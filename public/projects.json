@@ -1,0 +1,57 @@
+[
+    {
+      "id": 1,
+      "title": "Festotech",
+      "category": "Web development",
+      "image": "images/project-1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "U-learn",
+      "category": "Software development",
+      "image": "images/project-2.jpg"
+    },
+    {
+      "id": 3,
+      "title": "E-commerce",
+      "category": "Applications",
+      "image": "images/project-3.jpg"
+    },
+    {
+      "id": 4,
+      "title": "Nextevent ug",
+      "category": "Web development",
+      "image": "images/project-4.jpg"
+    },
+    {
+      "id": 5,
+      "title": "LMS",
+      "category": "Software development",
+      "image": "images/project-5.jpg"
+    },
+    {
+      "id": 6,
+      "title": "Form builder",
+      "category": "Web development",
+      "image": "images/project-6.jpg"
+    },
+    {
+      "id": 7,
+      "title": "Mentorship platform",
+      "category": "Software development",
+      "image": "images/project-7.jpg"
+    },
+    {
+      "id": 8,
+      "title": "Task Manager",
+      "category": "Applications",
+      "image": "images/project-8.jpg"
+    },
+    {
+      "id": 9,
+      "title": "Parking system",
+      "category": "Web development",
+      "image": "images/project-9.jpg"
+    }
+  ]
+  
