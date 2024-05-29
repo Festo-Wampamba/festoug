@@ -482,17 +482,17 @@ main {
 
 .icon-box.phone:hover,
 .icon-box.phone:focus {
-  color: #f7e603; /* Phone icon green color */
-}
-
-.icon-box.location:hover,
-.icon-box.location:focus {
-  color: #4285F4; /* Google Maps blue color */
+  color: #d8ca00; /* Phone icon green color */
 }
 
 .icon-box.pdf:hover,
 .icon-box.pdf:focus {
   color: #FF0000; /* PDF icon red color */
+}
+
+.icon-box.location:hover,
+.icon-box.location:focus {
+  color: #4285F4; /* Google Maps blue color */
 }
 
 .icon-box:active {
@@ -536,6 +536,7 @@ main {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
 
 
 

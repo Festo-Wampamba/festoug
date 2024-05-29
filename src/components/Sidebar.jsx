@@ -2,7 +2,7 @@ import { GiRotaryPhone } from "react-icons/gi";
 import { BiLogoGmail } from "react-icons/bi";
 import { GrDocumentPdf } from "react-icons/gr";
 import { FaMapLocationDot, FaWhatsapp } from "react-icons/fa6";
-import { PiCloudSunFill } from "react-icons/pi";
+import { LiaEyeSolid } from "react-icons/lia";
 import { useState } from "react";
 
 const Sidebar = () => {
@@ -22,9 +22,12 @@ const Sidebar = () => {
           <h1 className="name">Festo Wampamba</h1>
           <p className="title">Software Engineer</p>
         </div>
-        <button className="info_more-btn" onClick={toggleSidebar}>
+        <button
+          className={`info_more-btn ${isSidebarActive ? "blinking" : ""}`}
+          onClick={toggleSidebar}
+        >
           <span></span>
-          <PiCloudSunFill />
+          <LiaEyeSolid />
         </button>
       </div>
 

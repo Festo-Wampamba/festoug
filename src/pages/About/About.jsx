@@ -6,26 +6,22 @@ const servicesData = [
   {
     title: "Software Development",
     icon: "/images/icon-dev.svg",
-    description:
-      "Leveraging Python, Java, C++, JavaScript and PHP to deliver high quality software solutions.",
+    description: "Leveraging Python, Java, C++, JavaScript and PHP to deliver high quality software solutions.",
   },
   {
     title: "Data Modeling",
     icon: "/images/icon-dm.svg",
-    description:
-      "Expertise in database programming and management using industry leading tools and practices.",
+    description: "Expertise in database programming and management using industry leading tools and practices.",
   },
   {
     title: "Web Designing",
     icon: "/images/icon-design.svg",
-    description:
-      "Creating responsive and user-friendly web interfaces with Javascript, Tailwind CSS, React and NextJS.",
+    description: "Creating responsive and user-friendly web interfaces with Javascript, Tailwind CSS, React and NextJS.",
   },
   {
     title: "Database Management",
     icon: "/images/icon-db.svg",
-    description:
-      "Skilled in managing and optimizing databases for performance and reliability.",
+    description: "Skilled in managing and optimizing databases for performance and reliability.",
   },
 ];
 
@@ -38,6 +34,12 @@ const About = () => {
         setTestimonials(data);
       });
   }, []);
+
+  const handleLogoClick = (event) => {
+    event.preventDefault();
+    event.target.focus(); // Apply focus to the clicked element
+  };
+
   return (
     <div className="about active">
       <header>
@@ -75,7 +77,7 @@ const About = () => {
         </ul>
       </section>
 
-      {/*  Testimonials  */}
+      {/* Testimonials */}
       <section className="testimonials">
         <h3 className="h3 testimonials-title">Testimonials</h3>
         <ul className="testimonials-list has-scrollbar">
@@ -89,46 +91,38 @@ const About = () => {
           ))}
         </ul>
       </section>
-      {/* <!--
-      - clients
-    --> */}
 
+      {/* Clients */}
       <section className="clients">
         <h3 className="h3 clients-title">Clients</h3>
-
         <ul className="clients-list has-scrollbar">
           <li className="clients-item">
-            <a href="#">
+            <a href="#" onClick={handleLogoClick}>
               <img src="images/logo-1-color.png" alt="client logo" />
             </a>
           </li>
-
           <li className="clients-item">
-            <a href="#">
+            <a href="#" onClick={handleLogoClick}>
               <img src="images/logo-2-color.png" alt="client logo" />
             </a>
           </li>
-
           <li className="clients-item">
-            <a href="#">
+            <a href="#" onClick={handleLogoClick}>
               <img src="images/logo-3-color.png" alt="client logo" />
             </a>
           </li>
-
           <li className="clients-item">
-            <a href="#">
+            <a href="#" onClick={handleLogoClick}>
               <img src="images/logo-4-color.png" alt="client logo" />
             </a>
           </li>
-
           <li className="clients-item">
-            <a href="#">
+            <a href="#" onClick={handleLogoClick}>
               <img src="images/logo-5-color.png" alt="client logo" />
             </a>
           </li>
-
           <li className="clients-item">
-            <a href="#">
+            <a href="#" onClick={handleLogoClick}>
               <img src="images/logo-6-color.png" alt="client logo" />
             </a>
           </li>

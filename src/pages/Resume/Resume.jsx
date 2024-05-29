@@ -87,13 +87,10 @@ const Resume = () => {
       <div className="skill">
         <h3 className="h3 skills-title">My skills</h3>
         <ul className="skills-list content-card">
+          <SkillItem title="Software Development" value={95} />
           <SkillItem title="Programming Languages: Python, JavaScript, PHP, C" value={90} />
           <SkillItem title="Source and Version Control: Git, GitHub" value={95} />
-          <SkillItem title="Cloud Computing" value={85} />
-          <SkillItem title="JS Frameworks: React, NextJS" value={90} />
-          <SkillItem title="Creative Problem-Solving" value={95} />
           <SkillItem title="Database Programming" value={90} />
-          <SkillItem title="Project Coordination" value={90} />
           <SkillItem title="Team Collaboration" value={95} />
           <SkillItem title="Effective Communication" value={95} />
         </ul>
