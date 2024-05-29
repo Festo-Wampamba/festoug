@@ -147,7 +147,7 @@ This portfolio is deployed using Vercel, providing a fast and reliable hosting s
 
 To deploy your own version of the portfolio using Vercel:
 
-1. Sign up for a Vercel account at [vercel.com](https://vercel.com/).
+1. Sign up for a Vercel account at [vercel.com](https://festoug.vercel.app/).
 2. Link your GitHub repository to Vercel.
 3. Configure the project settings, including the environment variables.
 4. Deploy the project.
