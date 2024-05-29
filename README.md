@@ -62,7 +62,7 @@ Creating a personal portfolio is an essential step for showcasing my skills, exp
 
 ## Contact
 
-Feel free to reach out to me if you have any questions, comments, or opportunities! You can contact me through the form on my portfolio or connect with me on [LinkedIn](https://www.linkedin.com/in/yourprofile).
+Feel free to reach out to me if you have any questions, comments, or opportunities! You can contact me through the form on my portfolio or connect with me on [LinkedIn](https://www.linkedin.com/in/festo-muwanguzi/).
 
 Thank you for visiting my portfolio!
 
