@@ -32,7 +32,6 @@ The portfolio is structured as a single-page application (SPA) using React for t
 - **About Section**: Provides an introduction and background information about me.
 - **Projects Section**: Showcases my projects with detailed descriptions and links to live demos or repositories.
 - **Contact Section**: Includes a contact form powered by EmailJS for direct communication.
-- **Footer**: Contains social media links and additional contact information.
 
 ## 🚀 Development Process
 
