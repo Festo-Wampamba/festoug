@@ -30,24 +30,33 @@ Creating a personal portfolio is an essential step for showcasing my skills, exp
 ## How to Run This Project
 
 1. Clone the repository:
+
     ```bash
     git clone https://github.com/your-username/your-portfolio-repo.git
     ```
+
 2. Navigate to the project directory:
+
     ```bash
     cd your-portfolio-repo
     ```
+
 3. Install the dependencies:
+
     ```bash
     npm install
     ```
+
 4. Create a `.env` file in the root directory and add your environment variables:
+
     ```env
     VITE_EMAILJS_SERVICE_ID=your_service_id
     VITE_EMAILJS_TEMPLATE_ID=your_template_id
     VITE_EMAILJS_USER_ID=your_user_id
     ```
+
 5. Start the development server:
+
     ```bash
     npm run dev
     ```
@@ -55,10 +64,28 @@ Creating a personal portfolio is an essential step for showcasing my skills, exp
 ## Technologies Used
 
 - **React**: For building the user interface.
+- **Vue**: Another popular JavaScript framework.
+- **React Router DOM**: For handling routing in the application.
+- **React Icons**: For using a variety of icons in the application.
 - **Vite**: For fast and optimized development.
 - **EmailJS**: For handling contact form submissions.
 - **CSS**: For styling the components.
 - **JavaScript**: For adding interactivity and functionality.
+
+## Presentation
+
+### Project Presentation Details
+
+As part of the project completion, I will be presenting my portfolio individually (or with my team) via a Zoom call. The presentation, inclusive of the demo, will not exceed 16 minutes and will cover the following:
+
+- **Public GitHub Repository**: This repository contains the complete code for my portfolio project.
+- **Google Slides Presentation**: The presentation will include:
+  - **Project Description and Team**: A brief overview of the project and introduction of team members.
+  - **Architecture and Technologies**: An in-depth look at the architecture of the project and the technologies or third-party services used.
+  - **Development Report**: A report highlighting the development process, successes, challenges, areas for improvement, lessons learned, and next steps.
+  - **Conclusion**: A summary of the overall experience working on the project.
+
+The presentation is a critical component of the project completion, and thorough planning will be undertaken to ensure timely submission and comprehensive coverage of all aspects.
 
 ## Contact
 
