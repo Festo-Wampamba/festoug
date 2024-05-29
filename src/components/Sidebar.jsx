@@ -1,5 +1,6 @@
 import { GiRotaryPhone } from "react-icons/gi";
 import { BiLogoGmail } from "react-icons/bi";
+import { GrDocumentPdf } from "react-icons/gr";
 import { FaMapLocationDot, FaWhatsapp } from "react-icons/fa6";
 import { PiCloudSunFill } from "react-icons/pi";
 import { useState } from "react";
@@ -61,6 +62,17 @@ const Sidebar = () => {
               <p className="contact-title">WhatsApp</p>
               <a href="https://wa.me/256754230525" className="contact-link">
                 Chat on WhatsApp
+              </a>
+            </div>
+          </li>
+          <li className="contact-item">
+            <div className="icon-box pdf">
+              <GrDocumentPdf />
+            </div>
+            <div className="contact-info">
+              <p className="contact-title">My Resume</p>
+              <a href="/src/Festo_Resume.pdf" className="contact-link" download>
+                Download Resume
               </a>
             </div>
           </li>

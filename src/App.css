@@ -490,6 +490,11 @@ main {
   color: #4285F4; /* Google Maps blue color */
 }
 
+.icon-box.pdf:hover,
+.icon-box.pdf:focus {
+  color: #FF0000; /* PDF icon red color */
+}
+
 .icon-box:active {
   transform: scale(0.9);
 }
