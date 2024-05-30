@@ -1,34 +1,24 @@
 {
     "routes": [
         {
-            "path": "/",
-            "component": "About",
-            "exact": true
+            "src": "/",
+            "dest": "/about"
         },
         {
-            "path": "/resume",
-            "component": "About",
-            "exact": true
+            "src": "/resume",
+            "dest": "/resume"
         },
         {
-            "path": "/contact",
-            "component": "Resume",
-            "exact": true
+            "src": "/portfolio",
+            "dest": "/portfolio"
         },
         {
-            "path": "/portfolio",
-            "component": "Portfolio",
-            "exact": true
+            "src": "/blog",
+            "dest": "/blog"
         },
         {
-            "path": "/blogs",
-            "component": "Blogs",
-            "exact": true
-        },
-        {
-            "path": "/contact",
-            "component": "Contact",
-            "exact": true
+            "src": "/contact",
+            "dest": "/contact"
         }
     ]
 }
