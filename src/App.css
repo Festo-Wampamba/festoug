@@ -915,6 +915,43 @@ main {
   top: 0;
 }
 
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+  .timeline .title-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timeline-list {
+    margin-left: 0;
+  }
+
+  .timeline-item::before,
+  .timeline-item::after {
+    display: none;
+  }
+
+  .timeline-item {
+    margin-left: 0;
+  }
+
+  .timeline-description {
+    padding-left: 0;
+    margin-left: 0;
+    list-style: none;
+  }
+
+  .timeline-description li {
+    text-indent: 0; /* Remove outdent for mobile */
+    padding-left: 0; /* Remove indent for mobile */
+  }
+
+  .timeline-description li::before {
+    content: "";
+  }
+}
+
+
 /**
  * skills 
  */
@@ -1024,13 +1061,30 @@ main {
 
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
+  .skills-list {
+    padding: 15px;
+  }
+
+  .skills-item {
+    padding-left: 20px;
+    margin-bottom: 20px;
+  }
+
   .title-wrapper1 {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .title-wrapper1 data {
     margin-top: 5px;
+  }
+
+  .skill-progress-bg {
+    height: 6px;
+  }
+
+  .skills-item::after {
+    left: 5px;
   }
 }
 
@@ -1038,6 +1092,7 @@ main {
 .skills-item:hover .skill-progress-fill {
   box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
+
 
 
 
