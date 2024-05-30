@@ -1,0 +1,34 @@
+{
+    "routes": [
+        {
+            "path": "/",
+            "component": "About",
+            "exact": true
+        },
+        {
+            "path": "/resume",
+            "component": "About",
+            "exact": true
+        },
+        {
+            "path": "/contact",
+            "component": "Resume",
+            "exact": true
+        },
+        {
+            "path": "/portfolio",
+            "component": "Portfolio",
+            "exact": true
+        },
+        {
+            "path": "/blogs",
+            "component": "Blogs",
+            "exact": true
+        },
+        {
+            "path": "/contact",
+            "component": "Contact",
+            "exact": true
+        }
+    ]
+}
