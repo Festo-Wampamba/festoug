@@ -65,12 +65,10 @@ const Resume = () => {
             institution="Online"
             period="2022 — Present"
             description="
-            Optimized application performance by regularly conducting code reviews and refactoring, leading to a 25% improvement in system efficiency across major projects.
-            Increased development speed by 30% by automating Development and over 15 repetitive daily tasks using Python scripts and advanced automation tools, significantly reducing manual error.
-            Modernized and updated legacy code bases to current development standards, enhancing system functionality and user response time by 50% across 20+ applications.
+            Optimized application performance by regularly conducting code reviews and refactoring, leading to a 25% improvement in system efficiency across major projects like NextEvent UG.
+            Modernized and updated legacy code bases to current development standards, enhancing system functionality and user response time by  50% across 20+ applications
             Enhanced user experience by designing and implementing intuitive user interfaces, which improved customer satisfaction ratings by 35% according to user feedback surveys.
-            Actively contributed to team meetings with innovative ideas, influencing the direction of project development; consistently delivered project updates that kept 5 ongoing projects 20% ahead of schedule.
-            Saved time and resources by identifying and fixing bugs before product deployment."
+            Boosted customer satisfaction rates through timely resolution of reported technical issues during the support phase of projects."
           />
           <TimelineItem
             role="Programmer"
@@ -88,10 +86,10 @@ const Resume = () => {
         <h3 className="h3 skills-title">My skills</h3>
         <ul className="skills-list content-card">
           <SkillItem title="Software Development" value={95} />
-          <SkillItem title="Programming Languages: Python, JavaScript, PHP, C" value={90} />
-          <SkillItem title="Source and Version Control: Git, GitHub" value={95} />
-          <SkillItem title="Database Programming" value={90} />
-          <SkillItem title="Team Collaboration" value={95} />
+          <SkillItem title="Programming Languages: Python, JavaScript, PHP, C" value={85} />
+          <SkillItem title="Source and Version Control: Git, GitHub" value={90} />
+          <SkillItem title="Database Programming" value={85} />
+          <SkillItem title="Team Collaboration" value={80} />
           <SkillItem title="Effective Communication" value={95} />
         </ul>
       </div>

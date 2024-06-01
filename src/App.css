@@ -358,11 +358,11 @@ main {
   font-weight: var(--fw-500);
   letter-spacing: -0.25px;
   margin-bottom: 10px;
-  animation: typing 4s steps(22) 1s infinite alternate;
   white-space: nowrap;
   overflow: hidden;
-  border-right: none; /* Removed blinking cursor */
+  border-right: none;
 }
+
 
 .info-content .title {
   color: var(--white-1);
@@ -522,19 +522,6 @@ main {
 .social-item .social-link:focus {
   color: var(--orange-yellow-crayola);
   transform: scale(1.1);
-}
-
-/* Typing effect */
-@keyframes typing {
-  0%, 10% { width: 0; }
-  70%, 80% { width: 100%; }
-  90%, 100% { width: 0; }
-}
-
-/* Fade in effect */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 
