@@ -1020,10 +1020,9 @@ main {
   font-weight: var(--fw-60);
 }
 
+/* Hide percentage numbers */
 .title-wrapper1 data {
-  color: var(--light-gray);
-  font-size: var(--fs-7);
-  font-weight: var(--fw-300);
+  display: none; /* or use visibility: hidden; if you prefer */
 }
 
 .skill-progress-bg {
@@ -1079,7 +1078,6 @@ main {
 .skills-item:hover .skill-progress-fill {
   box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
-
 
 
 
