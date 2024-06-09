@@ -34,7 +34,7 @@ const Resume = () => {
           <TimelineItem
             institution="ALX - Nairobi, Kenya"
             program="Certificate in Software Engineering"
-            period="2023 - Current"
+            period="2023 - 2024"
             description="This intensive program focuses on hands-on learning and real-world problem-solving, covering key areas such as coding, system design, and project management. The program is designed to rapidly build technical skills and prepare me for a successful career in software engineering."
           />
           <TimelineItem
@@ -76,7 +76,6 @@ const Resume = () => {
             period="2019 — 2023"
             description="
             Designed and implemented robust databases and table structures for 5 major web applications, enhancing data retrieval speeds and supporting daily transactions for over 10,000 users.
-            Developed reusable and scalable code for distributed cloud environments, resulting in a 40% reduction in code redundancy and a 30% improvement in deployment times across multiple cloud platforms.
             Enhanced customer experience by providing timely technical support to end users, successfully resolving over 200+ technical issues per month with a 95% satisfaction rate, contributing to a 20% increase in customer retention."
           />
         </ol>
