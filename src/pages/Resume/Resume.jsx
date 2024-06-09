@@ -66,7 +66,6 @@ const Resume = () => {
             period="2022 — Present"
             description="
             Optimized application performance by regularly conducting code reviews and refactoring, leading to a 25% improvement in system efficiency across major projects like NextEvent UG.
-            Modernized and updated legacy code bases to current development standards, enhancing system functionality and user response time by  50% across 20+ applications
             Enhanced user experience by designing and implementing intuitive user interfaces, which improved customer satisfaction ratings by 35% according to user feedback surveys.
             Boosted customer satisfaction rates through timely resolution of reported technical issues during the support phase of projects."
           />
