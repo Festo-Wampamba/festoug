@@ -946,9 +946,7 @@ main {
  :root {
   --light-gray: #d3d3d3;
   --text-primary: #333;
-  --text-gradient-yellow: #f0c674;
   --unused-progress-color: #e0e0e0;
-  --used-progress-color: #4caf50;
   --jet: #2a2a2a;
   --fs-5: 1.25rem;
   --fs-6: 1rem;
@@ -1038,11 +1036,24 @@ main {
 }
 
 .skill-progress-fill {
-  background: linear-gradient(90deg, #00ff00, #00ff00);
+  background: linear-gradient(90deg, #ff4500, #ffa500, #ff4500);
   height: 100%;
   border-radius: inherit;
   transition: width 1s ease-in-out;
   width: 0%; /* Initial width set to 0 for animation */
+  animation: flame 1.5s infinite;
+}
+
+@keyframes flame {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
 
 /* Media queries for responsiveness */
@@ -1076,8 +1087,9 @@ main {
 
 /* Adding hover effect */
 .skills-item:hover .skill-progress-fill {
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
 }
+
 
 
 
