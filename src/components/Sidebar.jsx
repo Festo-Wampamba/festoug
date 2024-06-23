@@ -19,7 +19,7 @@ const Sidebar = () => {
           <img src="/images/festo.svg" alt="Festo" width="80" />
         </figure>
         <div className="info-content">
-          <h1 className="name">Festo Wampamba</h1>
+          <h1 className="name">Festo Muwanguzi</h1>
           <p className="title">Software Engineer</p>
         </div>
         <button
