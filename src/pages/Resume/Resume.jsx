@@ -35,7 +35,7 @@ const Resume = () => {
             institution="ALX - Nairobi, Kenya"
             program="Certificate in Software Engineering"
             period="2023 - 2024"
-            description="TThis intensive program focused on hands-on learning and real-world problem-solving, covering key areas such as coding, system design, and project management. The program was designed to rapidly build technical skills and prepare me for a successful career in software engineering."
+            description="This intensive program focused on hands-on learning and real-world problem-solving, covering key areas such as coding, system design, and project management. The program was designed to rapidly build technical skills and prepare me for a successful career in software engineering."
           />
           <TimelineItem
             institution="Luzira Secondary School - Kampala, Uganda"
