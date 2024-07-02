@@ -18,6 +18,10 @@ const Sidebar = () => {
     setIsSidebarActive(!isSidebarActive);
   };
 
+  const emailLink = isDesktop
+    ? "https://mail.google.com/mail/?view=cm&fs=1&to=festotechug@gmail.com"
+    : "googlegmail://co?to=festotechug@gmail.com";
+
   return (
     <aside className={`sidebar ${isSidebarActive ? "active" : ""}`}>
       <div className="sidebar-info">
@@ -47,14 +51,7 @@ const Sidebar = () => {
             </div>
             <div className="contact-info">
               <p className="contact-title">Email</p>
-              <a
-                href={
-                  isDesktop
-                    ? "https://mail.google.com/mail/?view=cm&fs=1&to=festotechug@gmail.com"
-                    : "mailto:festotechug@gmail.com"
-                }
-                className="contact-link"
-              >
+              <a href={emailLink} className="contact-link">
                 festotechug@gmail.com
               </a>
             </div>
