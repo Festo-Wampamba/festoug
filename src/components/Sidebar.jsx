@@ -20,7 +20,7 @@ const Sidebar = () => {
 
   const emailLink = isDesktop
     ? "https://mail.google.com/mail/?view=cm&fs=1&to=festotechug@gmail.com"
-    : "googlegmail://co?to=festotechug@gmail.com";
+    : "mailto:festotechug@gmail.com";
 
   return (
     <aside className={`sidebar ${isSidebarActive ? "active" : ""}`}>
