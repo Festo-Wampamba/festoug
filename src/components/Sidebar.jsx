@@ -84,7 +84,7 @@ const Sidebar = () => {
             </div>
             <div className="contact-info">
               <p className="contact-title">My Resume</p>
-              <a href="/src/Festoug.pdf" className="contact-link" download>
+              <a href="/festoug.pdf" className="contact-link" download>
                 Download Resume
               </a>
             </div>
