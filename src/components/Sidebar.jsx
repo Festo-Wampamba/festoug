@@ -95,9 +95,14 @@ const Sidebar = () => {
             </div>
             <div className="contact-info">
               <p className="contact-title">Location</p>
-              <address className="contact-link">
+              <a
+                href="https://www.google.com/maps/place/Bugoloobi,+Kampala/@0.3124645,32.6133872,15z"
+                className="contact-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Bugolobi, Kampala, Uganda
-              </address>
+              </a>
             </div>
           </li>
         </ul>
