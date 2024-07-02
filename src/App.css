@@ -492,7 +492,7 @@ main {
 
 .icon-box.location:hover,
 .icon-box.location:focus {
-  color: #4285F4; /* Google Maps blue color */
+  color: #cc6301; /* Google Maps blue color */
 }
 
 .icon-box:active {
