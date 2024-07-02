@@ -3,10 +3,16 @@ import { BiLogoGmail } from "react-icons/bi";
 import { GrDocumentPdf } from "react-icons/gr";
 import { FaMapLocationDot, FaWhatsapp } from "react-icons/fa6";
 import { LiaEyeSolid } from "react-icons/lia";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Sidebar = () => {
   const [isSidebarActive, setIsSidebarActive] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    setIsDesktop(!/Mobi|Android/i.test(userAgent));
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarActive(!isSidebarActive);
@@ -41,7 +47,14 @@ const Sidebar = () => {
             </div>
             <div className="contact-info">
               <p className="contact-title">Email</p>
-              <a href="mailto:festotechug@gmail.com" className="contact-link">
+              <a
+                href={
+                  isDesktop
+                    ? "https://mail.google.com/mail/?view=cm&fs=1&to=festotechug@gmail.com"
+                    : "mailto:festotechug@gmail.com"
+                }
+                className="contact-link"
+              >
                 festotechug@gmail.com
               </a>
             </div>
@@ -74,7 +87,7 @@ const Sidebar = () => {
             </div>
             <div className="contact-info">
               <p className="contact-title">My Resume</p>
-              <a href="/src/Festo_Resume.pdf" className="contact-link" download>
+              <a href="/src/Festoug.pdf" className="contact-link" download>
                 Download Resume
               </a>
             </div>
