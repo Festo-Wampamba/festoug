@@ -1,8 +1,9 @@
 // vite.config.mjs
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'        // or '@vitejs/plugin-react' if React
+import react from '@vitejs/plugin-react'        // or '@vitejs/plugin-react' if React
 
+// https://vite.dev/config/
 export default defineConfig({
   base: './',
-  plugins: [ vue() ],
+  plugins: [ react() ],
 })
