@@ -45,6 +45,18 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Legacy Portfolio Custom Colors */
+  --color-jet: hsl(0, 0%, 22%);
+  --color-onyx: hsl(240, 1%, 17%);
+  --color-eerie-black-1: hsl(240, 2%, 13%);
+  --color-eerie-black-2: rgb(11 17 32);
+  --color-smoky-black: rgb(15 23 42);
+  --color-orange-yellow-crayola: rgb(56 189 248);
+  --color-vegas-gold: hsl(45 54% 58%);
+  --color-light-gray: hsl(0 0% 84%);
+  --color-light-gray-70: hsla(0 0% 84% / 0.7);
+  --color-bittersweet-shimmer: hsl(15 100% 50%);
 }
 
 :root {
@@ -121,9 +133,20 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-smoky-black text-light-gray;
   }
-  html {
-    @apply font-sans;
+  /* Scrollbar Customization */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-smoky-black;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 border-[3px] border-smoky-black rounded-full shadow-[inset_1px_1px_0_rgba(255,255,255,0.11),inset_-1px_-1px_0_rgba(255,255,255,0.11)];
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/15;
   }
 }
