@@ -1,0 +1,23 @@
+
+[
+  {
+    "title": "Software Development",
+    "icon": "/images/icon-dev.svg",
+    "description": "Leveraging Python, Java, C++, JavaScript and PHP to deliver high quality software solutions."
+  },
+  {
+    "title": "Data Modeling",
+    "icon": "/images/icon-dm.svg",
+    "description": "Expertise in database programming and management using industry leading tools and practices."
+  },
+  {
+    "title": "Web Designing",
+    "icon": "/images/icon-design.svg",
+    "description": "Creating responsive and user-friendly web interfaces with Javascript, Tailwind CSS, React and NextJS."
+  },
+  {
+    "title": "Database Management",
+    "icon": "/images/icon-db.svg",
+    "description": "Skilled in managing and optimizing databases for performance and reliability."
+  }
+]
