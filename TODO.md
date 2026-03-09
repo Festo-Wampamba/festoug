@@ -41,9 +41,20 @@
 - [x] Build `/dashboard/settings` (Profile update form)
 
 ### 6. Payment Webhooks & Fulfillment
-- [ ] Create webhook handler `/api/webhooks/lemonsqueezy`
-- [ ] On successful payment: Insert `Order` and `License` records in DB
+- [x] Create webhook handler `/api/webhooks/lemonsqueezy`
+- [x] On successful payment: Insert `Order` and `License` records in DB
 - [ ] Send confirmation email to customer (via EmailJS / Resend)
+
+### 7. Digital Products Catalog (`/store`)
+- [x] Build `/store` product catalog page showing available items
+- [x] Build `/store/[slug]` detailed product sales page
+- [x] Implement `/api/checkout` to generate dynamic hosted Lemon Squeezy templates
+- [x] Add variant ID mapping to PostgreSQL products schema
+
+### 8. Deferred UI Polish & Integration (To-Do Later)
+- [ ] Finish creating all variant IDs in Lemon Squeezy dashboard and add them to the `.env.local`
+- [ ] Fix Login/Signup UI design formatting and responsiveness on smaller screens
+- [ ] Adjust the Customer Dashboard profile and layout for mobile responsiveness
 
 ---
 
