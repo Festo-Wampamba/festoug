@@ -2,13 +2,18 @@ import { Metadata } from 'next';
 import { MonitorSmartphone, Search, Palette, Code2, Rocket, Share2 } from 'lucide-react';
 import { ServiceCard } from '@/components/marketing/service-card-new';
 import { PricingCard, PricingPlanProps } from '@/components/marketing/pricing-card';
+import { PortfolioGrid } from '@/components/marketing/portfolio-grid';
+import fs from 'fs';
+import path from 'path';
 
 export const metadata: Metadata = {
   title: 'Professional Services | FestoUG',
   description: 'Premium software development, UI/UX design, and digital marketing services by Festo Muwanguzi.',
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const projectsPath = path.join(process.cwd(), 'public', 'projects.json');
+  const projects = JSON.parse(fs.readFileSync(projectsPath, 'utf-8'));
   const services = [
     {
       title: 'Web Development',
@@ -163,13 +168,23 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      {/* Featured Proof of Work */}
+      <section className="mb-24">
+        <h3 className="text-2xl font-semibold text-white-2 mb-8 flex items-center gap-3">
+          <span className="text-orange-yellow-crayola">02.</span> Featured Work
+        </h3>
+        <PortfolioGrid projects={projects} limit={3} hideCategoryFilter={true} />
+      </section>
+
       {/* Pricing Section */}
       <section>
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-2 text-orange-yellow-crayola font-medium mb-3 tracking-widest text-sm">
             <span>&gt;&gt;&gt;</span> PRICING PLAN
           </div>
-          <h3 className="text-3xl md:text-5xl font-bold text-white-2 mb-4">Pricing My Work</h3>
+          <h3 className="text-3xl md:text-5xl font-bold text-white-2 mb-4">
+            <span className="text-orange-yellow-crayola">03.</span> Pricing My Work
+          </h3>
           <p className="text-light-gray max-w-xl mx-auto">
             Transparent, straightforward pricing for high-quality engineering and design. Choose the package that fits your business needs.
           </p>

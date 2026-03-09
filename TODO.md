@@ -23,7 +23,7 @@
 - [x] Create `ServiceCard` UI Component (Grid layout)
 - [x] Create `PricingCard` UI Component (3-tier plans)
 - [x] Build `/services/page.tsx` (Hero, Service Grid, Pricing Table)
-- [ ] Integrate Portfolio/Project Gallery carousel for proof of work
+- [x] Integrate Portfolio/Project Gallery carousel for proof of work
 
 ### 3. Checkout & Onboarding Flow
 - [ ] Implement Lemon Squeezy integration for Retainers / Fixed Projects
