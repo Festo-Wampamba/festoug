@@ -16,7 +16,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-black/40 backdrop-blur-2xl border border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)] z-50 xl:absolute xl:bottom-auto xl:top-0 xl:right-0 xl:w-max xl:rounded-tr-[20px] xl:rounded-bl-[20px] xl:rounded-tl-none xl:rounded-br-none xl:border-r-0 xl:border-t-0">
+    <nav className="fixed bottom-0 left-0 w-full bg-[hsla(240,1%,17%,0.75)] backdrop-blur-[10px] border border-jet rounded-t-[20px] shadow-2 z-50 xl:absolute xl:bottom-auto xl:top-0 xl:right-0 xl:left-auto xl:w-max xl:rounded-tr-[20px] xl:rounded-bl-[20px] xl:rounded-tl-none xl:rounded-br-none xl:border-r-0 xl:border-t-0">
       <ul className="flex flex-wrap justify-center items-center px-[10px] xl:px-[30px] xl:py-[5px]">
         {links.map((link) => {
           const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));

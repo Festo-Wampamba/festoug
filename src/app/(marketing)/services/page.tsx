@@ -134,7 +134,7 @@ export default function ServicesPage() {
     <div className="animate-in fade-in duration-500">
       
       {/* Page Header */}
-      <header className="mb-10 md:mb-16 xl:pr-[480px]">
+      <header className="mb-10 md:mb-16 xl:max-w-[55%]">
         <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-orange-yellow-crayola before:rounded-sm">
           Services <span className="text-light-gray-70 font-light">& Pricing</span>
         </h2>
