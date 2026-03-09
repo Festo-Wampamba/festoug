@@ -19,15 +19,16 @@
 - [x] Draft `PHASE_3_DESIGN.md` UI/UX specification
 - [x] Setup `TODO.md` tracking file
 
-### 2. Store Catalog (`/store`)
-- [ ] Create `ProductCard` UI Component
-- [ ] Create `/store/page.tsx` (Grid, Filters, Search)
-- [ ] Fetch products from PostgreSQL (Drizzle)
+### 2. Professional Services Portal (`/services` or `/hire-me`)
+- [x] Create `ServiceCard` UI Component (Grid layout)
+- [x] Create `PricingCard` UI Component (3-tier plans)
+- [x] Build `/services/page.tsx` (Hero, Service Grid, Pricing Table)
+- [ ] Integrate Portfolio/Project Gallery carousel for proof of work
 
-### 3. Product Detail Page (`/store/[slug]`)
-- [ ] Create `/store/[slug]/page.tsx` layout (Gallery, Specs)
-- [ ] Implement Lemon Squeezy integration utility wrapper
-- [ ] Create Checkout/Buy Now Button Component
+### 3. Checkout & Onboarding Flow
+- [ ] Implement Lemon Squeezy integration for Retainers / Fixed Projects
+- [ ] Build custom "Get Started" onboarding/scoping form
+- [ ] Configure specialized webhooks for service payments
 
 ### 4. Customer Dashboard Layout (`/dashboard`)
 - [ ] Create private layout for `/dashboard` with Sidebar/Tabs
