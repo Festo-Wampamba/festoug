@@ -98,6 +98,7 @@ export const products = pgTable(
     price: numeric("price", { precision: 10, scale: 2 }).notNull(), // in USD
     currency: text("currency").default("USD").notNull(),
     category: productCategoryEnum("category").default("OTHER").notNull(),
+    variantId: text("variant_id"), // Lemon Squeezy Variant ID
     downloadUrl: text("download_url"),
     thumbnailUrl: text("thumbnail_url"),
     isActive: boolean("is_active").default(true).notNull(),
@@ -210,3 +211,53 @@ export const services = pgTable("service", {
   sortOrder: integer("sort_order").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
 });
+
+// ─── Relations ────────────────────────────────────────────────────────────────
+import { relations } from "drizzle-orm";
+
+export const usersRelations = relations(users, ({ many }) => ({
+  orders: many(orders),
+  licenses: many(licenses),
+  accounts: many(accounts),
+  sessions: many(sessions),
+  blogPosts: many(blogPosts),
+}));
+
+export const productsRelations = relations(products, ({ many }) => ({
+  orders: many(orders),
+  licenses: many(licenses),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [orders.productId],
+    references: [products.id],
+  }),
+  licenses: many(licenses),
+}));
+
+export const licensesRelations = relations(licenses, ({ one }) => ({
+  user: one(users, {
+    fields: [licenses.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [licenses.productId],
+    references: [products.id],
+  }),
+  order: one(orders, {
+    fields: [licenses.orderId],
+    references: [orders.id],
+  }),
+}));
+
+export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
+  author: one(users, {
+    fields: [blogPosts.authorId],
+    references: [users.id],
+  }),
+}));
