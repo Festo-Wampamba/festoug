@@ -31,14 +31,14 @@
 - [x] Configure specialized webhooks for service payments
 
 ### 4. Customer Dashboard Layout (`/dashboard`)
-- [ ] Create private layout for `/dashboard` with Sidebar/Tabs
-- [ ] Ensure middleware strictly blocks non-authenticated users
+- [x] Create private layout for `/dashboard` with Sidebar/Tabs
+- [x] Ensure middleware strictly blocks non-authenticated users
 
 ### 5. Dashboard Pages
-- [ ] Build `/dashboard/page.tsx` (Overview & Stats)
-- [ ] Build `/dashboard/purchases` (Order History & Downloads)
-- [ ] Build `/dashboard/licenses` (License Key management)
-- [ ] Build `/dashboard/settings` (Profile update form)
+- [x] Build `/dashboard/page.tsx` (Overview & Stats)
+- [x] Build `/dashboard/purchases` (Order History & Downloads)
+- [x] Build `/dashboard/licenses` (License Key management)
+- [x] Build `/dashboard/settings` (Profile update form)
 
 ### 6. Payment Webhooks & Fulfillment
 - [ ] Create webhook handler `/api/webhooks/lemonsqueezy`
