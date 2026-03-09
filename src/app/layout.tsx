@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${poppins.variable} antialiased min-h-screen selection:bg-orange-yellow-crayola selection:text-smoky-black`}>
-        <div className="max-w-[1200px] mx-auto px-3 sm:px-4 py-[15px] sm:py-[60px] mb-[75px] xl:mb-0 flex flex-col xl:flex-row gap-6 justify-center">
+        <div className="max-w-[1440px] mx-auto px-3 sm:px-4 py-[15px] sm:py-[60px] mb-[75px] xl:mb-0 flex flex-col xl:flex-row gap-6 justify-center">
           <Sidebar />
           
           <div className="flex-1 min-w-0 relative">

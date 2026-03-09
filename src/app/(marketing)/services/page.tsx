@@ -131,7 +131,7 @@ export default function ServicesPage() {
   ];
 
   return (
-    <article className="bg-[#1e1e1f] border border-[#383838] rounded-2xl p-[15px] pb-20 md:p-[30px] w-full mt-4 md:mt-0 shadow-[0_24px_80px_hsla(0,0%,0%,0.25)] relative top-0 xl:min-h-screen xl:ml-6 mb-24 md:mb-8">
+    <div className="animate-in fade-in duration-500">
       
       {/* Page Header */}
       <header className="mb-10 md:mb-16">
@@ -184,6 +184,6 @@ export default function ServicesPage() {
         </div>
       </section>
 
-    </article>
+    </div>
   );
 }
