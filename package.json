@@ -16,6 +16,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
     "@base-ui/react": "^1.2.0",
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@types/pg": "^8.18.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

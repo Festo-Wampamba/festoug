@@ -26,9 +26,9 @@
 - [x] Integrate Portfolio/Project Gallery carousel for proof of work
 
 ### 3. Checkout & Onboarding Flow
-- [ ] Implement Lemon Squeezy integration for Retainers / Fixed Projects
+- [x] Implement Lemon Squeezy integration for Retainers / Fixed Projects
 - [x] Build custom "Get Started" onboarding/scoping form
-- [ ] Configure specialized webhooks for service payments
+- [x] Configure specialized webhooks for service payments
 
 ### 4. Customer Dashboard Layout (`/dashboard`)
 - [ ] Create private layout for `/dashboard` with Sidebar/Tabs

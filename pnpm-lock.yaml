@@ -14,6 +14,9 @@ importers:
       '@base-ui/react':
         specifier: ^1.2.0
         version: 1.2.0(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@lemonsqueezy/lemonsqueezy.js':
+        specifier: ^4.0.0
+        version: 4.0.0
       '@types/pg':
         specifier: ^8.18.0
         version: 8.18.0
@@ -1041,6 +1044,10 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lemonsqueezy/lemonsqueezy.js@4.0.0':
+    resolution: {integrity: sha512-xcY1/lDrY7CpIF98WKiL1ElsfoVhddP7FT0fw7ssOzrFqQsr44HgolKrQZxd9SywsCPn12OTOUieqDIokI3mFg==}
+    engines: {node: '>=20'}
 
   '@modelcontextprotocol/sdk@1.27.1':
     resolution: {integrity: sha512-sr6GbP+4edBwFndLbM60gf07z0FQ79gaExpnsjMGePXqFcSSb7t6iscpjk9DhFhwd+mTEQrzNafGP8/iGGFYaA==}
@@ -4462,6 +4469,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lemonsqueezy/lemonsqueezy.js@4.0.0': {}
 
   '@modelcontextprotocol/sdk@1.27.1(zod@3.25.76)':
     dependencies:
