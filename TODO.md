@@ -27,7 +27,7 @@
 
 ### 3. Checkout & Onboarding Flow
 - [ ] Implement Lemon Squeezy integration for Retainers / Fixed Projects
-- [ ] Build custom "Get Started" onboarding/scoping form
+- [x] Build custom "Get Started" onboarding/scoping form
 - [ ] Configure specialized webhooks for service payments
 
 ### 4. Customer Dashboard Layout (`/dashboard`)

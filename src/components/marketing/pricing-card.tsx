@@ -47,7 +47,7 @@ export function PricingCard({ plan }: { plan: PricingPlanProps }) {
 
       {/* CTA Button */}
       <Link 
-        href="/contact"
+        href={`/get-started?plan=${encodeURIComponent(plan.name)}`}
         className={`w-full py-3 rounded-xl font-semibold text-center transition-all duration-300 mb-8 ${
           plan.isPopular
             ? "bg-orange-yellow-crayola text-smoky-black hover:bg-orange-yellow-crayola/90 hover:shadow-[0_0_15px_rgba(255,181,63,0.4)]"
