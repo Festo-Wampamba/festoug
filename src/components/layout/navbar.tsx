@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, LogOut, User, Settings } from "lucide-react";
+import { LayoutDashboard, LogOut, User, Settings, Shield } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -84,16 +84,26 @@ export function Navbar() {
                     <p className="text-light-gray-70 text-xs truncate">{session.user.email}</p>
                   </div>
                   <ul className="py-2">
-                    <li>
-                      <Link href="/dashboard" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
-                        <LayoutDashboard className="w-4 h-4 text-orange-yellow-crayola" /> Dashboard
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/dashboard/settings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
-                        <Settings className="w-4 h-4 text-orange-yellow-crayola" /> Profile Settings
-                      </Link>
-                    </li>
+                    {session.user.role === "ADMIN" ? (
+                      <li>
+                        <Link href="/admin" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
+                          <Shield className="w-4 h-4 text-orange-yellow-crayola" /> Admin Panel
+                        </Link>
+                      </li>
+                    ) : (
+                      <>
+                        <li>
+                          <Link href="/dashboard" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
+                            <LayoutDashboard className="w-4 h-4 text-orange-yellow-crayola" /> Dashboard
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/dashboard/settings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
+                            <Settings className="w-4 h-4 text-orange-yellow-crayola" /> Profile Settings
+                          </Link>
+                        </li>
+                      </>
+                    )}
                     <li className="border-t border-jet mt-1 pt-1">
                       <button
                         onClick={() => { setDropdownOpen(false); signOut({ callbackUrl: "/" }); }}
