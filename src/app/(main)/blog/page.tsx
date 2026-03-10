@@ -1,25 +1,34 @@
 import { BlogCard } from "@/components/blog/blog-card";
-import fs from "fs";
-import path from "path";
+import { db } from "@/lib/db";
+import { blogPosts } from "@/lib/db/schema";
+import { desc, eq, count } from "drizzle-orm";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+export const metadata = { title: "Blog | Festo Wampamba" };
 
 export default async function BlogPage(props: { searchParams?: Promise<{ page?: string }> }) {
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams?.page) || 1;
-  const postsPerPage = 4;
+  const postsPerPage = 6;
 
-  const blogsPath = path.join(process.cwd(), "public", "blogs.json");
-  const blogs = JSON.parse(fs.readFileSync(blogsPath, "utf-8"));
+  // Total count of published posts
+  const [{ value: totalPosts }] = await db
+    .select({ value: count() })
+    .from(blogPosts)
+    .where(eq(blogPosts.isPublished, true));
 
-  const totalPages = Math.ceil(blogs.length / postsPerPage);
-  
-  // Guard against invalid ranges
+  const totalPages = Math.ceil(totalPosts / postsPerPage) || 1;
   const page = Math.max(1, Math.min(currentPage, totalPages));
+  const offset = (page - 1) * postsPerPage;
 
-  const indexOfLastPost = page * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = blogs.slice(indexOfFirstPost, indexOfLastPost);
+  // Fetch actual posts
+  const posts = await db.query.blogPosts.findMany({
+    where: eq(blogPosts.isPublished, true),
+    orderBy: [desc(blogPosts.publishedAt), desc(blogPosts.createdAt)],
+    limit: postsPerPage,
+    offset,
+  });
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -30,19 +39,33 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
         <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-gradient-to-r from-orange-yellow-crayola to-orange-400 rounded-[3px]" />
       </header>
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 gap-[30px] mb-10">
-        {currentPosts.map((post: any, index: number) => (
-          <BlogCard
-            key={index}
-            title={post.title}
-            category={post.category}
-            date={post.date}
-            image={post.image}
-            description={post.description}
-            link={post.link}
-          />
-        ))}
-      </ul>
+      {posts.length === 0 ? (
+        <div className="text-center py-12 border border-jet bg-eerie-black-1 rounded-2xl">
+          <p className="text-light-gray">No blog posts found at the moment. Check back soon!</p>
+        </div>
+      ) : (
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-[30px] mb-10">
+          {posts.map((post) => {
+            const dateStr = (post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            });
+            return (
+              <BlogCard
+                key={post.id}
+                title={post.title}
+                category={post.category || "Uncategorized"}
+                date={dateStr}
+                image={post.coverImage || "/images/blog-placeholder.jpg"}
+                description={post.excerpt || ""}
+                link={`/blog/${post.slug}`}
+                isFeatured={post.isFeatured}
+              />
+            );
+          })}
+        </ul>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (

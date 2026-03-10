@@ -42,7 +42,7 @@ export default function ContactPage() {
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15959.035959227225!2d32.613387183410396!3d0.3124645449513956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbc01495c9873%3A0xa7d285a6dfaac8!2sBugoloobi%2C%20Kampala!5e0!3m2!1sen!2sug!4v1716838058055!5m2!1sen!2sug"
             width="100%"
             height="400"
-            style={{ border: 0, filter: "grayscale(1) contrast(1.2) opacity(0.8)" }}
+            style={{ border: 0, filter: "contrast(1.2) opacity(0.8)" }}
             allowFullScreen={false}
             loading="lazy"
             title="Google Map"

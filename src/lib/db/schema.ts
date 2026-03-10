@@ -30,6 +30,11 @@ export const productCategoryEnum = pgEnum("product_category", [
   "SERVICE",
   "OTHER",
 ]);
+export const accountStatusEnum = pgEnum("account_status", [
+  "ACTIVE",
+  "SUSPENDED",
+  "BANNED",
+]);
 
 // ─── Auth.js Required Tables ─────────────────────────────────────────────────
 export const users = pgTable("user", {
@@ -40,6 +45,7 @@ export const users = pgTable("user", {
   image: text("image"),
   passwordHash: text("password_hash"),
   role: userRoleEnum("role").default("CUSTOMER").notNull(),
+  accountStatus: accountStatusEnum("account_status").default("ACTIVE").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -98,6 +104,7 @@ export const products = pgTable(
     price: numeric("price", { precision: 10, scale: 2 }).notNull(), // in USD
     currency: text("currency").default("USD").notNull(),
     category: productCategoryEnum("category").default("OTHER").notNull(),
+    variantId: text("variant_id"), // Lemon Squeezy Variant ID
     downloadUrl: text("download_url"),
     thumbnailUrl: text("thumbnail_url"),
     isActive: boolean("is_active").default(true).notNull(),
@@ -159,6 +166,7 @@ export const blogPosts = pgTable(
     coverImage: text("cover_image"),
     category: text("category"),
     isPublished: boolean("is_published").default(false).notNull(),
+    isFeatured: boolean("is_featured").default(false).notNull(),
     authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
     externalLink: text("external_link"), // Keep legacy external links
     publishedAt: timestamp("published_at"),
@@ -210,3 +218,62 @@ export const services = pgTable("service", {
   sortOrder: integer("sort_order").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
 });
+
+// ─── Banned Emails (permanent ban tracking) ──────────────────────────────────
+export const bannedEmails = pgTable("banned_email", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  reason: text("reason"),
+  bannedAt: timestamp("banned_at").defaultNow().notNull(),
+  bannedBy: uuid("banned_by").references(() => users.id, { onDelete: "set null" }),
+});
+
+// ─── Relations ────────────────────────────────────────────────────────────────
+import { relations } from "drizzle-orm";
+
+export const usersRelations = relations(users, ({ many }) => ({
+  orders: many(orders),
+  licenses: many(licenses),
+  accounts: many(accounts),
+  sessions: many(sessions),
+  blogPosts: many(blogPosts),
+}));
+
+export const productsRelations = relations(products, ({ many }) => ({
+  orders: many(orders),
+  licenses: many(licenses),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [orders.productId],
+    references: [products.id],
+  }),
+  licenses: many(licenses),
+}));
+
+export const licensesRelations = relations(licenses, ({ one }) => ({
+  user: one(users, {
+    fields: [licenses.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [licenses.productId],
+    references: [products.id],
+  }),
+  order: one(orders, {
+    fields: [licenses.orderId],
+    references: [orders.id],
+  }),
+}));
+
+export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
+  author: one(users, {
+    fields: [blogPosts.authorId],
+    references: [users.id],
+  }),
+}));

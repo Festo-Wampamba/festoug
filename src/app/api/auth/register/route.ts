@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { users, bannedEmails } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
@@ -16,6 +16,20 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Password must be at least 8 characters." },
         { status: 400 }
+      );
+    }
+
+    // Check if email is permanently banned
+    const [banned] = await db
+      .select({ id: bannedEmails.id })
+      .from(bannedEmails)
+      .where(eq(bannedEmails.email, email.toLowerCase()))
+      .limit(1);
+
+    if (banned) {
+      return NextResponse.json(
+        { error: "This email address has been permanently banned. Contact support if you believe this is an error." },
+        { status: 403 }
       );
     }
 

@@ -17,6 +17,7 @@ declare module "next-auth" {
     user: {
       id: string;
       role: "ADMIN" | "CUSTOMER";
+      accountStatus: "ACTIVE" | "SUSPENDED" | "BANNED";
     } & DefaultSession["user"];
   }
 }
@@ -82,33 +83,42 @@ export const authConfig: NextAuthConfig = {
 
         if (!isValid) return null;
 
+        // Block permanently banned users from signing in
+        if (user.accountStatus === "BANNED") {
+          throw new Error("ACCOUNT_BANNED");
+        }
+
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           image: user.image,
           role: user.role,
+          accountStatus: user.accountStatus,
         };
       },
     }),
   ],
 
   callbacks: {
-    // Attach role to the JWT on sign-in
+    // Attach role + accountStatus to the JWT on sign-in
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         // @ts-expect-error role is a custom field
         token.role = user.role ?? "CUSTOMER";
+        // @ts-expect-error accountStatus is a custom field
+        token.accountStatus = user.accountStatus ?? "ACTIVE";
       }
       return token;
     },
 
-    // Expose role and id on the session object for client use
+    // Expose role, id, and accountStatus on the session object for client use
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
         session.user.role = (token.role as "ADMIN" | "CUSTOMER") ?? "CUSTOMER";
+        session.user.accountStatus = (token.accountStatus as "ACTIVE" | "SUSPENDED" | "BANNED") ?? "ACTIVE";
       }
       return session;
     },

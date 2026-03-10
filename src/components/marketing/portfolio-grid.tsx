@@ -13,37 +13,45 @@ interface Project {
 
 interface PortfolioGridProps {
   projects: Project[];
+  limit?: number;
+  hideCategoryFilter?: boolean;
 }
 
-export function PortfolioGrid({ projects }: PortfolioGridProps) {
+export function PortfolioGrid({ projects, limit, hideCategoryFilter }: PortfolioGridProps) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const categories = ["All", ...Array.from(new Set(projects.map((p) => p.category)))];
 
-  const filteredProjects =
+  let filteredProjects =
     selectedCategory === "All"
       ? projects
       : projects.filter((p) => p.category === selectedCategory);
+      
+  if (limit) {
+    filteredProjects = filteredProjects.slice(0, limit);
+  }
 
   return (
     <>
-      <ul className="flex flex-wrap justify-start items-center gap-4 sm:gap-6 mb-8 mt-2">
-        {categories.map((category) => (
-          <li key={category}>
-            <button
-              onClick={() => setSelectedCategory(category)}
-              className={`text-[15px] font-medium transition-colors duration-300 ${
-                selectedCategory === category
-                  ? "text-orange-yellow-crayola"
-                  : "text-light-gray hover:text-light-gray-70"
-              }`}
-            >
-              {category}
-            </button>
-          </li>
-        ))}
-      </ul>
+      {!hideCategoryFilter && (
+        <ul className="flex flex-wrap justify-start items-center gap-4 sm:gap-6 mb-8 mt-2">
+          {categories.map((category) => (
+            <li key={category}>
+              <button
+                onClick={() => setSelectedCategory(category)}
+                className={`text-[15px] font-medium transition-colors duration-300 ${
+                  selectedCategory === category
+                    ? "text-orange-yellow-crayola"
+                    : "text-light-gray hover:text-light-gray-70"
+                }`}
+              >
+                {category}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[30px] mb-8">
         {filteredProjects.map((project) => (
