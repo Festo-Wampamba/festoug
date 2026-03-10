@@ -30,6 +30,11 @@ export const productCategoryEnum = pgEnum("product_category", [
   "SERVICE",
   "OTHER",
 ]);
+export const accountStatusEnum = pgEnum("account_status", [
+  "ACTIVE",
+  "SUSPENDED",
+  "BANNED",
+]);
 
 // ─── Auth.js Required Tables ─────────────────────────────────────────────────
 export const users = pgTable("user", {
@@ -40,6 +45,7 @@ export const users = pgTable("user", {
   image: text("image"),
   passwordHash: text("password_hash"),
   role: userRoleEnum("role").default("CUSTOMER").notNull(),
+  accountStatus: accountStatusEnum("account_status").default("ACTIVE").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -160,6 +166,7 @@ export const blogPosts = pgTable(
     coverImage: text("cover_image"),
     category: text("category"),
     isPublished: boolean("is_published").default(false).notNull(),
+    isFeatured: boolean("is_featured").default(false).notNull(),
     authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
     externalLink: text("external_link"), // Keep legacy external links
     publishedAt: timestamp("published_at"),
@@ -210,6 +217,15 @@ export const services = pgTable("service", {
   description: text("description").notNull(),
   sortOrder: integer("sort_order").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
+});
+
+// ─── Banned Emails (permanent ban tracking) ──────────────────────────────────
+export const bannedEmails = pgTable("banned_email", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  reason: text("reason"),
+  bannedAt: timestamp("banned_at").defaultNow().notNull(),
+  bannedBy: uuid("banned_by").references(() => users.id, { onDelete: "set null" }),
 });
 
 // ─── Relations ────────────────────────────────────────────────────────────────
