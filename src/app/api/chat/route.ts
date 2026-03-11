@@ -1,32 +1,88 @@
 import { google } from "@ai-sdk/google";
-import { streamText, UIMessage } from "ai";
-import { db } from "@/lib/db";
+import { streamText, type UIMessage, convertToModelMessages } from "ai";
+import { withRetry } from "@/lib/db";
 import { products, services } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { messages }: { messages: UIMessage[] } = await req.json();
+    // Rate limit: 20 chat messages per IP per minute
+    let ip: string;
+    try {
+      ip = getClientIp(req);
+    } catch {
+      ip = "unknown";
+    }
+
+    try {
+      const limiter = rateLimit(`chat:${ip}`, { limit: 20, windowSeconds: 60 });
+      if (!limiter.success) {
+        return new Response(
+          JSON.stringify({ error: "Too many requests. Please slow down." }),
+          { status: 429, headers: { "Content-Type": "application/json" } }
+        );
+      }
+    } catch (e) {
+      console.warn("Rate limiter error, allowing request:", e);
+    }
+
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON in request body." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const messages: UIMessage[] = body?.messages;
+
+    // Validate that messages is an array with at least one entry
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Invalid request: messages must be a non-empty array." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Cap conversation length to prevent abuse
+    const MAX_MESSAGES = 50;
+    const trimmedMessages = messages.slice(-MAX_MESSAGES);
 
     // Fetch live data from the database to give the AI context
-    const allProducts = await db.query.products.findMany({
-      where: eq(products.isActive, true),
-      columns: { name: true, description: true, price: true, currency: true, category: true, slug: true },
-    });
-    
-    const allServices = await db.query.services.findMany({
-      columns: { title: true, description: true },
-    });
+    // Gracefully degrade if DB is unavailable — the AI can still answer without live data
+    let allProducts: any[] = [];
+    let allServices: any[] = [];
+
+    try {
+      [allProducts, allServices] = await Promise.all([
+        withRetry((db) =>
+          db.query.products.findMany({
+            where: eq(products.isActive, true),
+            columns: { name: true, description: true, price: true, currency: true, category: true, slug: true },
+          })
+        ),
+        withRetry((db) =>
+          db.query.services.findMany({
+            columns: { title: true, description: true },
+          })
+        ),
+      ]);
+    } catch (dbError) {
+      console.warn("AI Chat: Database query failed, continuing without live data:", dbError);
+    }
 
     // Format the database data into readable text for the system prompt
-    const productsContext = allProducts.map(p => 
+    const productsContext = allProducts.map(p =>
       `- **${p.name}** (${p.currency} ${p.price}): ${p.description}. (Available at /store/${p.slug})`
     ).join("\n");
 
-    const servicesContext = allServices.map(s => 
+    const servicesContext = allServices.map(s =>
       `- **${s.title}**: ${s.description}`
     ).join("\n");
 
@@ -71,16 +127,42 @@ ${servicesContext || "Currently no active services listed."}
 - If a user needs human support, tell them to email festotechug@gmail.com.
 `;
 
+    let modelMessages;
+    try {
+      modelMessages = await convertToModelMessages(trimmedMessages);
+    } catch (conversionError) {
+      console.error("AI Chat: Failed to convert messages:", conversionError);
+      return new Response(
+        JSON.stringify({ error: "Invalid message format." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     const result = streamText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-2.0-flash"),
       system: systemPrompt,
-      messages,
+      messages: modelMessages,
       temperature: 0.7,
     });
 
-    return result.toTextStreamResponse();
-  } catch (error) {
+    return result.toUIMessageStreamResponse();
+  } catch (error: any) {
     console.error("AI Chat API Error:", error);
-    return new Response(JSON.stringify({ error: "Failed to process chat request" }), { status: 500 });
+
+    let message = "Failed to process chat request. Please try again.";
+    const errMsg = error?.message || "";
+
+    if (errMsg.includes("API key")) {
+      message = "AI service configuration error. Please contact support.";
+    } else if (errMsg.includes("quota") || errMsg.includes("Quota")) {
+      message = "AI service is temporarily unavailable due to usage limits. Please try again later.";
+    } else if (errMsg.includes("rate") || errMsg.includes("429")) {
+      message = "Too many requests. Please wait a moment and try again.";
+    }
+
+    return new Response(
+      JSON.stringify({ error: message }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }
