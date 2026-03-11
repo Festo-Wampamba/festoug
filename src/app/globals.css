@@ -57,6 +57,20 @@
   --color-light-gray: hsl(0 0% 84%);
   --color-light-gray-70: hsla(0 0% 84% / 0.7);
   --color-bittersweet-shimmer: hsl(15 100% 50%);
+
+  /* Coastal Midnight Palette */
+  --color-cm-bg: #0B1120;
+  --color-cm-surface: #111C35;
+  --color-cm-border: #1A2845;
+  --color-cm-ocean: #5BA4CF;
+  --color-cm-dusk: #E8A87C;
+  --color-cm-text: #D6E4F0;
+  --color-cm-muted: #5D7A9A;
+
+  /* Font Family Mappings */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 }
 
 :root {
@@ -148,5 +162,25 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-white/15;
+  }
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
   }
 }
