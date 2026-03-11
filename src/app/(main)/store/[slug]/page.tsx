@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -6,11 +6,13 @@ import { ArrowLeft, CheckCircle2, LayoutTemplate, ShieldCheck, Zap } from "lucid
 import Link from "next/link";
 import { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const p = await db.query.products.findFirst({
+  const p = await withRetry((db) => db.query.products.findFirst({
     where: eq(products.slug, slug)
-  });
+  }));
   if (!p) return { title: "Product Not Found" };
   return {
     title: `${p.name} | FestoUG Store`,
@@ -21,9 +23,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const product = await db.query.products.findFirst({
+  const product = await withRetry((db) => db.query.products.findFirst({
     where: eq(products.slug, slug),
-  });
+  }));
 
   if (!product || !product.isActive) {
     notFound();
