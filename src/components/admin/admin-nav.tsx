@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Package, 
+import {
+  LayoutDashboard,
+  Package,
   ShoppingBag,
   FileText,
   PenSquare,
   ArrowLeft,
   Users,
+  Star,
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview",  href: "/admin",          icon: LayoutDashboard },
   { label: "Products",  href: "/admin/products",  icon: Package },
   { label: "Orders",    href: "/admin/orders",    icon: ShoppingBag },
+  { label: "Reviews",   href: "/admin/reviews",   icon: Star },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Blog Posts", href: "/admin/blog",     icon: FileText },
   { label: "New Post",  href: "/admin/blog/new",  icon: PenSquare },
