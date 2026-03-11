@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import Link from "next/link";
-import { UserCircle, ShieldAlert } from "lucide-react";
+import { UserCircle } from "lucide-react";
 
 export default async function DashboardLayout({
   children,
@@ -19,20 +19,6 @@ export default async function DashboardLayout({
 
   return (
     <div className="animate-in fade-in duration-500">
-      {/* Suspension Warning Banner */}
-      {user.accountStatus === "SUSPENDED" && (
-        <div className="mb-6 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4 flex items-start gap-3 xl:mr-[360px]">
-          <ShieldAlert className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-yellow-400 font-semibold text-sm">Account Temporarily Suspended</p>
-            <p className="text-yellow-400/80 text-xs mt-1 leading-relaxed">
-              Your account has been temporarily suspended. You can view your data but cannot make any purchases, edits, or changes.
-              If you believe this is an error, please <a href="mailto:festotechug@gmail.com" className="font-medium text-yellow-400 underline hover:text-yellow-300 transition-colors">contact support</a>.
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Dashboard Header — title + clickable profile card */}
       <header className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-8 xl:pr-[360px]">
