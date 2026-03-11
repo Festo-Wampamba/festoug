@@ -9,8 +9,11 @@ export function Sidebar() {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const userAgent = navigator.userAgent;
-    setIsDesktop(!/Mobi|Android/i.test(userAgent));
+    const mql = window.matchMedia("(min-width: 768px)");
+    setIsDesktop(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
   }, []);
 
   const toggleSidebar = () => {
@@ -24,8 +27,8 @@ export function Sidebar() {
   return (
     <aside
       className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-8 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative ${
-        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] xl:max-h-none xl:h-max"
-      } xl:w-[280px] shrink-0`}
+        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] xl:max-h-none"
+      } xl:w-[280px] shrink-0 xl:sticky xl:top-[60px] xl:h-[calc(100vh-120px)]`}
     >
       <div className="relative flex justify-start items-center gap-[15px] xl:flex-col xl:gap-4 xl:text-center">
         <figure className="bg-gradient-to-br from-[#3f3f40] to-[#303030] rounded-[60px] p-2 flex shrink-0 xl:w-[150px] xl:h-[150px] xl:mx-auto">
@@ -57,7 +60,7 @@ export function Sidebar() {
       </div>
 
       <div
-        className={`transition-all duration-500 xl:opacity-100 xl:visible ${
+        className={`transition-all duration-500 xl:opacity-100 xl:visible xl:overflow-y-auto custom-scrollbar xl:h-[calc(100%-180px)] ${
           isSidebarActive ? "opacity-100 visible mt-4" : "opacity-0 invisible h-0 xl:h-auto xl:mt-8"
         }`}
       >
