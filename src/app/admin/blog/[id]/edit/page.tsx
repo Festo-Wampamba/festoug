@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -8,6 +8,8 @@ import Link from "next/link";
 
 export const metadata = { title: "Admin | Edit Blog Post" };
 
+export const dynamic = "force-dynamic";
+
 export default async function EditBlogPostPage({
   params,
 }: {
@@ -15,9 +17,9 @@ export default async function EditBlogPostPage({
 }) {
   const { id } = await params;
 
-  const post = await db.query.blogPosts.findFirst({
+  const post = await withRetry((db) => db.query.blogPosts.findFirst({
     where: eq(blogPosts.id, id),
-  });
+  }));
 
   if (!post) notFound();
 
