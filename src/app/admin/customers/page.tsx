@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
@@ -7,12 +7,14 @@ import { CustomerActions } from "@/components/admin/toggle-customer";
 
 export const metadata = { title: "Admin | Customers" };
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminCustomersPage() {
-  const allCustomers = await db.query.users.findMany({
+  const allCustomers = await withRetry((db) => db.query.users.findMany({
     where: eq(users.role, "CUSTOMER"),
     with: { orders: true },
     orderBy: [desc(users.createdAt)],
-  });
+  }));
 
   function statusBadge(status: string) {
     switch (status) {
