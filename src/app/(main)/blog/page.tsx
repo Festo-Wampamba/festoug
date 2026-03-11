@@ -1,9 +1,11 @@
 import { BlogCard } from "@/components/blog/blog-card";
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { desc, eq, count } from "drizzle-orm";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Blog | Festo Wampamba" };
 
@@ -13,22 +15,23 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
   const postsPerPage = 6;
 
   // Total count of published posts
-  const [{ value: totalPosts }] = await db
-    .select({ value: count() })
-    .from(blogPosts)
-    .where(eq(blogPosts.isPublished, true));
+  const [{ value: totalPosts }] = await withRetry((db) =>
+    db.select({ value: count() }).from(blogPosts).where(eq(blogPosts.isPublished, true))
+  );
 
   const totalPages = Math.ceil(totalPosts / postsPerPage) || 1;
   const page = Math.max(1, Math.min(currentPage, totalPages));
   const offset = (page - 1) * postsPerPage;
 
   // Fetch actual posts
-  const posts = await db.query.blogPosts.findMany({
-    where: eq(blogPosts.isPublished, true),
-    orderBy: [desc(blogPosts.publishedAt), desc(blogPosts.createdAt)],
-    limit: postsPerPage,
-    offset,
-  });
+  const posts = await withRetry((db) =>
+    db.query.blogPosts.findMany({
+      where: eq(blogPosts.isPublished, true),
+      orderBy: [desc(blogPosts.publishedAt), desc(blogPosts.createdAt)],
+      limit: postsPerPage,
+      offset,
+    })
+  );
 
   return (
     <div className="animate-in fade-in duration-500">
