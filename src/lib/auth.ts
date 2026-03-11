@@ -52,10 +52,12 @@ export const authConfig: NextAuthConfig = {
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
 
     // ── Email / Password (Credentials) ───────────────────────────────────────
@@ -101,14 +103,39 @@ export const authConfig: NextAuthConfig = {
   ],
 
   callbacks: {
+    // Allow OAuth sign-in even when adapter has issues
+    async signIn({ account }) {
+      // Always allow credentials (handled by authorize())
+      if (account?.provider === "credentials") return true;
+      // Allow all OAuth providers
+      return true;
+    },
+
     // Attach role + accountStatus to the JWT on sign-in
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         // @ts-expect-error role is a custom field
-        token.role = user.role ?? "CUSTOMER";
+        let role = user.role;
         // @ts-expect-error accountStatus is a custom field
-        token.accountStatus = user.accountStatus ?? "ACTIVE";
+        let accountStatus = user.accountStatus;
+
+        // For OAuth sign-ins the adapter user object may not carry
+        // custom columns (role, accountStatus). Fetch them from the DB.
+        if (!role && authDb && user.id) {
+          const [dbUser] = await authDb
+            .select({ role: users.role, accountStatus: users.accountStatus })
+            .from(users)
+            .where(eq(users.id, user.id))
+            .limit(1);
+          if (dbUser) {
+            role = dbUser.role;
+            accountStatus = dbUser.accountStatus;
+          }
+        }
+
+        token.role = role ?? "CUSTOMER";
+        token.accountStatus = accountStatus ?? "ACTIVE";
       }
       return token;
     },
