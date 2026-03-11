@@ -1,16 +1,19 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { sanitizeHtml } from "@/lib/sanitize";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await db.query.blogPosts.findFirst({
+  const post = await withRetry((db) => db.query.blogPosts.findFirst({
     where: eq(blogPosts.slug, slug),
-  });
+  }));
 
   if (!post || !post.isPublished) return { title: "Post Not Found" };
 
@@ -23,10 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const post = await db.query.blogPosts.findFirst({
+  const post = await withRetry((db) => db.query.blogPosts.findFirst({
     where: eq(blogPosts.slug, slug),
     with: { author: true },
-  });
+  }));
 
   if (!post || !post.isPublished) notFound();
 
@@ -92,11 +95,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
       )}
 
-      {/* Render HTML from Tiptap database safely */}
+      {/* Render sanitized HTML from Tiptap database */}
       {post.content ? (
         <div
           className={contentStyles}
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
         />
       ) : (
         <p className="text-light-gray italic">No content available.</p>
