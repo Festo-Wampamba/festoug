@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
@@ -7,11 +7,13 @@ import { DeleteBlogButton } from "@/components/admin/delete-blog-button";
 
 export const metadata = { title: "Admin | Blog Posts" };
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminBlogPage() {
-  const posts = await db.query.blogPosts.findMany({
+  const posts = await withRetry((db) => db.query.blogPosts.findMany({
     with: { author: true },
     orderBy: (p, { desc: d }) => [d(p.createdAt)],
-  });
+  }));
 
   return (
     <div className="space-y-6">
