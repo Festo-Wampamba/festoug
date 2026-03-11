@@ -1,21 +1,23 @@
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { orders } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { Download, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function PurchasesPage() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const userOrders = await db.query.orders.findMany({
-    where: eq(orders.userId, session.user.id),
-    with: {
-      product: true,
-    },
-    orderBy: [desc(orders.createdAt)],
-  });
+  const userOrders = await withRetry((db) =>
+    db.query.orders.findMany({
+      where: eq(orders.userId, session.user.id),
+      with: { product: true },
+      orderBy: [desc(orders.createdAt)],
+    })
+  );
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500">
