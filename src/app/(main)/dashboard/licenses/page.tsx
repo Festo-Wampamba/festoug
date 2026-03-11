@@ -1,21 +1,22 @@
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { licenses } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { Copy, CheckCircle2, AlertCircle } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function LicensesPage() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const userLicenses = await db.query.licenses.findMany({
-    where: eq(licenses.userId, session.user.id),
-    with: {
-      product: true,
-      order: true,
-    },
-    orderBy: [desc(licenses.createdAt)],
-  });
+  const userLicenses = await withRetry((db) =>
+    db.query.licenses.findMany({
+      where: eq(licenses.userId, session.user.id),
+      with: { product: true, order: true },
+      orderBy: [desc(licenses.createdAt)],
+    })
+  );
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500">
