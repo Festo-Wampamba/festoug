@@ -1,33 +1,51 @@
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { orders, licenses, products } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
-import { ShoppingBag, KeyRound, MonitorSmartphone, ArrowRight } from "lucide-react";
+import { ShoppingBag, KeyRound, MonitorSmartphone, ArrowRight, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function DashboardOverview() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  // Fetch stats concurrently
+  // Fetch stats concurrently with retry for Neon cold starts
   const [userOrders, userLicenses] = await Promise.all([
-    db.query.orders.findMany({
-      where: eq(orders.userId, session.user.id),
-      with: {
-        product: true
-      },
-      limit: 5,
-      orderBy: [desc(orders.createdAt)],
-    }),
-    db.query.licenses.findMany({
-      where: eq(licenses.userId, session.user.id),
-    })
+    withRetry((db) =>
+      db.query.orders.findMany({
+        where: eq(orders.userId, session.user.id),
+        with: { product: true },
+        limit: 5,
+        orderBy: [desc(orders.createdAt)],
+      })
+    ),
+    withRetry((db) =>
+      db.query.licenses.findMany({
+        where: eq(licenses.userId, session.user.id),
+      })
+    ),
   ]);
 
   const activeLicensesCount = userLicenses.filter(l => l.isActive).length;
 
   return (
     <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
+      {/* Account Status Warning */}
+      {session.user.accountStatus === "SUSPENDED" && (
+        <div className="flex items-start gap-3 p-4 bg-orange-400/10 border border-orange-400/20 rounded-2xl">
+          <AlertTriangle className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
+          <div>
+            <h4 className="text-orange-400 font-semibold text-sm">Account Suspended</h4>
+            <p className="text-orange-300/80 text-sm mt-1">
+              Your account has been temporarily suspended. You can view your data but some actions may be restricted.
+              If you believe this is an error, please contact <a href="mailto:festotechug@gmail.com" className="underline hover:text-orange-200">support</a>.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-eerie-black-1 border border-jet rounded-2xl p-6 shadow-1 flex items-center gap-4">
