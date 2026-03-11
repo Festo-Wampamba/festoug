@@ -1,27 +1,31 @@
-import { db } from "@/lib/db";
-import { products, orders, licenses, users, blogPosts } from "@/lib/db/schema";
+import { withRetry } from "@/lib/db";
+import { products, orders, licenses, users, blogPosts, reviews } from "@/lib/db/schema";
 import { count, sum, eq } from "drizzle-orm";
-import { Package, ShoppingBag, Key, Users, DollarSign, PenSquare } from "lucide-react";
+import { Package, ShoppingBag, Key, Users, DollarSign, PenSquare, Star } from "lucide-react";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Admin Dashboard | Overview" };
 
 export default async function AdminOverviewPage() {
-  // Fetch aggregate stats in parallel
+  // Fetch aggregate stats in parallel with retry for Neon cold starts
   const [
     [productCount],
     [orderCount],
     [licenseCount],
     [customerCount],
     [blogCount],
+    [pendingReviewCount],
     [revenueResult],
   ] = await Promise.all([
-    db.select({ value: count() }).from(products),
-    db.select({ value: count() }).from(orders),
-    db.select({ value: count() }).from(licenses),
-    db.select({ value: count() }).from(users).where(eq(users.role, "CUSTOMER")),
-    db.select({ value: count() }).from(blogPosts),
-    db.select({ value: sum(orders.amount) }).from(orders).where(eq(orders.status, "COMPLETED")),
+    withRetry((db) => db.select({ value: count() }).from(products)),
+    withRetry((db) => db.select({ value: count() }).from(orders)),
+    withRetry((db) => db.select({ value: count() }).from(licenses)),
+    withRetry((db) => db.select({ value: count() }).from(users).where(eq(users.role, "CUSTOMER"))),
+    withRetry((db) => db.select({ value: count() }).from(blogPosts)),
+    withRetry((db) => db.select({ value: count() }).from(reviews).where(eq(reviews.status, "PENDING"))),
+    withRetry((db) => db.select({ value: sum(orders.amount) }).from(orders).where(eq(orders.status, "COMPLETED"))),
   ]);
 
   const totalRevenue = parseFloat(revenueResult?.value || "0");
@@ -32,15 +36,18 @@ export default async function AdminOverviewPage() {
     { label: "Orders",         value: orderCount.value,    icon: ShoppingBag, color: "text-blue-400", href: "/admin/orders" },
     { label: "Blog Posts",     value: blogCount.value,     icon: PenSquare,   color: "text-yellow-400", href: "/admin/blog" },
     { label: "Active Licenses",value: licenseCount.value, icon: Key,         color: "text-purple-400", href: "/admin/orders" },
+    { label: "Pending Reviews", value: pendingReviewCount.value, icon: Star,   color: "text-orange-400", href: "/admin/reviews" },
     { label: "Customers",      value: customerCount.value, icon: Users,       color: "text-pink-400", href: "/admin/customers" },
   ];
 
   // Recent orders
-  const recentOrders = await db.query.orders.findMany({
-    with: { user: true, product: true },
-    orderBy: (o, { desc }) => [desc(o.createdAt)],
-    limit: 8,
-  });
+  const recentOrders = await withRetry((db) =>
+    db.query.orders.findMany({
+      with: { user: true, product: true },
+      orderBy: (o, { desc }) => [desc(o.createdAt)],
+      limit: 8,
+    })
+  );
 
   return (
     <div className="space-y-8">
