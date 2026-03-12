@@ -28,9 +28,9 @@ function StarRating({ rating }: { rating: number }) {
 export function TestimonialCard({ name, avatar, role, rating, testimonial }: TestimonialCardProps) {
   return (
     <div className="min-w-[calc(50%-8px)] max-w-[calc(50%-8px)] shrink-0 snap-start">
-      <div className="relative bg-gradient-to-br from-cm-surface to-[#0d1528] border border-cm-border rounded-[14px] p-5 pt-8 shadow-lg mt-8 flex flex-col">
+      <div className="relative bg-gradient-to-br from-cm-surface to-cm-bg border border-cm-border rounded-[14px] p-5 pt-8 shadow-lg mt-8 flex flex-col">
         {/* Avatar - positioned at top-left overlapping */}
-        <figure className="absolute top-0 left-0 transform translate-x-[15px] -translate-y-[25px] bg-gradient-to-br from-cm-surface to-[#0d1528] rounded-[14px] shadow-lg">
+        <figure className="absolute top-0 left-0 transform translate-x-[15px] -translate-y-[25px] bg-gradient-to-br from-cm-surface to-cm-bg rounded-[14px] shadow-lg">
           <Image
             src={avatar}
             alt={name}
