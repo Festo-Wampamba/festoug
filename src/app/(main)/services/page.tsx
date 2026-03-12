@@ -3,17 +3,32 @@ import { MonitorSmartphone, Search, Palette, Code2, Rocket, Share2 } from 'lucid
 import { ServiceCard } from '@/components/marketing/service-card-new';
 import { PricingCard, PricingPlanProps } from '@/components/marketing/pricing-card';
 import { PortfolioGrid } from '@/components/marketing/portfolio-grid';
-import fs from 'fs';
-import path from 'path';
+import { withRetry } from '@/lib/db';
+import { projects as projectsTable } from '@/lib/db/schema';
+import { asc, eq } from 'drizzle-orm';
 
 export const metadata: Metadata = {
-  title: 'Professional Services | FestoUG',
+  title: 'Services',
   description: 'Premium software development, UI/UX design, and digital marketing services by Festo Muwanguzi.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function ServicesPage() {
-  const projectsPath = path.join(process.cwd(), 'public', 'projects.json');
-  const projects = JSON.parse(fs.readFileSync(projectsPath, 'utf-8'));
+  const dbProjects = await withRetry((db) =>
+    db
+      .select()
+      .from(projectsTable)
+      .where(eq(projectsTable.isActive, true))
+      .orderBy(asc(projectsTable.sortOrder))
+  );
+  const projects = dbProjects.map((p) => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    category: p.category,
+    image: p.image || 'images/project-1.jpg',
+  }));
   const services = [
     {
       title: 'Web Development',
