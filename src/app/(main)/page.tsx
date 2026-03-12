@@ -1,15 +1,17 @@
 import { ServiceCard } from "@/components/marketing/service-card";
 import { TestimonialCarousel } from "@/components/marketing/testimonial-carousel";
+import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
 import Image from "next/image";
+import Link from "next/link";
 import { withRetry } from "@/lib/db";
-import { services, testimonials as testimonialsTable } from "@/lib/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { services, testimonials as testimonialsTable, projects as projectsTable } from "@/lib/db/schema";
+import { eq, asc, and, desc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
   // Fetch services and testimonials from the database with retry
-  const [servicesData, testimonials] = await Promise.all([
+  const [servicesData, testimonials, featuredProjects] = await Promise.all([
     withRetry((db) =>
       db.query.services.findMany({
         where: eq(services.isActive, true),
@@ -22,7 +24,23 @@ export default async function AboutPage() {
         orderBy: [asc(testimonialsTable.sortOrder)],
       })
     ),
+    withRetry((db) =>
+      db
+        .select()
+        .from(projectsTable)
+        .where(and(eq(projectsTable.isActive, true), eq(projectsTable.isFeatured, true)))
+        .orderBy(asc(projectsTable.sortOrder))
+        .limit(6)
+    ),
   ]);
+
+  const projects = featuredProjects.map((p) => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    category: p.category,
+    image: p.image || "images/project-1.jpg",
+  }));
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -67,6 +85,24 @@ export default async function AboutPage() {
           ))}
         </ul>
       </section>
+
+      {/* Featured Projects */}
+      {projects.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-white-2 text-2xl font-semibold capitalize">
+              Featured Work
+            </h3>
+            <Link
+              href="/portfolio"
+              className="text-orange-yellow-crayola text-sm font-medium hover:underline"
+            >
+              View All
+            </Link>
+          </div>
+          <PortfolioGrid projects={projects} hideCategoryFilter />
+        </section>
+      )}
 
       {/* Testimonials */}
       <section className="mb-10">
