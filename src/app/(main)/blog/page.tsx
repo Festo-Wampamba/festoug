@@ -7,7 +7,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Blog | Festo Wampamba" };
+export const metadata = {
+  title: "Blog",
+  description: "Articles on software development, technology, and engineering by Festo Wampamba.",
+};
 
 export default async function BlogPage(props: { searchParams?: Promise<{ page?: string }> }) {
   const searchParams = await props.searchParams;
