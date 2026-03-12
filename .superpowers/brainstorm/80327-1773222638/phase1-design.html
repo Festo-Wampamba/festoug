@@ -1,0 +1,155 @@
+<h2>Phase 1: UI/UX Polish — Design Overview</h2>
+<p class="subtitle">Three components to redesign: Testimonials, Clients Marquee, and Sign-in/Sign-up</p>
+
+<div class="section">
+  <h3>1. Testimonial Cards Redesign</h3>
+  <div class="split">
+    <div class="mockup">
+      <div class="mockup-header">CURRENT — Flat scroll cards</div>
+      <div class="mockup-body" style="background:#0b1120;padding:24px;">
+        <div style="display:flex;gap:16px;overflow:hidden;">
+          <div style="min-width:300px;background:#1a1a2e;border:1px solid #333;border-radius:16px;padding:20px;position:relative;">
+            <div style="width:50px;height:50px;border-radius:50%;background:#444;position:absolute;top:-10px;left:16px;"></div>
+            <p style="color:#888;margin-top:40px;font-size:13px;">Name</p>
+            <p style="color:#aaa;font-size:12px;margin-top:8px;">Testimonial text here...</p>
+          </div>
+          <div style="min-width:300px;background:#1a1a2e;border:1px solid #333;border-radius:16px;padding:20px;position:relative;">
+            <div style="width:50px;height:50px;border-radius:50%;background:#444;position:absolute;top:-10px;left:16px;"></div>
+            <p style="color:#888;margin-top:40px;font-size:13px;">Name</p>
+            <p style="color:#aaa;font-size:12px;margin-top:8px;">Testimonial text here...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header">NEW — Rich cards with star ratings</div>
+      <div class="mockup-body" style="background:#0b1120;padding:24px;">
+        <div style="display:flex;gap:16px;overflow:hidden;">
+          <div style="min-width:320px;background:linear-gradient(135deg,#1a1a2e,#141428);border:1px solid #333;border-radius:20px;padding:24px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <div style="width:48px;height:48px;border-radius:50%;background:#333;border:2px solid rgba(56,189,248,0.3);"></div>
+              <div>
+                <p style="color:#e2e2e2;font-size:14px;font-weight:600;">Client Name</p>
+                <p style="color:#888;font-size:11px;">Software Developer</p>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <span style="color:#f59e0b;font-size:14px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+            <p style="color:#aaa;font-size:13px;line-height:1.6;font-style:italic;">"Excellent work on our platform. Delivered ahead of schedule with outstanding quality."</p>
+            <div style="margin-top:14px;display:flex;align-items:center;gap:6px;">
+              <span style="color:rgba(56,189,248,0.6);font-size:20px;line-height:1;">"</span>
+              <div style="height:1px;flex:1;background:#333;"></div>
+            </div>
+          </div>
+          <div style="min-width:320px;background:linear-gradient(135deg,#1a1a2e,#141428);border:1px solid #333;border-radius:20px;padding:24px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <div style="width:48px;height:48px;border-radius:50%;background:#333;border:2px solid rgba(56,189,248,0.3);"></div>
+              <div>
+                <p style="color:#e2e2e2;font-size:14px;font-weight:600;">Client Name</p>
+                <p style="color:#888;font-size:11px;">Business Owner</p>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <span style="color:#f59e0b;font-size:14px;">&#9733;&#9733;&#9733;&#9733;</span><span style="color:#555;font-size:14px;">&#9733;</span>
+            </div>
+            <p style="color:#aaa;font-size:13px;line-height:1.6;font-style:italic;">"Great communication and professional results. Would highly recommend."</p>
+            <div style="margin-top:14px;display:flex;align-items:center;gap:6px;">
+              <span style="color:rgba(56,189,248,0.6);font-size:20px;line-height:1;">"</span>
+              <div style="height:1px;flex:1;background:#333;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>2. Clients Auto-Scroll Marquee</h3>
+  <div class="mockup">
+    <div class="mockup-header">NEW — Infinite CSS marquee, pauses on hover, color on hover</div>
+    <div class="mockup-body" style="background:#0b1120;padding:24px 0;overflow:hidden;">
+      <div style="display:flex;gap:40px;animation:none;">
+        <div style="display:flex;gap:40px;align-items:center;">
+          <div style="width:100px;height:60px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:0.5;">
+            <span style="color:#666;font-size:11px;">LOGO 1</span>
+          </div>
+          <div style="width:100px;height:60px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;filter:none;opacity:1;border:1px solid rgba(56,189,248,0.3);">
+            <span style="color:rgb(56,189,248);font-size:11px;">HOVERED</span>
+          </div>
+          <div style="width:100px;height:60px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:0.5;">
+            <span style="color:#666;font-size:11px;">LOGO 3</span>
+          </div>
+          <div style="width:100px;height:60px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:0.5;">
+            <span style="color:#666;font-size:11px;">LOGO 4</span>
+          </div>
+          <div style="width:100px;height:60px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:0.5;">
+            <span style="color:#666;font-size:11px;">LOGO 5</span>
+          </div>
+          <div style="width:100px;height:60px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:0.5;">
+            <span style="color:#666;font-size:11px;">LOGO 6</span>
+          </div>
+        </div>
+      </div>
+      <p style="color:#555;text-align:center;font-size:11px;margin-top:12px;">&#8592; Scrolls infinitely &bull; Pauses on hover &bull; Logo gets full color + accent border on hover &#8594;</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>3. Sign-in / Sign-up UI Redesign</h3>
+  <div class="split">
+    <div class="mockup">
+      <div class="mockup-header">CURRENT — Low contrast inputs</div>
+      <div class="mockup-body" style="background:#0b1120;padding:32px;display:flex;justify-content:center;">
+        <div style="width:340px;background:#1a1a2e;border:1px solid #333;border-radius:20px;padding:28px;">
+          <h4 style="color:#e2e2e2;text-align:center;margin-bottom:4px;font-size:18px;">Welcome back</h4>
+          <p style="color:#666;text-align:center;font-size:12px;margin-bottom:20px;">Sign in to your account</p>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <div style="flex:1;padding:10px;border:1px solid #333;border-radius:10px;text-align:center;color:#888;font-size:12px;">GitHub</div>
+            <div style="flex:1;padding:10px;border:1px solid #333;border-radius:10px;text-align:center;color:#888;font-size:12px;">Google</div>
+          </div>
+          <div style="padding:10px 14px;border:1px solid #222;border-radius:10px;margin-bottom:10px;color:#444;font-size:13px;">Email address</div>
+          <div style="padding:10px 14px;border:1px solid #222;border-radius:10px;margin-bottom:14px;color:#444;font-size:13px;">Password</div>
+          <div style="padding:10px;background:cyan;border-radius:10px;text-align:center;color:#000;font-size:13px;font-weight:600;">Sign in</div>
+          <p style="color:#555;font-size:11px;text-align:center;margin-top:10px;">Issue: inputs nearly invisible</p>
+        </div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header">NEW — High contrast, themed inputs</div>
+      <div class="mockup-body" style="background:#0b1120;padding:32px;display:flex;justify-content:center;">
+        <div style="width:340px;background:linear-gradient(135deg,#1a1a2e,#141428);border:1px solid #444;border-radius:20px;padding:28px;">
+          <h4 style="color:#e2e2e2;text-align:center;margin-bottom:4px;font-size:18px;">Welcome back</h4>
+          <p style="color:#888;text-align:center;font-size:12px;margin-bottom:20px;">Sign in to your FestoUG account</p>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <div style="flex:1;padding:10px;border:1px solid #555;border-radius:10px;text-align:center;color:#ccc;font-size:12px;background:rgba(255,255,255,0.03);">&#9733; GitHub</div>
+            <div style="flex:1;padding:10px;border:1px solid #555;border-radius:10px;text-align:center;color:#ccc;font-size:12px;background:rgba(255,255,255,0.03);">&#9733; Google</div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="color:rgb(56,189,248);font-size:11px;font-weight:500;display:block;margin-bottom:4px;">Email</label>
+            <div style="padding:10px 14px;border:1px solid #555;border-radius:10px;color:#ccc;font-size:13px;background:rgba(255,255,255,0.04);">user@example.com</div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="color:rgb(56,189,248);font-size:11px;font-weight:500;display:block;margin-bottom:4px;">Password</label>
+            <div style="padding:10px 14px;border:1px solid #555;border-radius:10px;color:#ccc;font-size:13px;background:rgba(255,255,255,0.04);">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;</div>
+          </div>
+          <div style="padding:10px;background:rgb(56,189,248);border-radius:10px;text-align:center;color:#0b1120;font-size:13px;font-weight:700;">Sign in</div>
+          <p style="color:#888;font-size:11px;text-align:center;margin-top:10px;">Visible labels + higher contrast borders</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:32px;padding:20px;background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.2);border-radius:12px;">
+  <h3 style="margin-top:0;">Summary of Changes</h3>
+  <ul style="color:#aaa;font-size:13px;line-height:2;">
+    <li><strong>DB:</strong> Add <code>rating</code> (int 1-5) + <code>role</code> (text, e.g. "CEO") to testimonials table</li>
+    <li><strong>Testimonial Card:</strong> New component with avatar row, star rating, italic quote, decorative accent</li>
+    <li><strong>Clients:</strong> CSS keyframe marquee, duplicated logo strip for seamless loop, hover:pause + color</li>
+    <li><strong>Sign-in/Sign-up:</strong> Add visible labels, brighter borders (#555), subtle input background, themed accent labels</li>
+    <li><strong>No new dependencies</strong> — all CSS/Tailwind based</li>
+  </ul>
+</div>

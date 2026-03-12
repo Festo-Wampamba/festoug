@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -8,6 +8,8 @@ import { ChevronLeft } from "lucide-react";
 
 export const metadata = { title: "Admin | Edit Product" };
 
+export const dynamic = "force-dynamic";
+
 export default async function EditProductPage({
   params,
 }: {
@@ -15,9 +17,9 @@ export default async function EditProductPage({
 }) {
   const { id } = await params;
 
-  const product = await db.query.products.findFirst({
+  const product = await withRetry((db) => db.query.products.findFirst({
     where: eq(products.id, id),
-  });
+  }));
 
   if (!product) notFound();
 

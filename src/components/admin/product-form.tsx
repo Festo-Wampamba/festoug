@@ -112,10 +112,10 @@ export function ProductForm({ initialData }: ProductFormProps) {
           <input name="price" type="number" step="0.01" required defaultValue={initialData?.price} className={inputClass} placeholder="29.99" />
         </div>
         <div>
-          <label className="text-light-gray text-xs font-medium uppercase tracking-wider mb-1.5 block">
+          <label htmlFor="product-category" className="text-light-gray text-xs font-medium uppercase tracking-wider mb-1.5 block">
             Category *
           </label>
-          <select name="category" required defaultValue={initialData?.category || "OTHER"} className={inputClass}>
+          <select id="product-category" name="category" required defaultValue={initialData?.category || "OTHER"} className={inputClass}>
             {categories.map((c) => (
               <option key={c} value={c} className="bg-eerie-black-2">{c}</option>
             ))}

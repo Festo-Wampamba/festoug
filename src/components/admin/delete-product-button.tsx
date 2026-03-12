@@ -3,6 +3,7 @@
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useToast } from "@/components/ui/toast-provider";
 
 export function DeleteProductButton({
   productId,
@@ -13,6 +14,7 @@ export function DeleteProductButton({
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  const { toast } = useToast();
 
   async function handleDelete() {
     if (!confirm(`Delete "${productName}"? This action is irreversible.`)) return;
@@ -20,9 +22,10 @@ export function DeleteProductButton({
     try {
       const res = await fetch(`/api/admin/products/${productId}`, { method: "DELETE" });
       if (res.ok) {
+        toast.success("Product deleted successfully");
         router.refresh();
       } else {
-        alert("Failed to delete product.");
+        toast.error("Failed to delete product");
       }
     } finally {
       setPending(false);

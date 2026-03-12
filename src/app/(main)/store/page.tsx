@@ -1,20 +1,24 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
-  title: "Digital Store | Plugins, Scripts & Templates",
+  title: "Digital Store",
   description: "Browse premium digital products carefully crafted to accelerate your next project.",
 };
 
 export default async function StorePage() {
-  // Fetch active products
-  const availableProducts = await db.query.products.findMany({
-    where: eq(products.isActive, true),
-    orderBy: [desc(products.createdAt)],
-  });
+  // Fetch active products with retry for Neon cold starts
+  const availableProducts = await withRetry((db) =>
+    db.query.products.findMany({
+      where: eq(products.isActive, true),
+      orderBy: [desc(products.createdAt)],
+    })
+  );
 
   return (
     <article className="animate-in fade-in duration-500 xl:pr-[60px]">

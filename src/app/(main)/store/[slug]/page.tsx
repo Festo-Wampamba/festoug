@@ -1,16 +1,21 @@
-import { db } from "@/lib/db";
-import { products } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { withRetry } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { products, reviews, orders, reviewHelpfulVotes } from "@/lib/db/schema";
+import { and, desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, LayoutTemplate, ShieldCheck, Zap } from "lucide-react";
+import { ArrowLeft, CheckCircle2, LayoutTemplate, ShieldCheck, Star, Zap } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import { ReviewCard } from "@/components/reviews/review-card";
+import { ProductReviewForm } from "./product-review-form";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const p = await db.query.products.findFirst({
+  const p = await withRetry((db) => db.query.products.findFirst({
     where: eq(products.slug, slug)
-  });
+  }));
   if (!p) return { title: "Product Not Found" };
   return {
     title: `${p.name} | FestoUG Store`,
@@ -21,13 +26,76 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const product = await db.query.products.findFirst({
+  const product = await withRetry((db) => db.query.products.findFirst({
     where: eq(products.slug, slug),
-  });
+  }));
 
   if (!product || !product.isActive) {
     notFound();
   }
+
+  const session = await auth();
+
+  const productReviews = await withRetry((db) =>
+    db.query.reviews.findMany({
+      where: and(
+        eq(reviews.productId, product.id),
+        eq(reviews.status, "APPROVED")
+      ),
+      with: {
+        user: { columns: { id: true, name: true, image: true } },
+      },
+      orderBy: [desc(reviews.createdAt)],
+    })
+  );
+
+  // Check if current user can review (has completed order, hasn't reviewed yet)
+  let canReview = false;
+  let userOrder: { id: string } | undefined;
+  let existingReview: typeof productReviews[0] | undefined;
+
+  if (session?.user?.id) {
+    userOrder = await withRetry((db) =>
+      db.query.orders.findFirst({
+        where: and(
+          eq(orders.userId, session.user.id),
+          eq(orders.productId, product.id),
+          eq(orders.status, "COMPLETED")
+        ),
+        columns: { id: true },
+      })
+    );
+
+    existingReview = await withRetry((db) =>
+      db.query.reviews.findFirst({
+        where: and(
+          eq(reviews.userId, session.user.id),
+          eq(reviews.productId, product.id)
+        ),
+        with: {
+          user: { columns: { id: true, name: true, image: true } },
+        },
+      })
+    );
+
+    canReview = !!userOrder && !existingReview;
+  }
+
+  // Get user's helpful votes for display
+  const userVotes = session?.user?.id
+    ? await withRetry((db) =>
+        db.query.reviewHelpfulVotes.findMany({
+          where: eq(reviewHelpfulVotes.userId, session.user.id),
+          columns: { reviewId: true },
+        })
+      )
+    : [];
+  const votedReviewIds = new Set(userVotes.map((v) => v.reviewId));
+
+  // Calculate average rating
+  const avgRating = productReviews.length > 0
+    ? productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length
+    : 0;
 
   const features = [
     "Lifetime Access & Updates",
@@ -80,6 +148,88 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <p>No description provided yet.</p>
               )}
             </div>
+          </section>
+
+          {/* Reviews Section */}
+          <section className="bg-eerie-black-1 border border-jet rounded-[20px] p-8 shadow-1">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-white-2 flex items-center gap-3">
+                <span className="bg-orange-yellow-crayola/10 text-orange-yellow-crayola p-2 rounded-xl">
+                  <Star className="w-5 h-5" />
+                </span>
+                Reviews
+                {productReviews.length > 0 && (
+                  <span className="text-light-gray-70 text-base font-normal ml-1">
+                    ({productReviews.length})
+                  </span>
+                )}
+              </h3>
+              {avgRating > 0 && (
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={`w-4 h-4 ${
+                          s <= Math.round(avgRating)
+                            ? "text-orange-yellow-crayola fill-orange-yellow-crayola"
+                            : "text-jet"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-white-2 font-semibold text-sm">
+                    {avgRating.toFixed(1)}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Write Review */}
+            {canReview && userOrder && (
+              <div className="mb-6 pb-6 border-b border-jet">
+                <ProductReviewForm productId={product.id} orderId={userOrder.id} />
+              </div>
+            )}
+
+            {/* Edit existing review notice */}
+            {existingReview && (
+              <div className="mb-6 pb-6 border-b border-jet">
+                <p className="text-light-gray-70 text-sm">
+                  You have already reviewed this product. Visit{" "}
+                  <Link href="/dashboard/reviews" className="text-orange-yellow-crayola hover:underline">
+                    My Reviews
+                  </Link>{" "}
+                  to edit your review.
+                </p>
+              </div>
+            )}
+
+            {/* Reviews List */}
+            {productReviews.length === 0 ? (
+              <p className="text-light-gray-70 text-center py-8">
+                No reviews yet. Be the first to review this product!
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {productReviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    id={review.id}
+                    userName={review.user.name || "Anonymous"}
+                    userImage={review.user.image}
+                    rating={review.rating}
+                    title={review.title}
+                    body={review.body}
+                    helpfulCount={review.helpfulCount}
+                    createdAt={review.createdAt.toISOString()}
+                    isOwnReview={review.userId === session?.user?.id}
+                    hasVoted={votedReviewIds.has(review.id)}
+                    isAuthenticated={!!session?.user?.id}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         </div>
 

@@ -4,6 +4,8 @@ import Link from "next/link";
 
 export const metadata = { title: "Admin | New Blog Post" };
 
+export const dynamic = "force-dynamic";
+
 export default function NewBlogPostPage() {
   return (
     <div className="space-y-6">

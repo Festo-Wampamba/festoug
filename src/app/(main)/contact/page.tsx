@@ -94,7 +94,7 @@ export default function ContactPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group relative self-end bg-gradient-to-br from-[#404040] to-[rgba(64,64,64,0)] border border-jet text-orange-yellow-crayola text-[15px] font-medium px-6 py-4 rounded-[14px] shadow-1 transition-all duration-300 hover:text-white-2 hover:bg-jet flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative self-end bg-gradient-to-br from-jet to-jet/0 border border-jet text-orange-yellow-crayola text-[15px] font-medium px-6 py-4 rounded-[14px] shadow-1 transition-all duration-300 hover:text-white-2 hover:bg-jet flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="absolute inset-[1px] bg-eerie-black-1 rounded-[14px] -z-10 group-hover:bg-jet transition-colors" />
             <Send className="w-4 h-4" />

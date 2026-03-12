@@ -3,6 +3,7 @@
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useToast } from "@/components/ui/toast-provider";
 
 export function DeleteBlogButton({
   postId,
@@ -13,6 +14,7 @@ export function DeleteBlogButton({
 }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  const { toast } = useToast();
 
   async function handleDelete() {
     if (!confirm(`Delete "${postTitle}"? This cannot be undone.`)) return;
@@ -20,9 +22,10 @@ export function DeleteBlogButton({
     try {
       const res = await fetch(`/api/admin/blog/${postId}`, { method: "DELETE" });
       if (res.ok) {
+        toast.success("Post deleted successfully");
         router.refresh();
       } else {
-        alert("Failed to delete post.");
+        toast.error("Failed to delete post");
       }
     } finally {
       setPending(false);

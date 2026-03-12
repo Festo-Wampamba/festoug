@@ -9,6 +9,7 @@ import {
   numeric,
   index,
   primaryKey,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // ─── Enums ──────────────────────────────────────────────────────────────────
@@ -34,6 +35,11 @@ export const accountStatusEnum = pgEnum("account_status", [
   "ACTIVE",
   "SUSPENDED",
   "BANNED",
+]);
+export const reviewStatusEnum = pgEnum("review_status", [
+  "APPROVED",
+  "PENDING",
+  "REJECTED",
 ]);
 
 // ─── Auth.js Required Tables ─────────────────────────────────────────────────
@@ -191,9 +197,11 @@ export const projects = pgTable(
     description: text("description"),
     liveUrl: text("live_url"),
     repoUrl: text("repo_url"),
+    isFeatured: boolean("is_featured").default(false).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     sortOrder: integer("sort_order").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => ({ slugIdx: index("project_slug_idx").on(t.slug) })
 );
@@ -203,6 +211,8 @@ export const testimonials = pgTable("testimonial", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   avatar: text("avatar"),
+  role: text("role"),
+  rating: integer("rating").default(5).notNull(),
   testimonial: text("testimonial").notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   sortOrder: integer("sort_order").default(0).notNull(),
@@ -228,6 +238,65 @@ export const bannedEmails = pgTable("banned_email", {
   bannedBy: uuid("banned_by").references(() => users.id, { onDelete: "set null" }),
 });
 
+// ─── Password Reset Tokens ──────────────────────────────────────────────────
+export const passwordResetTokens = pgTable("password_reset_token", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// ─── Reviews ─────────────────────────────────────────────────────────────────
+export const reviews = pgTable(
+  "review",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    rating: integer("rating").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    status: reviewStatusEnum("status").default("PENDING").notNull(),
+    helpfulCount: integer("helpful_count").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    productIdx: index("review_product_idx").on(t.productId),
+    userIdx: index("review_user_idx").on(t.userId),
+    statusIdx: index("review_status_idx").on(t.status),
+    userProductUniq: uniqueIndex("review_user_product_uniq").on(t.userId, t.productId),
+  })
+);
+
+export const reviewHelpfulVotes = pgTable(
+  "review_helpful_vote",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reviewId: uuid("review_id")
+      .notNull()
+      .references(() => reviews.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    reviewIdx: index("helpful_vote_review_idx").on(t.reviewId),
+    userReviewUniq: uniqueIndex("helpful_vote_user_review_uniq").on(t.reviewId, t.userId),
+  })
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 import { relations } from "drizzle-orm";
 
@@ -237,11 +306,13 @@ export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
   blogPosts: many(blogPosts),
+  reviews: many(reviews),
 }));
 
 export const productsRelations = relations(products, ({ many }) => ({
   orders: many(orders),
   licenses: many(licenses),
+  reviews: many(reviews),
 }));
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
@@ -254,6 +325,7 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
     references: [products.id],
   }),
   licenses: many(licenses),
+  reviews: many(reviews),
 }));
 
 export const licensesRelations = relations(licenses, ({ one }) => ({
@@ -276,4 +348,16 @@ export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
     fields: [blogPosts.authorId],
     references: [users.id],
   }),
+}));
+
+export const reviewsRelations = relations(reviews, ({ one, many }) => ({
+  user: one(users, { fields: [reviews.userId], references: [users.id] }),
+  product: one(products, { fields: [reviews.productId], references: [products.id] }),
+  order: one(orders, { fields: [reviews.orderId], references: [orders.id] }),
+  helpfulVotes: many(reviewHelpfulVotes),
+}));
+
+export const reviewHelpfulVotesRelations = relations(reviewHelpfulVotes, ({ one }) => ({
+  review: one(reviews, { fields: [reviewHelpfulVotes.reviewId], references: [reviews.id] }),
+  user: one(users, { fields: [reviewHelpfulVotes.userId], references: [users.id] }),
 }));
