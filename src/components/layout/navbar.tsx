@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { LayoutDashboard, LogOut, User, Settings, Shield } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -116,7 +117,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 w-full bg-[hsla(240,1%,17%,0.75)] backdrop-blur-[10px] border border-jet rounded-t-[20px] shadow-2 z-50 xl:absolute xl:bottom-auto xl:top-0 xl:right-0 xl:left-auto xl:w-max xl:rounded-tr-[20px] xl:rounded-bl-[20px] xl:rounded-tl-none xl:rounded-br-none xl:border-r-0 xl:border-t-0">
+      <nav className="fixed bottom-0 left-0 w-full bg-onyx/75 backdrop-blur-[10px] border border-jet rounded-t-[20px] shadow-2 z-50 xl:absolute xl:bottom-auto xl:top-0 xl:right-0 xl:left-auto xl:w-max xl:rounded-tr-[20px] xl:rounded-bl-[20px] xl:rounded-tl-none xl:rounded-br-none xl:border-r-0 xl:border-t-0">
         <ul className="flex flex-nowrap overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] justify-start xl:justify-center items-center px-[15px] py-[5px] xl:px-[20px] gap-1 max-w-full">
           {links.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
@@ -135,8 +136,9 @@ export function Navbar() {
             );
           })}
 
-          {/* User Account Controls */}
-          <li className="flex items-center pl-2 ml-1 border-l border-jet/60 shrink-0 pr-[15px] xl:pr-0">
+          {/* Theme Toggle + User Account Controls */}
+          <li className="flex items-center pl-2 ml-1 border-l border-jet/60 shrink-0 pr-[15px] xl:pr-0 gap-1">
+            <ThemeToggle />
             {status === "loading" ? null : session?.user ? (
               /* Logged-in: avatar dropdown */
               <div className="relative">
