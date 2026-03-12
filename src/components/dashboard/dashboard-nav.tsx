@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, KeyRound, Settings } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, KeyRound, Settings, Star } from "lucide-react";
 
 export function DashboardNav() {
   const pathname = usePathname();
@@ -10,6 +10,7 @@ export function DashboardNav() {
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { name: "Purchases", href: "/dashboard/purchases", icon: ShoppingBag },
+    { name: "My Reviews", href: "/dashboard/reviews", icon: Star },
     { name: "License Keys", href: "/dashboard/licenses", icon: KeyRound },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
