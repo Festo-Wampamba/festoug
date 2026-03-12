@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CheckCircle2, XCircle, Trash2 } from "lucide-react";
+import { useToast } from "@/components/ui/toast-provider";
 
 export function ReviewAdminActions({
   reviewId,
@@ -13,6 +14,7 @@ export function ReviewAdminActions({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   async function handleAction(action: "APPROVED" | "REJECTED" | "delete") {
     setLoading(true);
@@ -22,13 +24,23 @@ export function ReviewAdminActions({
           setLoading(false);
           return;
         }
-        await fetch(`/api/admin/reviews/${reviewId}`, { method: "DELETE" });
+        const res = await fetch(`/api/admin/reviews/${reviewId}`, { method: "DELETE" });
+        if (res.ok) {
+          toast.success("Review deleted");
+        } else {
+          toast.error("Failed to delete review");
+        }
       } else {
-        await fetch(`/api/admin/reviews/${reviewId}`, {
+        const res = await fetch(`/api/admin/reviews/${reviewId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: action }),
         });
+        if (res.ok) {
+          toast.success(`Review ${action.toLowerCase()}`);
+        } else {
+          toast.error(`Failed to update review`);
+        }
       }
       router.refresh();
     } finally {
