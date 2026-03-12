@@ -7,7 +7,7 @@ import { ShoppingCart } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Digital Store | Plugins, Scripts & Templates",
+  title: "Digital Store",
   description: "Browse premium digital products carefully crafted to accelerate your next project.",
 };
 
