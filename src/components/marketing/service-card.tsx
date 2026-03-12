@@ -8,7 +8,7 @@ interface ServiceCardProps {
 
 export function ServiceCard({ title, icon, description }: ServiceCardProps) {
   return (
-    <div className="relative bg-gradient-to-br from-[#404040] to-[rgba(64,64,64,0)] p-5 rounded-[14px] shadow-2 z-10 flex flex-col justify-start">
+    <div className="relative bg-gradient-to-br from-jet to-jet/0 p-5 rounded-[14px] shadow-2 z-10 flex flex-col justify-start">
       <div className="absolute inset-[1px] bg-gradient-to-br from-[hsla(240,1%,18%,0.25)] to-[hsla(240,2%,11%,0)] bg-eerie-black-1 rounded-[14px] -z-10" />
       
       <div className="mb-[10px] flex justify-center">
