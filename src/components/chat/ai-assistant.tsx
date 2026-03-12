@@ -159,7 +159,7 @@ export function AiAssistant() {
                   <div className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl text-xs sm:text-sm ${
                     m.role === 'user'
                       ? 'bg-jet text-white-2 rounded-tr-sm'
-                      : 'bg-[#2a2a2a] text-light-gray border border-jet/50 rounded-tl-sm'
+                      : 'bg-eerie-black-1 text-light-gray border border-jet/50 rounded-tl-sm'
                   }`}>
                     {m.role === 'user' ? (
                       <p className="whitespace-pre-wrap">{textContent}</p>
@@ -183,7 +183,7 @@ export function AiAssistant() {
                   <div className="shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-orange-yellow-crayola text-smoky-black flex items-center justify-center">
                     <Bot className="w-3 h-3 sm:w-4 sm:h-4" />
                   </div>
-                  <div className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-[#2a2a2a] border border-jet/50 rounded-tl-sm flex items-center gap-1">
+                  <div className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-eerie-black-1 border border-jet/50 rounded-tl-sm flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce" style={{ animationDelay: '0ms' }} />
                     <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce" style={{ animationDelay: '150ms' }} />
                     <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce" style={{ animationDelay: '300ms' }} />
