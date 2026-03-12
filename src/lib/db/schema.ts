@@ -197,9 +197,11 @@ export const projects = pgTable(
     description: text("description"),
     liveUrl: text("live_url"),
     repoUrl: text("repo_url"),
+    isFeatured: boolean("is_featured").default(false).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     sortOrder: integer("sort_order").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => ({ slugIdx: index("project_slug_idx").on(t.slug) })
 );
