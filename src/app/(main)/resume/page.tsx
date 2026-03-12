@@ -2,6 +2,11 @@ import { TimelineItem } from "@/components/marketing/timeline-item";
 import { SkillBar } from "@/components/marketing/skill-bar";
 import { BookOpen, Bookmark } from "lucide-react";
 
+export const metadata = {
+  title: "Resume",
+  description: "Education, experience, and technical skills of Festo Wampamba — Full-Stack Software Engineer.",
+};
+
 export default function ResumePage() {
   return (
     <div className="animate-in fade-in duration-500">
@@ -15,7 +20,7 @@ export default function ResumePage() {
       {/* Education Timeline */}
       <div className="mb-8">
         <div className="flex items-center gap-[15px] mb-[25px]">
-          <div className="relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 bg-gradient-to-br from-[#404040] to-[rgba(64,64,64,0)]">
+          <div className="relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 bg-gradient-to-br from-jet to-jet/0">
             <div className="absolute inset-[1px] bg-eerie-black-1 rounded-lg -z-10" />
             <BookOpen className="w-[18px] h-[18px]" />
           </div>
@@ -47,7 +52,7 @@ export default function ResumePage() {
       {/* Work Timeline */}
       <div className="mb-8">
         <div className="flex items-center gap-[15px] mb-[25px]">
-          <div className="relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 bg-gradient-to-br from-[#404040] to-[rgba(64,64,64,0)]">
+          <div className="relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 bg-gradient-to-br from-jet to-jet/0">
             <div className="absolute inset-[1px] bg-eerie-black-1 rounded-lg -z-10" />
             <Bookmark className="w-[18px] h-[18px]" />
           </div>
