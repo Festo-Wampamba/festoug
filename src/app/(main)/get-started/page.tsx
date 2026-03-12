@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import { ScopingForm } from '@/components/marketing/scoping-form';
 import { Target, Clock, ShieldCheck } from 'lucide-react';
 
@@ -26,7 +27,9 @@ export default function GetStartedPage() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-12">
         {/* Form Column */}
         <div className="xl:col-span-8 order-2 xl:order-1">
-          <ScopingForm />
+          <Suspense fallback={<div className="text-light-gray-70 py-8">Loading form...</div>}>
+            <ScopingForm />
+          </Suspense>
         </div>
 
         {/* Sidebar Info Column */}

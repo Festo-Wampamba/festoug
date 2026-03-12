@@ -4,9 +4,20 @@ import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { generateCheckoutLink } from "@/lib/payments/lemonsqueezy";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
   try {
+    // Rate limit: 10 checkout attempts per IP per 5 minutes
+    const ip = getClientIp(req);
+    const limiter = rateLimit(`checkout:${ip}`, { limit: 10, windowSeconds: 300 });
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: "Too many checkout attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const productId = searchParams.get("productId");
 

@@ -48,10 +48,13 @@ export async function POST(req: Request) {
         where: eq(products.slug, productSlug)
       });
 
-      // If product doesn't exist, we might want to just skip or log
+      // Return an error so Lemon Squeezy retries the webhook
       if (!product) {
-        console.warn(`Webhook processed but product slug '${productSlug}' not found.`);
-        return NextResponse.json({ message: "Product missing, order skipped." });
+        console.error(`[WEBHOOK] Product slug '${productSlug}' not found. Order ID: ${externalOrderId}`);
+        return NextResponse.json(
+          { error: `Product slug '${productSlug}' not found. Order could not be created.` },
+          { status: 422 }
+        );
       }
 
       // Insert Order

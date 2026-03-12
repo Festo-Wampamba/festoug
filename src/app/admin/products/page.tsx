@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
@@ -7,11 +7,13 @@ import { DeleteProductButton } from "@/components/admin/delete-product-button";
 
 export const metadata = { title: "Admin | Products" };
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminProductsPage() {
-  const allProducts = await db
+  const allProducts = await withRetry((db) => db
     .select()
     .from(products)
-    .orderBy(desc(products.createdAt));
+    .orderBy(desc(products.createdAt)));
 
   return (
     <div className="space-y-6">

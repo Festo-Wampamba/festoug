@@ -3,9 +3,20 @@ import { users, bannedEmails } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    // Rate limit: 5 registration attempts per IP per 15 minutes
+    const ip = getClientIp(req);
+    const limiter = rateLimit(`register:${ip}`, { limit: 5, windowSeconds: 900 });
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: "Too many registration attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {

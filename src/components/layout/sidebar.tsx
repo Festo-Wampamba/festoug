@@ -9,8 +9,11 @@ export function Sidebar() {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const userAgent = navigator.userAgent;
-    setIsDesktop(!/Mobi|Android/i.test(userAgent));
+    const mql = window.matchMedia("(min-width: 768px)");
+    setIsDesktop(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
   }, []);
 
   const toggleSidebar = () => {
@@ -24,16 +27,16 @@ export function Sidebar() {
   return (
     <aside
       className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-8 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative ${
-        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] xl:max-h-none xl:h-max"
-      } xl:w-[280px] shrink-0`}
+        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] xl:max-h-none"
+      } xl:w-[280px] shrink-0 xl:sticky xl:top-[60px] xl:h-[calc(100vh-120px)]`}
     >
       <div className="relative flex justify-start items-center gap-[15px] xl:flex-col xl:gap-4 xl:text-center">
-        <figure className="bg-gradient-to-br from-[#3f3f40] to-[#303030] rounded-[60px] p-2 flex shrink-0 xl:w-[150px] xl:h-[150px] xl:mx-auto">
+        <figure className="bg-gradient-to-br from-jet to-onyx rounded-[60px] p-2 flex shrink-0 xl:w-[150px] xl:h-[150px] xl:mx-auto">
           <Image
-            src="/images/festo.svg"
+            src="/images/festo-profile.png"
             alt="Festo"
-            width={80}
-            height={80}
+            width={150}
+            height={150}
             className="rounded-[60px] animate-in fade-in duration-1000 xl:w-full xl:h-full object-cover"
           />
         </figure>
@@ -48,7 +51,7 @@ export function Sidebar() {
         </div>
 
         <button
-          className={`absolute -top-[15px] -right-[15px] sm:-right-8 sm:-top-8 xl:hidden rounded-bl-[15px] rounded-tr-[20px] text-[13px] text-orange-yellow-crayola bg-gradient-to-br from-[#404040] to-[#303030] p-[10px] shadow-2 transition-colors z-10 hover:from-[#3f3f40] hover:to-[#303030]`}
+          className={`absolute -top-[15px] -right-[15px] sm:-right-8 sm:-top-8 xl:hidden rounded-bl-[15px] rounded-tr-[20px] text-[13px] text-orange-yellow-crayola bg-gradient-to-br from-jet to-onyx p-[10px] shadow-2 transition-colors z-10 hover:from-jet/80 hover:to-onyx/80`}
           onClick={toggleSidebar}
           aria-label="Toggle Sidebar"
         >
@@ -57,7 +60,7 @@ export function Sidebar() {
       </div>
 
       <div
-        className={`transition-all duration-500 xl:opacity-100 xl:visible ${
+        className={`transition-all duration-500 xl:opacity-100 xl:visible xl:overflow-y-auto custom-scrollbar xl:h-[calc(100%-180px)] ${
           isSidebarActive ? "opacity-100 visible mt-4" : "opacity-0 invisible h-0 xl:h-auto xl:mt-8"
         }`}
       >
@@ -111,13 +114,13 @@ function ContactItem({ icon, title, href, value, download, target, rel, iconClas
   return (
     <li className="flex items-center gap-4">
       <div
-        className={`relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 shrink-0 bg-gradient-to-br from-[#404040] to-[rgba(64,64,64,0)] transition-transform duration-300 hover:scale-110 cursor-pointer active:scale-95 ${iconClass}`}
+        className={`relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 shrink-0 bg-gradient-to-br from-jet to-jet/0 transition-transform duration-300 hover:scale-110 cursor-pointer active:scale-95 ${iconClass}`}
       >
         <div className="absolute inset-[1px] bg-eerie-black-1 rounded-lg -z-10" />
         {icon}
       </div>
       <div className="w-[calc(100%-56px)]">
-        <p className="text-[#ffd700] text-[11px] uppercase mb-[2px]">{title}</p>
+        <p className="text-orange-yellow-crayola dark:text-[#ffd700] text-[11px] uppercase mb-[2px]">{title}</p>
         <a
           href={href}
           download={download}

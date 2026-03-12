@@ -44,10 +44,10 @@ const rawProjects = [
 ];
 
 const rawTestimonials = [
-  { name: "Danie T", avatar: "/images/avatar-1.png", testimonial: "Festo was hired to develop our software solution. We were extremely impressed with his expertise in Python and JavaScript, delivering a top-notch product that exceeded our expectations." },
-  { name: "Bakeine Grace", avatar: "/images/avatar-2.png", testimonial: "Festo provided exceptional data modeling services for our project. His proficiency in database programming ensured our data structures were optimized and efficient." },
-  { name: "Jenny Eden", avatar: "/images/avatar-3.png", testimonial: "Festo was hired to design our website. His skills with React and NextJS resulted in a highly responsive and user-friendly interface that our users love." },
-  { name: "Edrine K", avatar: "/images/avatar-4.png", testimonial: "Festo managed our database with great expertise. His attention to detail and knowledge in database management significantly improved our system's performance and reliability." },
+  { name: "Danie T", avatar: "/images/avatar-1.png", role: "CTO, TechVentures", rating: 5, testimonial: "Festo was hired to develop our software solution. We were extremely impressed with his expertise in Python and JavaScript, delivering a top-notch product that exceeded our expectations." },
+  { name: "Bakeine Grace", avatar: "/images/avatar-2.png", role: "Data Lead, AnalyticsCo", rating: 4, testimonial: "Festo provided exceptional data modeling services for our project. His proficiency in database programming ensured our data structures were optimized and efficient." },
+  { name: "Jenny Eden", avatar: "/images/avatar-3.png", role: "Product Manager, WebFlow", rating: 5, testimonial: "Festo was hired to design our website. His skills with React and NextJS resulted in a highly responsive and user-friendly interface that our users love." },
+  { name: "Edrine K", avatar: "/images/avatar-4.png", role: "Ops Director, DataSafe", rating: 4, testimonial: "Festo managed our database with great expertise. His attention to detail and knowledge in database management significantly improved our system's performance and reliability." },
 ];
 
 const rawServices = [
@@ -83,6 +83,8 @@ async function seed() {
       rawTestimonials.map((t, i) => ({
         name: t.name,
         avatar: t.avatar,
+        role: t.role,
+        rating: t.rating,
         testimonial: t.testimonial,
         sortOrder: i,
       }))

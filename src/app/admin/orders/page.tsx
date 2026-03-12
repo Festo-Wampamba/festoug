@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { orders, licenses } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
@@ -6,11 +6,13 @@ import { ChevronLeft } from "lucide-react";
 
 export const metadata = { title: "Admin | Orders" };
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminOrdersPage() {
-  const allOrders = await db.query.orders.findMany({
+  const allOrders = await withRetry((db) => db.query.orders.findMany({
     with: { user: true, product: true, licenses: true },
     orderBy: (o, { desc: d }) => [d(o.createdAt)],
-  });
+  }));
 
   return (
     <div className="space-y-6">

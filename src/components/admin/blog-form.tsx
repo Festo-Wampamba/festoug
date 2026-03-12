@@ -33,6 +33,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
     if (!file) return;
 
     setUploadingImage(true);
+    setError(null);
     const fd = new FormData();
     fd.append("file", file);
 
@@ -42,11 +43,14 @@ export function BlogForm({ initialData }: BlogFormProps) {
         body: fd,
       });
 
-      if (!res.ok) throw new Error("Upload failed");
-      const { url } = await res.json();
-      setCoverImageUrl(url);
-    } catch (err) {
-      alert("Failed to upload image.");
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to upload image.");
+        return;
+      }
+      setCoverImageUrl(data.url);
+    } catch {
+      setError("Failed to upload image. Please try again.");
     } finally {
       setUploadingImage(false);
     }

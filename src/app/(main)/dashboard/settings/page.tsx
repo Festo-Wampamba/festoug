@@ -1,16 +1,20 @@
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { withRetry } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { UserCircle, Mail, Lock } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-  });
+  const user = await withRetry((db) =>
+    db.query.users.findFirst({
+      where: eq(users.id, session.user.id),
+    })
+  );
 
   if (!user) return null;
 

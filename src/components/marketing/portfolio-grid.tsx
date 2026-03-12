@@ -2,13 +2,40 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Eye, X } from "lucide-react";
 
+function ProjectCard({ project }: { project: Project }) {
+  return (
+    <>
+      <figure className="relative rounded-[16px] overflow-hidden mb-[15px] bg-bg-gradient-onyx shadow-1 group-hover:shadow-[0_0_0_1px_rgba(56,189,248,0.3)] transition-all">
+        <div className="absolute inset-0 bg-transparent group-hover:bg-[rgba(0,0,0,0.5)] z-10 transition-colors duration-300 flex justify-center items-center">
+          <div className="w-[45px] h-[45px] rounded-[12px] bg-jet text-orange-yellow-crayola flex justify-center items-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300">
+            <Eye className="w-5 h-5" />
+          </div>
+        </div>
+        <Image
+          src={`/${project.image}`}
+          alt={project.title}
+          width={800}
+          height={600}
+          className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
+        />
+      </figure>
+      <h3 className="text-white-2 text-[15px] font-medium capitalize mb-[5px] group-hover:text-orange-yellow-crayola transition-colors">
+        {project.title}
+      </h3>
+      <p className="text-light-gray font-light text-[14px]">{project.category}</p>
+    </>
+  );
+}
+
 interface Project {
-  id: number;
+  id: number | string;
   title: string;
   category: string;
   image: string;
+  slug?: string;
 }
 
 interface PortfolioGridProps {
@@ -27,7 +54,7 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
     selectedCategory === "All"
       ? projects
       : projects.filter((p) => p.category === selectedCategory);
-      
+
   if (limit) {
     filteredProjects = filteredProjects.slice(0, limit);
   }
@@ -57,44 +84,35 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
         {filteredProjects.map((project) => (
           <li
             key={project.id}
-            className="group relative cursor-pointer animate-in fade-in zoom-in-95 duration-500"
-            onClick={() => setSelectedProject(project)}
+            className={`group relative animate-in fade-in zoom-in-95 duration-500 ${!project.slug ? "cursor-pointer" : ""}`}
+            onClick={project.slug ? undefined : () => setSelectedProject(project)}
           >
-            <figure className="relative rounded-[16px] overflow-hidden mb-[15px] bg-bg-gradient-onyx shadow-1 group-hover:shadow-[0_0_0_1px_rgba(56,189,248,0.3)] transition-all">
-              <div className="absolute inset-0 bg-transparent group-hover:bg-[rgba(0,0,0,0.5)] z-10 transition-colors duration-300 flex justify-center items-center">
-                <div className="w-[45px] h-[45px] rounded-[12px] bg-jet text-orange-yellow-crayola flex justify-center items-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300">
-                  <Eye className="w-5 h-5" />
-                </div>
-              </div>
-              <Image
-                src={`/${project.image}`}
-                alt={project.title}
-                width={800}
-                height={600}
-                className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-            </figure>
-            <h3 className="text-white-2 text-[15px] font-medium capitalize mb-[5px] group-hover:text-orange-yellow-crayola transition-colors">
-              {project.title}
-            </h3>
-            <p className="text-light-gray font-light text-[14px]">{project.category}</p>
+            {project.slug ? (
+              <Link href={`/portfolio/${project.slug}`} className="block">
+                <ProjectCard project={project} />
+              </Link>
+            ) : (
+              <ProjectCard project={project} />
+            )}
           </li>
         ))}
       </ul>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal (fallback for projects without slug) */}
       {selectedProject && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex justify-center items-center bg-[rgba(0,0,0,0.8)] p-4 animate-in fade-in duration-300"
           onClick={() => setSelectedProject(null)}
         >
-          <div 
+          <div
             className="relative bg-eerie-black-2 p-4 rounded-[20px] max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-jet shadow-2 animate-in zoom-in-95 duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <button 
+            <button
               className="absolute top-4 right-4 z-10 bg-jet text-white-2 p-2 rounded-lg hover:text-orange-yellow-crayola transition-colors"
               onClick={() => setSelectedProject(null)}
+              aria-label="Close lightbox"
+              type="button"
             >
               <X className="w-5 h-5" />
             </button>
