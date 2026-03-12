@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { withRetry } from "@/lib/db";
-import { orders } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
-import { Download, ExternalLink } from "lucide-react";
+import { orders, reviews } from "@/lib/db/schema";
+import { eq, and, desc } from "drizzle-orm";
+import { Download, ExternalLink, Star, Pencil } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +18,14 @@ export default async function PurchasesPage() {
       orderBy: [desc(orders.createdAt)],
     })
   );
+
+  const userReviews = await withRetry((db) =>
+    db.query.reviews.findMany({
+      where: eq(reviews.userId, session.user.id),
+      columns: { id: true, productId: true },
+    })
+  );
+  const reviewedProductIds = new Set(userReviews.map((r) => r.productId));
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500">
@@ -98,6 +106,23 @@ export default async function PurchasesPage() {
                   <button className="flex items-center justify-center gap-2 bg-transparent text-light-gray border border-jet px-6 py-3 rounded-xl font-medium hover:bg-jet hover:text-white-2 transition-colors w-full sm:w-auto">
                     Receipt <ExternalLink className="w-4 h-4" />
                   </button>
+                  {isCompleted && product && (
+                    reviewedProductIds.has(product.id) ? (
+                      <Link
+                        href="/dashboard/reviews"
+                        className="flex items-center justify-center gap-2 bg-transparent text-orange-yellow-crayola border border-orange-yellow-crayola/20 px-6 py-3 rounded-xl font-medium hover:bg-orange-yellow-crayola/10 transition-colors w-full sm:w-auto"
+                      >
+                        <Pencil className="w-4 h-4" /> Edit Review
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/store/${product.slug}`}
+                        className="flex items-center justify-center gap-2 bg-transparent text-orange-yellow-crayola border border-orange-yellow-crayola/20 px-6 py-3 rounded-xl font-medium hover:bg-orange-yellow-crayola/10 transition-colors w-full sm:w-auto"
+                      >
+                        <Star className="w-4 h-4" /> Write Review
+                      </Link>
+                    )
+                  )}
                 </div>
               </div>
             );
