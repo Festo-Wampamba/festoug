@@ -46,26 +46,28 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Legacy Portfolio Custom Colors */
-  --color-jet: hsl(0, 0%, 22%);
-  --color-onyx: hsl(240, 1%, 17%);
-  --color-eerie-black-1: hsl(240, 2%, 13%);
-  --color-eerie-black-2: rgb(11 17 32);
-  --color-smoky-black: rgb(15 23 42);
-  --color-orange-yellow-crayola: rgb(56 189 248);
-  --color-vegas-gold: hsl(45 54% 58%);
-  --color-light-gray: hsl(0 0% 84%);
-  --color-light-gray-70: hsla(0 0% 84% / 0.7);
-  --color-bittersweet-shimmer: hsl(15 100% 50%);
+  /* Portfolio Custom Colors (theme-aware via CSS vars) */
+  --color-jet: var(--theme-jet);
+  --color-onyx: var(--theme-onyx);
+  --color-eerie-black-1: var(--theme-eerie-black-1);
+  --color-eerie-black-2: var(--theme-eerie-black-2);
+  --color-smoky-black: var(--theme-smoky-black);
+  --color-orange-yellow-crayola: var(--theme-accent);
+  --color-vegas-gold: var(--theme-vegas-gold);
+  --color-light-gray: var(--theme-light-gray);
+  --color-light-gray-70: var(--theme-light-gray-70);
+  --color-bittersweet-shimmer: var(--theme-bittersweet);
+  --color-white-1: var(--theme-white-1);
+  --color-white-2: var(--theme-white-2);
 
-  /* Coastal Midnight Palette */
-  --color-cm-bg: #0B1120;
-  --color-cm-surface: #111C35;
-  --color-cm-border: #1A2845;
-  --color-cm-ocean: #5BA4CF;
-  --color-cm-dusk: #E8A87C;
-  --color-cm-text: #D6E4F0;
-  --color-cm-muted: #5D7A9A;
+  /* Coastal Midnight Palette (theme-aware) */
+  --color-cm-bg: var(--theme-cm-bg);
+  --color-cm-surface: var(--theme-cm-surface);
+  --color-cm-border: var(--theme-cm-border);
+  --color-cm-ocean: var(--theme-cm-ocean);
+  --color-cm-dusk: var(--theme-cm-dusk);
+  --color-cm-text: var(--theme-cm-text);
+  --color-cm-muted: var(--theme-cm-muted);
 
   /* Font Family Mappings */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -142,6 +144,52 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ─── Light Theme Portfolio Colors ─── */
+:root {
+  --theme-jet: hsl(220 13% 86%);
+  --theme-onyx: hsl(220 14% 90%);
+  --theme-eerie-black-1: hsl(220 14% 95%);
+  --theme-eerie-black-2: hsl(0 0% 100%);
+  --theme-smoky-black: hsl(220 14% 96%);
+  --theme-accent: rgb(2 132 199);
+  --theme-vegas-gold: hsl(45 54% 42%);
+  --theme-light-gray: hsl(220 9% 40%);
+  --theme-light-gray-70: hsla(220 9% 40% / 0.7);
+  --theme-bittersweet: hsl(15 100% 45%);
+  --theme-white-1: hsl(220 13% 20%);
+  --theme-white-2: hsl(220 13% 13%);
+  --theme-cm-bg: hsl(220 14% 96%);
+  --theme-cm-surface: hsl(0 0% 100%);
+  --theme-cm-border: hsl(220 13% 86%);
+  --theme-cm-ocean: hsl(200 60% 40%);
+  --theme-cm-dusk: hsl(25 70% 50%);
+  --theme-cm-text: hsl(220 13% 20%);
+  --theme-cm-muted: hsl(220 9% 55%);
+}
+
+/* ─── Dark Theme Portfolio Colors ─── */
+.dark {
+  --theme-jet: hsl(0 0% 22%);
+  --theme-onyx: hsl(240 1% 17%);
+  --theme-eerie-black-1: hsl(240 2% 13%);
+  --theme-eerie-black-2: rgb(11 17 32);
+  --theme-smoky-black: rgb(15 23 42);
+  --theme-accent: rgb(56 189 248);
+  --theme-vegas-gold: hsl(45 54% 58%);
+  --theme-light-gray: hsl(0 0% 84%);
+  --theme-light-gray-70: hsla(0 0% 84% / 0.7);
+  --theme-bittersweet: hsl(15 100% 50%);
+  --theme-white-1: hsl(0 0% 100%);
+  --theme-white-2: hsl(0 0% 98%);
+  --theme-cm-bg: #0B1120;
+  --theme-cm-surface: #111C35;
+  --theme-cm-border: #1A2845;
+  --theme-cm-ocean: #5BA4CF;
+  --theme-cm-dusk: #E8A87C;
+  --theme-cm-text: #D6E4F0;
+  --theme-cm-muted: #5D7A9A;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -158,11 +206,23 @@
     @apply bg-smoky-black;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-white/10 border-[3px] border-smoky-black rounded-full shadow-[inset_1px_1px_0_rgba(255,255,255,0.11),inset_-1px_-1px_0_rgba(255,255,255,0.11)];
+    @apply bg-black/10 border-[3px] border-smoky-black rounded-full;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 shadow-[inset_1px_1px_0_rgba(255,255,255,0.11),inset_-1px_-1px_0_rgba(255,255,255,0.11)];
   }
   ::-webkit-scrollbar-thumb:hover {
+    @apply bg-black/20;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
     @apply bg-white/15;
   }
+}
+
+/* Light mode subtle shadows for depth */
+html:not(.dark) aside,
+html:not(.dark) main {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
 }
 
 /* Marquee Animation */
