@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { TestimonialCard } from "./testimonial-card";
 
 interface Testimonial {
@@ -12,58 +12,81 @@ interface Testimonial {
 }
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
-  const scrollRef = useRef<HTMLUListElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval>>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(1);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const scrollNext = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const cardWidth = el.firstElementChild?.clientWidth ?? 0;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-
-    if (el.scrollLeft >= maxScroll - 10) {
-      // Loop back to start
-      el.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      el.scrollBy({ left: cardWidth + 16, behavior: "smooth" });
-    }
+  // Detect screen size (mobile = 1 card, md+ = 2 cards)
+  useEffect(() => {
+    const update = () => setPerPage(window.innerWidth >= 768 ? 2 : 1);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
+  const totalPages = Math.ceil(testimonials.length / perPage);
+
+  // Keep currentPage in bounds when perPage changes
   useEffect(() => {
-    // Auto-scroll every 30 seconds
-    timerRef.current = setInterval(scrollNext, 5000);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [scrollNext]);
+    if (currentPage >= totalPages) setCurrentPage(0);
+  }, [totalPages, currentPage]);
 
-  // Pause on hover
-  const handleMouseEnter = () => {
+  const goNext = useCallback(() => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  }, [totalPages]);
+
+  const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
-  };
+    timerRef.current = setInterval(goNext, 5000);
+  }, [goNext]);
 
-  const handleMouseLeave = () => {
-    timerRef.current = setInterval(scrollNext, 5000);
-  };
+  useEffect(() => {
+    startTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [startTimer]);
+
+  const pause = () => { if (timerRef.current) clearInterval(timerRef.current); };
+  const resume = startTimer;
+
+  const startIdx = currentPage * perPage;
+  const visible = testimonials.slice(startIdx, startIdx + perPage);
 
   return (
-    <ul
-      ref={scrollRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="flex gap-[15px] overflow-x-auto pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar px-4 -mx-4"
-    >
-      {testimonials.map((t, index) => (
-        <TestimonialCard
-          key={index}
-          name={t.name}
-          avatar={t.avatar || "/images/avatar-1.png"}
-          role={t.role ?? undefined}
-          rating={t.rating}
-          testimonial={t.testimonial}
-        />
-      ))}
-    </ul>
+    <div className="relative" onMouseEnter={pause} onMouseLeave={resume}>
+      {/* Cards row */}
+      <div className="flex gap-4">
+        {visible.map((t, i) => (
+          <TestimonialCard
+            key={startIdx + i}
+            name={t.name}
+            avatar={t.avatar || "/images/avatar-1.png"}
+            role={t.role ?? undefined}
+            rating={t.rating}
+            testimonial={t.testimonial}
+          />
+        ))}
+        {/* Ghost spacer when showing 2 per page but only 1 card left */}
+        {perPage === 2 && visible.length === 1 && <div className="flex-1" />}
+      </div>
+
+      {/* Dot navigation */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-5">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => { setCurrentPage(i); pause(); }}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === currentPage
+                  ? "w-5 bg-orange-yellow-crayola"
+                  : "w-2 bg-jet hover:bg-light-gray-70"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
