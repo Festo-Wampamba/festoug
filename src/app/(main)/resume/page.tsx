@@ -27,7 +27,7 @@ export default function ResumePage() {
           <h3 className="text-white-2 text-2xl font-semibold capitalize">Education</h3>
         </div>
 
-        <ol className="ml-[45px] sm:ml-[15px] xl:ml-[45px] border-l border-jet pl-[30px] sm:pl-[20px] xl:pl-[30px]">
+        <ol className="ml-0 sm:ml-[15px] xl:ml-[45px] border-l-0 sm:border-l sm:border-jet pl-0 sm:pl-[25px] xl:pl-[30px]">
           <TimelineItem
             institution="Makerere University Business School - Nakawa, Uganda"
             program="Bachelor's Degree in Business Computing"
@@ -59,7 +59,7 @@ export default function ResumePage() {
           <h3 className="text-white-2 text-2xl font-semibold capitalize">Work history</h3>
         </div>
 
-        <ol className="ml-[45px] sm:ml-[15px] xl:ml-[45px] border-l border-jet pl-[30px] sm:pl-[20px] xl:pl-[30px]">
+        <ol className="ml-0 sm:ml-[15px] xl:ml-[45px] border-l-0 sm:border-l sm:border-jet pl-0 sm:pl-[25px] xl:pl-[30px]">
           <TimelineItem
             role="Software Developer"
             institution="Online"
