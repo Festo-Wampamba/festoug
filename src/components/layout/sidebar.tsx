@@ -26,26 +26,26 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-8 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative ${
-        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] xl:max-h-none"
+      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-5 md:p-6 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative ${
+        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] sm:max-h-[120px] md:max-h-[148px] xl:max-h-none"
       } xl:w-[280px] shrink-0 xl:sticky xl:top-[60px] xl:h-[calc(100vh-120px)]`}
     >
-      <div className="relative flex justify-start items-center gap-[15px] xl:flex-col xl:gap-4 xl:text-center">
-        <figure className="bg-gradient-to-br from-jet to-onyx rounded-[60px] p-2 flex shrink-0 xl:w-[150px] xl:h-[150px] xl:mx-auto">
+      <div className="relative flex justify-start items-center gap-[15px] md:gap-5 xl:flex-col xl:gap-4 xl:text-center">
+        <figure className="shrink-0 w-[70px] h-[70px] sm:w-[84px] sm:h-[84px] md:w-[110px] md:h-[110px] xl:w-[150px] xl:h-[150px] xl:mx-auto">
           <Image
             src="/images/festo-profile.png"
             alt="Festo"
             width={150}
             height={150}
-            className="rounded-[60px] animate-in fade-in duration-1000 xl:w-full xl:h-full object-cover"
+            className="rounded-full animate-in fade-in duration-1000 w-full h-full object-cover"
           />
         </figure>
 
         <div className="flex-1 xl:w-full">
-          <h1 className="text-white-2 text-2xl font-medium tracking-tight mb-[10px] whitespace-nowrap overflow-hidden text-ellipsis xl:mb-4">
+          <h1 className="text-white-2 text-2xl md:text-3xl font-medium tracking-tight mb-[10px] xl:mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
             Wampamba Festo
           </h1>
-          <p className="text-white-1 bg-onyx text-[13px] font-light w-max px-3 py-1 rounded-lg xl:mx-auto">
+          <p className="text-white-1 bg-onyx text-[13px] md:text-[14px] font-light w-max px-3 py-1 rounded-lg xl:mx-auto">
             Software Engineer
           </p>
         </div>
