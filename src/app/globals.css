@@ -233,10 +233,15 @@ html:not(.dark) main {
 
 .animate-marquee {
   animation: marquee 30s linear infinite;
+  width: max-content;
 }
 
-.animate-marquee:hover {
+.marquee-paused {
   animation-play-state: paused;
+}
+
+.marquee-running {
+  animation-play-state: running;
 }
 
 @media (prefers-reduced-motion: reduce) {
