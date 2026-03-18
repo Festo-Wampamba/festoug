@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type UIMessage, convertToModelMessages } from "ai";
 import { withRetry } from "@/lib/db";
 import { products, services } from "@/lib/db/schema";
@@ -138,8 +138,14 @@ ${servicesContext || "Currently no active services listed."}
       );
     }
 
+    const openrouter = createOpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
+      compatibility: "compatible",
+    });
+
     const result = streamText({
-      model: google("gemini-2.0-flash"),
+      model: openrouter.chat("meta-llama/llama-4-maverick"),
       system: systemPrompt,
       messages: modelMessages,
       temperature: 0.7,
