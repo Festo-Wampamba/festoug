@@ -141,7 +141,6 @@ ${servicesContext || "Currently no active services listed."}
     const openrouter = createOpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: process.env.OPENROUTER_API_KEY,
-      compatibility: "compatible",
     });
 
     const result = streamText({
