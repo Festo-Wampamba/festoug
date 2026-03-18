@@ -32,7 +32,7 @@ export function ClientLogos() {
     }, 1500);
   };
 
-  const renderLogo = (num: number, prefix: string) => {
+  const logoItem = (num: number, prefix: string) => {
     const key = `${prefix}-${num}`;
     const isActive = activeKey === key;
     return (
@@ -43,11 +43,10 @@ export function ClientLogos() {
         onMouseLeave={() => setActiveKey(null)}
         onTouchStart={() => handleTouchStart(key)}
         onTouchEnd={handleTouchEnd}
-        aria-hidden={prefix === "b" ? true : undefined}
       >
         <Image
           src={`/images/logo-${num}-color.png`}
-          alt={prefix === "a" ? `Client ${num}` : ""}
+          alt={`Client ${num}`}
           width={120}
           height={40}
           className={`transition-all duration-500 object-contain ${
@@ -69,8 +68,12 @@ export function ClientLogos() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {logos.map((num) => renderLogo(num, "a"))}
-        {logos.map((num) => renderLogo(num, "b"))}
+        {/* Primary set */}
+        {logos.map((num) => logoItem(num, "a"))}
+        {/* Duplicate set for seamless loop — hidden from assistive tech */}
+        <div aria-hidden="true" className="contents">
+          {logos.map((num) => logoItem(num, "b"))}
+        </div>
       </div>
     </div>
   );

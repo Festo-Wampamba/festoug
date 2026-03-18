@@ -41,3 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 server.log
+
+# Tool-generated directories — not part of the project source
+.claude/
+.agents/
+.superpowers/
+commit_script.sh
