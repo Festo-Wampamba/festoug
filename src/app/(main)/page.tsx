@@ -1,6 +1,7 @@
 import { ServiceCard } from "@/components/marketing/service-card";
 import { TestimonialCarousel } from "@/components/marketing/testimonial-carousel";
 import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
+import { ClientLogos } from "@/components/marketing/client-logos";
 import Image from "next/image";
 import Link from "next/link";
 import { withRetry } from "@/lib/db";
@@ -117,38 +118,7 @@ export default async function AboutPage() {
         <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">
           Clients
         </h3>
-        <div className="overflow-hidden relative">
-          {/* Fade edges */}
-          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-eerie-black-2 to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-eerie-black-2 to-transparent z-10 pointer-events-none" />
-
-          <div className="flex animate-marquee" style={{ width: "max-content" }}>
-            {/* First set */}
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <div key={`a-${num}`} className="mx-8 flex items-center shrink-0">
-                <Image
-                  src={`/images/logo-${num}-color.png`}
-                  alt={`Client ${num}`}
-                  width={120}
-                  height={40}
-                  className="filter grayscale opacity-50 hover:filter-none hover:opacity-100 transition-all duration-300 object-contain"
-                />
-              </div>
-            ))}
-            {/* Duplicate set for seamless loop */}
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <div key={`b-${num}`} className="mx-8 flex items-center shrink-0" aria-hidden="true">
-                <Image
-                  src={`/images/logo-${num}-color.png`}
-                  alt=""
-                  width={120}
-                  height={40}
-                  className="filter grayscale opacity-50 hover:filter-none hover:opacity-100 transition-all duration-300 object-contain"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        <ClientLogos />
       </section>
     </div>
   );
