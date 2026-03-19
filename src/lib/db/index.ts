@@ -26,8 +26,12 @@ function getDb() {
   }
 
   if (isNeonUrl(connectionString)) {
-    // Neon HTTP driver — strip "-pooler" as HTTP API requires the direct endpoint
-    const httpUrl = connectionString.replace("-pooler", "");
+    // Neon HTTP driver requires the direct endpoint (no -pooler) and does not
+    // support the channel_binding TCP parameter — strip both from the URL
+    const httpUrl = connectionString
+      .replace("-pooler", "")
+      .replace(/[?&]channel_binding=[^&]*/g, "")
+      .replace(/\?$/, "");
     const sql = neon(httpUrl);
     global._db = drizzleNeon(sql, { schema }) as any;
   } else {

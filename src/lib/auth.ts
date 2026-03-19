@@ -32,8 +32,11 @@ function createAuthDb() {
   const url = process.env.DATABASE_URL;
   if (!url) return undefined;
   // Use Neon HTTP driver — required for Vercel serverless (no raw TCP)
-  // Strip -pooler suffix as the HTTP API requires the direct endpoint
-  const httpUrl = url.replace("-pooler", "");
+  // Strip -pooler and channel_binding (TCP param not supported by HTTP driver)
+  const httpUrl = url
+    .replace("-pooler", "")
+    .replace(/[?&]channel_binding=[^&]*/g, "")
+    .replace(/\?$/, "");
   const sql = neon(httpUrl);
   return drizzle(sql, { schema });
 }
