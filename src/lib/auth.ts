@@ -3,8 +3,8 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "@/lib/db/schema";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -31,8 +31,14 @@ declare module "next-auth" {
 function createAuthDb() {
   const url = process.env.DATABASE_URL;
   if (!url) return undefined;
-  const client = postgres(url, { max: 3 });
-  return drizzle(client, { schema });
+  // Use Neon HTTP driver — required for Vercel serverless (no raw TCP)
+  // Strip -pooler and channel_binding (TCP param not supported by HTTP driver)
+  const httpUrl = url
+    .replace("-pooler", "")
+    .replace(/[?&]channel_binding=[^&]*/g, "")
+    .replace(/\?$/, "");
+  const sql = neon(httpUrl);
+  return drizzle(sql, { schema });
 }
 
 const authDb = createAuthDb();
