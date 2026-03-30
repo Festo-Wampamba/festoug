@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
+import { useSession } from "next-auth/react";
 import type { UIMessage } from "ai";
 import { Bot, X, Send, User, Sparkles, Loader2, ChevronDown } from "lucide-react";
 
@@ -95,6 +96,7 @@ export function AiAssistant() {
   const [lastClickedTopic, setLastClickedTopic] = useState<string | null>("initial");
   const bottomRef = useRef<HTMLDivElement>(null);
   const isLarge = useIsLargeScreen();
+  const { data: session } = useSession();
 
   // Drag state for the toggle button (small/medium only)
   const [btnPos, setBtnPos] = useState<{ x: number; y: number } | null>(null);
@@ -105,17 +107,29 @@ export function AiAssistant() {
   const origXRef = useRef(0);
   const origYRef = useRef(0);
 
-  // Vercel AI SDK
   const initialMessages: UIMessage[] = [
     {
       id: "welcome-1",
       role: "assistant",
-      parts: [{ type: "text", text: "Hi there! I'm Festo's AI Assistant. I can help you navigate the portfolio, answer questions about Festo's skills, or guide you on how to purchase digital products and services. How can I help you today?" }],
+      parts: [{ type: "text", text: "Hi there! I'm **FestoAI** — your full-access tech assistant. I can help with code, debugging, tech advice, career decisions, global tech trends, or anything about Festo's portfolio and services. What can I help you with?" }],
     }
   ];
   const { messages, sendMessage, status, error, setMessages } = useChat({
     messages: initialMessages,
   });
+
+  // Personalize welcome message when a registered user is detected
+  const [welcomed, setWelcomed] = useState(false);
+  useEffect(() => {
+    if (welcomed || !session?.user?.name) return;
+    setWelcomed(true);
+    const firstName = session.user.name.split(" ")[0];
+    setMessages([{
+      id: "welcome-1",
+      role: "assistant",
+      parts: [{ type: "text", text: `Welcome back, **${firstName}**! I remember our previous conversations. I'm **FestoAI** — here to help with anything: code, tech advice, architecture, global tech trends, or Festo's services. What are you working on today?` }],
+    }]);
+  }, [session, welcomed, setMessages]);
 
   // Auto-scroll
   useEffect(() => {
@@ -246,9 +260,9 @@ export function AiAssistant() {
                     <Bot className="w-3 h-3 sm:w-4 sm:h-4" />
                   </div>
                   <div className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-eerie-black-1 border border-jet/50 rounded-tl-sm flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce bounce-d0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce bounce-d150" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-light-gray-70 animate-bounce bounce-d300" />
                   </div>
                 </div>
               </div>
@@ -294,7 +308,7 @@ export function AiAssistant() {
                 className="w-full bg-smoky-black border border-jet rounded-xl pl-3 pr-10 py-2.5 sm:pl-4 sm:pr-12 sm:py-3 text-xs sm:text-sm text-white-2 placeholder:text-light-gray-70 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all"
                 value={inputLocal}
                 onChange={(e) => setInputLocal(e.target.value)}
-                placeholder="Ask about my portfolio..."
+                placeholder="Ask anything — code, tech, or about Festo..."
                 disabled={isLoadingLocally}
               />
               <button
@@ -316,6 +330,7 @@ export function AiAssistant() {
       {isLarge && (
         <>
           <button
+            type="button"
             onClick={() => setIsOpen(!isOpen)}
             className={`fixed z-50 bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,181,63,0.3)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(255,181,63,0.5)] active:scale-95 ${
               isOpen ? 'bg-jet text-white-2' : 'bg-orange-yellow-crayola text-smoky-black'
@@ -339,8 +354,9 @@ export function AiAssistant() {
           onPointerUp={handlePointerUp}
           className={`fixed z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,181,63,0.3)] transition-shadow duration-300 active:scale-95 touch-none ${
             isOpen ? "bg-jet text-white-2" : "bg-orange-yellow-crayola text-smoky-black"
-          } ${!btnPos ? "bottom-20 right-4" : ""}`}
-          style={btnPos ? { left: btnPos.x, top: btnPos.y } : undefined}
+          } ${!btnPos ? "bottom-20 right-4" : "chat-btn-dragged"}`}
+          /* eslint-disable-next-line react/forbid-component-props */
+          style={btnPos ? ({ "--bx": `${btnPos.x}px`, "--by": `${btnPos.y}px` } as React.CSSProperties) : undefined}
           aria-label="Toggle AI Chat"
         >
           {isOpen ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
