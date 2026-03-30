@@ -165,7 +165,7 @@ export function Navbar() {
         onTouchStart={handleNavTouch}
       >
         <div className="flex items-center gap-0 sm:gap-0.5 md:gap-1
-          px-1.5 py-1 sm:px-2 sm:py-1.5 md:px-3 md:py-2.5
+          px-2 py-1.5 sm:px-2.5 sm:py-2 md:px-3 md:py-2.5
           bg-eerie-black-2/90 backdrop-blur-2xl
           border border-white/[0.07]
           rounded-full
@@ -181,7 +181,7 @@ export function Navbar() {
                 href={link.href}
                 title={link.label}
                 className={`relative flex items-center justify-center
-                  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10
+                  w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
                   rounded-full
                   transition-all duration-200 shrink-0
                   ${isActive
@@ -190,10 +190,10 @@ export function Navbar() {
                   }`}
               >
                 <link.Icon
-                  className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px] md:w-[18px] md:h-[18px]"
+                  className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] md:w-[18px] md:h-[18px]"
                   strokeWidth={isActive ? 2.2 : 1.8}
                 />
-                {/* Active dot indicator — visible on all mobile/tablet sizes */}
+                {/* Active dot indicator */}
                 {isActive && (
                   <span className="absolute bottom-[3px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-yellow-crayola" />
                 )}
@@ -202,10 +202,10 @@ export function Navbar() {
           })}
 
           {/* Divider */}
-          <div className="w-px h-3.5 sm:h-4 md:h-5 bg-white/[0.09] mx-0.5 sm:mx-1 shrink-0" />
+          <div className="w-px h-4 sm:h-5 bg-white/[0.09] mx-0.5 sm:mx-1 shrink-0" />
 
-          {/* Theme toggle */}
-          <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 shrink-0">
+          {/* Theme toggle — constrained to pill item size */}
+          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 overflow-hidden">
             <ThemeToggle />
           </div>
 
@@ -216,7 +216,7 @@ export function Navbar() {
                 ref={mobileButtonRef}
                 type="button"
                 onClick={() => setDropdownOpen((o) => !o)}
-                className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full hover:bg-white/5 transition-colors shrink-0"
+                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full hover:bg-white/5 transition-colors shrink-0"
                 aria-label="Account menu"
               >
                 <UserAvatar size="sm" />
@@ -224,11 +224,11 @@ export function Navbar() {
             ) : (
               <Link
                 href="/auth/signin"
-                className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full text-light-gray-70 hover:text-white-2 hover:bg-white/5 transition-colors shrink-0"
+                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full text-light-gray-70 hover:text-white-2 hover:bg-white/5 transition-colors shrink-0"
                 title="Sign in"
                 aria-label="Sign in"
               >
-                <LogIn className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px]" strokeWidth={1.8} />
+                <LogIn className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px]" strokeWidth={1.8} />
               </Link>
             )
           )}
