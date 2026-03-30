@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, X } from "lucide-react";
@@ -47,6 +47,8 @@ interface PortfolioGridProps {
 export function PortfolioGrid({ projects, limit, hideCategoryFilter }: PortfolioGridProps) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const triggerRef = useRef<HTMLLIElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const categories = ["All", ...Array.from(new Set(projects.map((p) => p.category)))];
 
@@ -59,6 +61,31 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
     filteredProjects = filteredProjects.slice(0, limit);
   }
 
+  // Focus close button when modal opens
+  useEffect(() => {
+    if (selectedProject && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [selectedProject]);
+
+  // Escape key closes modal; return focus to trigger
+  useEffect(() => {
+    if (!selectedProject) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedProject(null);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [selectedProject]);
+
+  const openLightbox = (project: Project, el: HTMLLIElement) => {
+    triggerRef.current = el;
+    setSelectedProject(project);
+  };
+
   return (
     <>
       {!hideCategoryFilter && (
@@ -66,6 +93,7 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
           {categories.map((category) => (
             <li key={category}>
               <button
+                type="button"
                 onClick={() => setSelectedCategory(category)}
                 className={`text-[15px] font-medium transition-colors duration-300 ${
                   selectedCategory === category
@@ -85,7 +113,11 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
           <li
             key={project.id}
             className={`group relative animate-in fade-in zoom-in-95 duration-500 ${!project.slug ? "cursor-pointer" : ""}`}
-            onClick={project.slug ? undefined : () => setSelectedProject(project)}
+            onClick={
+              project.slug
+                ? undefined
+                : (e) => openLightbox(project, e.currentTarget as HTMLLIElement)
+            }
           >
             {project.slug ? (
               <Link href={`/portfolio/${project.slug}`} className="block">
@@ -98,19 +130,23 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
         ))}
       </ul>
 
-      {/* Lightbox Modal (fallback for projects without slug) */}
+      {/* Lightbox Modal */}
       {selectedProject && (
         <div
           className="fixed inset-0 z-50 flex justify-center items-center bg-[rgba(0,0,0,0.8)] p-4 animate-in fade-in duration-300"
-          onClick={() => setSelectedProject(null)}
+          onClick={() => { setSelectedProject(null); triggerRef.current?.focus(); }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={selectedProject.title}
         >
           <div
             className="relative bg-eerie-black-2 p-4 rounded-[20px] max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-jet shadow-2 animate-in zoom-in-95 duration-300"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-4 right-4 z-10 bg-jet text-white-2 p-2 rounded-lg hover:text-orange-yellow-crayola transition-colors"
-              onClick={() => setSelectedProject(null)}
+              ref={closeButtonRef}
+              className="absolute top-4 right-4 z-10 bg-jet text-white-2 p-2 rounded-lg hover:text-orange-yellow-crayola transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              onClick={() => { setSelectedProject(null); triggerRef.current?.focus(); }}
               aria-label="Close lightbox"
               type="button"
             >
