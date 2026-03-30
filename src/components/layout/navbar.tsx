@@ -157,7 +157,7 @@ export function Navbar() {
     <>
       {/* ── Mobile + Tablet (< xl): Floating Pill ─────────────────────────────── */}
       <nav
-        className={`xl:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-in-out ${
+        className={`xl:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-in-out max-w-[calc(100vw-2rem)] ${
           navOpaque ? "opacity-100 translate-y-0" : "opacity-[0.18] translate-y-1 hover:opacity-100 hover:translate-y-0"
         }`}
         onMouseEnter={() => setIsNavFocused(true)}
@@ -165,7 +165,7 @@ export function Navbar() {
         onTouchStart={handleNavTouch}
       >
         <div className="flex items-center gap-0 sm:gap-0.5 md:gap-1
-          px-1 py-1 sm:px-2 sm:py-2 md:px-3 md:py-2.5
+          px-1.5 py-1 sm:px-2 sm:py-1.5 md:px-3 md:py-2.5
           bg-eerie-black-2/90 backdrop-blur-2xl
           border border-white/[0.07]
           rounded-full
@@ -181,7 +181,7 @@ export function Navbar() {
                 href={link.href}
                 title={link.label}
                 className={`relative flex items-center justify-center
-                  w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
+                  w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10
                   rounded-full
                   transition-all duration-200 shrink-0
                   ${isActive
@@ -190,7 +190,7 @@ export function Navbar() {
                   }`}
               >
                 <link.Icon
-                  className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] md:w-[19px] md:h-[19px]"
+                  className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px] md:w-[18px] md:h-[18px]"
                   strokeWidth={isActive ? 2.2 : 1.8}
                 />
                 {/* Active dot indicator — visible on all mobile/tablet sizes */}
@@ -202,10 +202,10 @@ export function Navbar() {
           })}
 
           {/* Divider */}
-          <div className="w-px h-4 sm:h-5 bg-white/[0.09] mx-1 shrink-0" />
+          <div className="w-px h-3.5 sm:h-4 md:h-5 bg-white/[0.09] mx-0.5 sm:mx-1 shrink-0" />
 
           {/* Theme toggle */}
-          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0">
+          <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 shrink-0">
             <ThemeToggle />
           </div>
 
@@ -216,20 +216,19 @@ export function Navbar() {
                 ref={mobileButtonRef}
                 type="button"
                 onClick={() => setDropdownOpen((o) => !o)}
-                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full hover:bg-white/5 transition-colors shrink-0"
+                className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full hover:bg-white/5 transition-colors shrink-0"
                 aria-label="Account menu"
               >
                 <UserAvatar size="sm" />
               </button>
             ) : (
-              /* Icon-only sign-in for ALL mobile/tablet sizes — desktop xl nav already has full text buttons */
               <Link
                 href="/auth/signin"
-                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full text-light-gray-70 hover:text-white-2 hover:bg-white/5 transition-colors shrink-0"
+                className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full text-light-gray-70 hover:text-white-2 hover:bg-white/5 transition-colors shrink-0"
                 title="Sign in"
                 aria-label="Sign in"
               >
-                <LogIn className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px]" strokeWidth={1.8} />
+                <LogIn className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px]" strokeWidth={1.8} />
               </Link>
             )
           )}
