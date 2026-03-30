@@ -164,8 +164,8 @@ export function Navbar() {
         onMouseLeave={() => setIsNavFocused(false)}
         onTouchStart={handleNavTouch}
       >
-        <div className="flex items-center gap-0 sm:gap-0.5 md:gap-1.5
-          px-1.5 py-1.5 sm:px-2 sm:py-2 md:px-4 md:py-3
+        <div className="flex items-center gap-0 sm:gap-0.5 md:gap-1
+          px-1 py-1 sm:px-2 sm:py-2 md:px-3 md:py-2.5
           bg-eerie-black-2/90 backdrop-blur-2xl
           border border-white/[0.07]
           rounded-full
@@ -180,9 +180,9 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 title={link.label}
-                className={`relative flex flex-col items-center justify-center gap-0.5
-                  w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-[52px]
-                  rounded-full md:rounded-xl
+                className={`relative flex items-center justify-center
+                  w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
+                  rounded-full
                   transition-all duration-200 shrink-0
                   ${isActive
                     ? "bg-orange-yellow-crayola/15 text-orange-yellow-crayola"
@@ -190,16 +190,12 @@ export function Navbar() {
                   }`}
               >
                 <link.Icon
-                  className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] md:w-[22px] md:h-[22px]"
+                  className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] md:w-[19px] md:h-[19px]"
                   strokeWidth={isActive ? 2.2 : 1.8}
                 />
-                {/* Label on md+ only */}
-                <span className={`hidden md:block text-[9px] leading-none font-medium tracking-wide ${isActive ? "text-orange-yellow-crayola" : "text-light-gray-70"}`}>
-                  {link.label}
-                </span>
-                {/* Active dot on mobile/sm */}
+                {/* Active dot indicator — visible on all mobile/tablet sizes */}
                 {isActive && (
-                  <span className="md:hidden absolute bottom-[3px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-yellow-crayola" />
+                  <span className="absolute bottom-[3px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-yellow-crayola" />
                 )}
               </Link>
             );
@@ -209,7 +205,7 @@ export function Navbar() {
           <div className="w-px h-4 sm:h-5 bg-white/[0.09] mx-1 shrink-0" />
 
           {/* Theme toggle */}
-          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-[52px] shrink-0">
+          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0">
             <ThemeToggle />
           </div>
 
@@ -220,31 +216,21 @@ export function Navbar() {
                 ref={mobileButtonRef}
                 type="button"
                 onClick={() => setDropdownOpen((o) => !o)}
-                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-[52px] rounded-full hover:bg-white/5 transition-colors shrink-0"
+                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full hover:bg-white/5 transition-colors shrink-0"
                 aria-label="Account menu"
               >
                 <UserAvatar size="sm" />
               </button>
             ) : (
-              <>
-                {/* Mobile: single icon */}
-                <Link
-                  href="/auth/signin"
-                  className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full text-light-gray-70 hover:text-white-2 hover:bg-white/5 transition-colors shrink-0"
-                  title="Sign in"
-                >
-                  <LogIn className="w-[15px] h-[15px]" strokeWidth={1.8} />
-                </Link>
-                {/* sm+: text buttons */}
-                <div className="hidden sm:flex items-center gap-1 px-0.5 md:px-1 shrink-0">
-                  <Link href="/auth/signin" className="text-[10px] md:text-[11px] font-medium px-2 py-1.5 md:px-2.5 rounded-full text-light-gray hover:text-white-2 transition-colors whitespace-nowrap">
-                    Sign in
-                  </Link>
-                  <Link href="/auth/signup" className="text-[10px] md:text-[11px] font-semibold px-2.5 py-1.5 md:px-3 rounded-full bg-orange-yellow-crayola text-smoky-black hover:bg-orange-yellow-crayola/90 transition-colors whitespace-nowrap">
-                    Sign up
-                  </Link>
-                </div>
-              </>
+              /* Icon-only sign-in for ALL mobile/tablet sizes — desktop xl nav already has full text buttons */
+              <Link
+                href="/auth/signin"
+                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full text-light-gray-70 hover:text-white-2 hover:bg-white/5 transition-colors shrink-0"
+                title="Sign in"
+                aria-label="Sign in"
+              >
+                <LogIn className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px]" strokeWidth={1.8} />
+              </Link>
             )
           )}
         </div>
