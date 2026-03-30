@@ -82,6 +82,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased min-h-screen selection:bg-orange-yellow-crayola selection:text-smoky-black bg-smoky-black text-light-gray`}>
+        <a href="#main-content" className="skip-nav">Skip to main content</a>
         <Providers>
           {children}
           <AiAssistant />
