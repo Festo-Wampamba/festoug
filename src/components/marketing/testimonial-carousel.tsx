@@ -13,26 +13,29 @@ interface Testimonial {
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [perPage, setPerPage] = useState(1);
+  // Lazy initializer: reads window once on mount, avoids synchronous setState in effect
+  const [perPage, setPerPage] = useState(() =>
+    typeof window !== "undefined" ? (window.innerWidth >= 768 ? 2 : 1) : 1
+  );
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Detect screen size (mobile = 1 card, md+ = 2 cards)
+  // Only listen for resize changes — initial value is already set above
   useEffect(() => {
-    const update = () => setPerPage(window.innerWidth >= 768 ? 2 : 1);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    const handler = () => setPerPage(window.innerWidth >= 768 ? 2 : 1);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
   }, []);
 
   const totalPages = Math.ceil(testimonials.length / perPage);
-
-  // Keep currentPage in bounds when perPage changes
-  useEffect(() => {
-    if (currentPage >= totalPages) setCurrentPage(0);
-  }, [totalPages, currentPage]);
+  // Derived safe page — no setState in effect needed; modulo naturally wraps out-of-bounds pages
+  const safePage = totalPages > 0 ? currentPage % totalPages : 0;
 
   const goNext = useCallback(() => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
+  }, [totalPages]);
+
+  const goPrev = useCallback(() => {
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
   }, [totalPages]);
 
   const startTimer = useCallback(() => {
@@ -48,13 +51,34 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
   const pause = () => { if (timerRef.current) clearInterval(timerRef.current); };
   const resume = startTimer;
 
-  const startIdx = currentPage * perPage;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); pause(); }
+    if (e.key === "ArrowRight") { e.preventDefault(); goNext(); pause(); }
+  };
+
+  const startIdx = safePage * perPage;
   const visible = testimonials.slice(startIdx, startIdx + perPage);
 
   return (
-    <div className="relative" onMouseEnter={pause} onMouseLeave={resume}>
+    <div
+      className="relative"
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onFocus={pause}
+      onBlur={resume}
+      onKeyDown={handleKeyDown}
+      role="region"
+      aria-label="Testimonials carousel"
+      aria-roledescription="carousel"
+      tabIndex={0}
+    >
       {/* Cards row */}
-      <div className="flex gap-4">
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        aria-label={`Slide ${safePage + 1} of ${totalPages}`}
+        className="flex gap-4"
+      >
         {visible.map((t, i) => (
           <TestimonialCard
             key={startIdx + i}
@@ -71,18 +95,20 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
 
       {/* Dot navigation */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-5">
+        <div className="flex justify-center gap-2 mt-5" role="tablist" aria-label="Carousel navigation">
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
               key={i}
               type="button"
+              role="tab"
+              aria-selected={i === safePage}
+              aria-label={`Go to slide ${i + 1} of ${totalPages}`}
               onClick={() => { setCurrentPage(i); pause(); }}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === currentPage
+              className={`h-2 rounded-full transition-all duration-300 focus-visible:outline-2 focus-visible:outline-orange-yellow-crayola focus-visible:outline-offset-2 ${
+                i === safePage
                   ? "w-5 bg-orange-yellow-crayola"
                   : "w-2 bg-jet hover:bg-light-gray-70"
               }`}
-              aria-label={`Go to slide ${i + 1}`}
             />
           ))}
         </div>

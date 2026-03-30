@@ -297,6 +297,24 @@ export const reviewHelpfulVotes = pgTable(
   })
 );
 
+// ─── Chat Memory (registered user conversation history) ───────────────────────
+export const chatMessages = pgTable(
+  "chat_message",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: text("role").notNull(), // "user" | "assistant"
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    userIdx: index("chat_message_user_idx").on(t.userId),
+    userTimeIdx: index("chat_message_user_time_idx").on(t.userId, t.createdAt),
+  })
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 import { relations } from "drizzle-orm";
 
@@ -307,6 +325,11 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   blogPosts: many(blogPosts),
   reviews: many(reviews),
+  chatMessages: many(chatMessages),
+}));
+
+export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
+  user: one(users, { fields: [chatMessages.userId], references: [users.id] }),
 }));
 
 export const productsRelations = relations(products, ({ many }) => ({

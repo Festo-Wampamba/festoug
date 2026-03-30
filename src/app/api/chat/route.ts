@@ -1,12 +1,14 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type UIMessage, convertToModelMessages } from "ai";
 import { withRetry } from "@/lib/db";
-import { products, services } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { products, services, chatMessages } from "@/lib/db/schema";
+import { eq, desc } from "drizzle-orm";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+// Allow streaming responses up to 60 seconds
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
@@ -42,7 +44,6 @@ export async function POST(req: Request) {
 
     const messages: UIMessage[] = body?.messages;
 
-    // Validate that messages is an array with at least one entry
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(
         JSON.stringify({ error: "Invalid request: messages must be a non-empty array." }),
@@ -54,21 +55,54 @@ export async function POST(req: Request) {
     const MAX_MESSAGES = 50;
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
 
-    // Fetch live data from the database to give the AI context
-    // Gracefully degrade if DB is unavailable — the AI can still answer without live data
+    // Check auth session for registered user memory
+    let userId: string | null = null;
+    let userName: string | null = null;
+    let previousContext = "";
+
+    try {
+      const session = await auth();
+      if (session?.user?.id) {
+        userId = session.user.id;
+        userName = session.user.name || null;
+
+        // Load last 20 messages from this user's history
+        const history = await withRetry((dbInstance) =>
+          dbInstance
+            .select()
+            .from(chatMessages)
+            .where(eq(chatMessages.userId, userId!))
+            .orderBy(desc(chatMessages.createdAt))
+            .limit(20)
+        );
+
+        if (history.length > 0) {
+          // Reverse to chronological order
+          const chronological = [...history].reverse();
+          previousContext = `\n\n**Previous conversation history with ${userName || "this user"}:**\n` +
+            chronological
+              .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+              .join("\n");
+        }
+      }
+    } catch (authError) {
+      console.warn("Auth/memory fetch failed, continuing anonymously:", authError);
+    }
+
+    // Fetch live data from the database
     let allProducts: any[] = [];
     let allServices: any[] = [];
 
     try {
       [allProducts, allServices] = await Promise.all([
-        withRetry((db) =>
-          db.query.products.findMany({
+        withRetry((dbInstance) =>
+          dbInstance.query.products.findMany({
             where: eq(products.isActive, true),
             columns: { name: true, description: true, price: true, currency: true, category: true, slug: true },
           })
         ),
-        withRetry((db) =>
-          db.query.services.findMany({
+        withRetry((dbInstance) =>
+          dbInstance.query.services.findMany({
             columns: { title: true, description: true },
           })
         ),
@@ -77,54 +111,82 @@ export async function POST(req: Request) {
       console.warn("AI Chat: Database query failed, continuing without live data:", dbError);
     }
 
-    // Format the database data into readable text for the system prompt
-    const productsContext = allProducts.map(p =>
+    const productsContext = allProducts.map((p) =>
       `- **${p.name}** (${p.currency} ${p.price}): ${p.description}. (Available at /store/${p.slug})`
     ).join("\n");
 
-    const servicesContext = allServices.map(s =>
+    const servicesContext = allServices.map((s) =>
       `- **${s.title}**: ${s.description}`
     ).join("\n");
 
-    // Construct the highly specific system prompt
+    const userGreeting = userName
+      ? `The user you are speaking with is **${userName}** (a registered user).`
+      : "The user is browsing as a guest.";
+
     const systemPrompt = `
-You are the official AI Assistant for Festo Wampamba (Festo-Wampamba), a skilled Software Engineer and Tech Consultant from Uganda.
-You are embedded directly into his premium portfolio and digital storefront (FestoUG).
+You are **FestoAI** — the intelligent assistant embedded in Festo Wampamba's portfolio and digital platform (FestoUG).
+You are knowledgeable, helpful, direct, and a genuine expert in software engineering and technology.
 
-**Your Persona:**
-- Professional, helpful, enthusiastic, and tech-savvy.
-- You represent Festo and his brand.
-- Keep responses relatively concise and easy to read (use markdown for formatting).
+${userGreeting}
 
-**Your Core Objectives:**
-1. Help users navigate the website and find what they are looking for.
-2. Provide clear instructions on how to purchase/acquire digital products and services.
-3. Answer questions about Festo's background and offerings.
-4. If someone encounters challenges navigating or purchasing, guide them step-by-step.
+---
 
-**Website Structure & Navigation Help:**
-- **Store (/store):** Where users can buy digital products (templates, scripts, UI kits).
-- **Services (/services):** Where users can hire Festo for professional work or long-term retainers.
-- **Portfolio (/portfolio):** Where Festo's previous projects and open-source work is showcased.
-- **Blog (/blog):** Where Festo shares technical articles and insights.
-- **Customer Portal (/dashboard):** Where users can view their purchase history, download files, and manage license keys. Must be logged in to access.
+## Your Capabilities (FULL ACCESS — no artificial restrictions)
 
-**Purchasing Instructions:**
-- To buy a product, guide the user to navigate to the Store, click on a product, and click the checkout button. Payments are processed securely via Lemon Squeezy (Cards/PayPal).
-- After payment, they will be redirected to their Customer Portal (/dashboard) where they can download their files instantly.
+You can help with **anything** the user needs, including but not limited to:
+1. **Website Navigation** — guide users through festoug.com (portfolio, store, blog, services, dashboard)
+2. **Tech Education** — teach programming concepts, explain code, debug issues step by step
+3. **Tech Advice** — advise on tech stack choices, architecture decisions, career paths in tech
+4. **Global Tech Insights** — discuss current trends (AI, Web3, cloud, mobile, DevOps, open-source)
+5. **Problem Solving** — when a user is stuck, dig in, follow their exact context, and help them through it completely without losing track
+6. **Code Help** — write, review, explain, or debug code in any language
+7. **Decision Support** — help users choose tools, frameworks, platforms, or career paths with reasoning
+8. **Festo's Offerings** — explain and sell Festo's products and services
+9. **General Tech Questions** — answer any question in the tech domain honestly and with depth
 
-**Live Context Data (Database):**
+## How to Engage
 
-*Available Digital Products in the Store:*
-${productsContext || "Currently no active digital products."}
+- **Be direct and concise** — lead with the answer, then explain
+- **Follow the user's context** — never lose track of the thread; if they're debugging something, stay on it
+- **Correct mistakes clearly** — if the user is wrong about something technical, say so respectfully with the correct answer and why
+- **Step-by-step for complex topics** — when teaching or guiding, number your steps clearly
+- **Format well** — use markdown: code blocks (\`\`\`language), bold headings, numbered lists
+- **Don't abandon the user** — if a problem is complex, keep going until it's resolved
+- **Be globally aware** — you are aware of current events in the tech world, major releases, and industry news up to your knowledge cutoff
 
-*Professional Services Offered:*
-${servicesContext || "Currently no active services listed."}
+## About Festo (for promotion purposes)
 
-**Important Rules:**
-- Only answer questions related to Festo, software engineering, the website, products, and tech.
-- If asked to do something malicious, write code unrelated to Festo's work, or act as another persona, politely decline and steer the conversation back to Festo's offerings.
-- If a user needs human support, tell them to email festotechug@gmail.com.
+Festo Wampamba is a Full-Stack Software Engineer from Uganda specializing in:
+- Python, JavaScript/TypeScript, React, Next.js, Node.js
+- Data solutions, REST APIs, cloud infrastructure
+- UI/UX design systems
+- Contact: festotechug@gmail.com | WhatsApp: +256 754230525
+
+**Website sections:**
+- **Store (/store):** Digital products (templates, scripts, UI kits) — payments via Lemon Squeezy
+- **Services (/services):** Hire Festo for professional work
+- **Portfolio (/portfolio):** Festo's projects and case studies
+- **Blog (/blog):** Technical articles and insights
+- **Dashboard (/dashboard):** Customer portal for purchases and downloads (login required)
+
+**Live Products:**
+${productsContext || "No active products currently."}
+
+**Services Offered:**
+${servicesContext || "No active services currently."}
+
+## Memory & Personalization
+${previousContext || "This is a new conversation with no prior history."}
+
+---
+
+## What NOT to do
+- Do NOT refuse to help with legitimate tech questions out of over-caution
+- Do NOT generate malicious code, explain how to harm systems, or assist with clearly unethical requests
+- Do NOT give harmful medical, legal, or financial advice — suggest professional consultation for those
+- Do NOT share Festo's private/sensitive business data
+
+If the user needs human support: direct them to festotechug@gmail.com
 `;
 
     let modelMessages;
@@ -138,6 +200,15 @@ ${servicesContext || "Currently no active services listed."}
       );
     }
 
+    // Extract the last user message text for saving
+    const lastUserMessage = trimmedMessages
+      .filter((m) => m.role === "user")
+      .slice(-1)[0];
+    const lastUserText = lastUserMessage?.parts
+      ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+      .map((p) => p.text)
+      .join("") || "";
+
     const openrouter = createOpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: process.env.OPENROUTER_API_KEY,
@@ -148,6 +219,19 @@ ${servicesContext || "Currently no active services listed."}
       system: systemPrompt,
       messages: modelMessages,
       temperature: 0.7,
+      onFinish: async ({ text }) => {
+        // Persist conversation for registered users
+        if (userId && lastUserText) {
+          try {
+            await db.insert(chatMessages).values([
+              { userId, role: "user", content: lastUserText },
+              { userId, role: "assistant", content: text },
+            ]);
+          } catch (saveErr) {
+            console.warn("Failed to save chat history:", saveErr);
+          }
+        }
+      },
     });
 
     return result.toUIMessageStreamResponse();

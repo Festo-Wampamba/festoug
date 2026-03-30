@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import Image from "next/image";
 import { Mail, Phone, MessageCircle, FileText, MapPin, Eye } from "lucide-react";
 
 export function Sidebar() {
   const [isSidebarActive, setIsSidebarActive] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  // Lazy initializer avoids synchronous setState-in-effect; only the change handler fires setState
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
+  );
 
   useEffect(() => {
     const mql = window.matchMedia("(min-width: 768px)");
-    setIsDesktop(mql.matches);
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
@@ -30,7 +32,7 @@ export function Sidebar() {
         isSidebarActive ? "max-h-[800px]" : "max-h-[112px] sm:max-h-[120px] md:max-h-[148px] xl:max-h-none"
       } xl:w-[280px] shrink-0 xl:sticky xl:top-[60px] xl:h-[calc(100vh-120px)]`}
     >
-      <div className="relative flex justify-start items-center gap-[15px] md:gap-5 xl:flex-col xl:gap-4 xl:text-center">
+      <div className="flex items-center gap-[15px] md:gap-5 xl:flex-col xl:gap-4 xl:text-center">
         <figure className="shrink-0 w-[70px] h-[70px] sm:w-[84px] sm:h-[84px] md:w-[110px] md:h-[110px] xl:w-[150px] xl:h-[150px] xl:mx-auto">
           <Image
             src="/images/festo-profile.png"
@@ -41,7 +43,7 @@ export function Sidebar() {
           />
         </figure>
 
-        <div className="flex-1 xl:w-full">
+        <div className="flex-1 min-w-0 xl:w-full">
           <h1 className="text-white-2 text-2xl md:text-3xl font-medium tracking-tight mb-[10px] xl:mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
             Wampamba Festo
           </h1>
@@ -51,9 +53,10 @@ export function Sidebar() {
         </div>
 
         <button
-          className={`absolute -top-[15px] -right-[15px] sm:-right-8 sm:-top-8 xl:hidden rounded-bl-[15px] rounded-tr-[20px] text-[13px] text-orange-yellow-crayola bg-gradient-to-br from-jet to-onyx p-[10px] shadow-2 transition-colors z-10 hover:from-jet/80 hover:to-onyx/80`}
+          className="xl:hidden shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl text-orange-yellow-crayola bg-gradient-to-br from-jet to-onyx shadow-2 transition-all hover:from-jet/80 hover:to-onyx/80 hover:scale-105 active:scale-95"
           onClick={toggleSidebar}
-          aria-label="Toggle Sidebar"
+          aria-label={isSidebarActive ? "Hide contact info" : "Show contact information"}
+          aria-expanded={isSidebarActive ? "true" : "false"}
         >
           <Eye className="w-4 h-4" />
         </button>
@@ -110,7 +113,18 @@ export function Sidebar() {
   );
 }
 
-function ContactItem({ icon, title, href, value, download, target, rel, iconClass }: any) {
+interface ContactItemProps {
+  icon: ReactNode;
+  title: string;
+  href: string;
+  value: string;
+  iconClass?: string;
+  download?: boolean;
+  target?: string;
+  rel?: string;
+}
+
+function ContactItem({ icon, title, href, value, download, target, rel, iconClass }: ContactItemProps) {
   return (
     <li className="flex items-center gap-4">
       <div
