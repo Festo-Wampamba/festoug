@@ -319,14 +319,12 @@ html:not(.dark) main {
   }
 }
 
-/* Ensure minimum 44px touch targets for interactive elements on mobile (Req 12) */
+/* Touch targets: pill nav items use Tailwind sizing; only expand the theme toggle button
+   and admin nav links where extra tap area is needed without breaking pill layout */
 @media (max-width: 1279px) {
-  nav a,
-  nav button {
+  /* Admin nav links in the grid need decent tap height */
+  aside nav a,
+  aside nav button {
     min-height: 44px;
-    min-width: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
   }
 }
