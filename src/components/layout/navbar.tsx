@@ -282,8 +282,8 @@ export function Navbar() {
               </button>
             ) : (
               <div className="flex items-center gap-1 py-[5px]">
-                <Link href="/auth/signin" className="text-[13px] font-medium px-3 py-1.5 rounded-lg text-light-gray hover:text-white-2 transition-colors">Sign In</Link>
-                <Link href="/auth/signup" className="text-[13px] font-semibold px-4 py-2 rounded-lg bg-orange-yellow-crayola text-smoky-black hover:bg-orange-yellow-crayola/90 transition-colors">Sign Up</Link>
+                <Link href="/auth/signin" className="whitespace-nowrap text-[13px] font-medium px-3 py-1.5 rounded-lg text-light-gray hover:text-white-2 transition-colors">Sign In</Link>
+                <Link href="/auth/signup" className="whitespace-nowrap text-[13px] font-semibold px-4 py-2 rounded-lg bg-orange-yellow-crayola text-smoky-black hover:bg-orange-yellow-crayola/90 transition-colors">Sign Up</Link>
               </div>
             )}
           </li>
