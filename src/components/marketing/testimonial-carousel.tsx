@@ -13,15 +13,14 @@ interface Testimonial {
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const [currentPage, setCurrentPage] = useState(0);
-  // Lazy initializer: reads window once on mount, avoids synchronous setState in effect
-  const [perPage, setPerPage] = useState(() =>
-    typeof window !== "undefined" ? (window.innerWidth >= 768 ? 2 : 1) : 1
-  );
+  // Start with 1 (matches SSR), then correct on the client after hydration
+  const [perPage, setPerPage] = useState(1);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Only listen for resize changes — initial value is already set above
   useEffect(() => {
-    const handler = () => setPerPage(window.innerWidth >= 768 ? 2 : 1);
+    const getPerPage = () => (window.innerWidth >= 768 ? 2 : 1);
+    setPerPage(getPerPage());
+    const handler = () => setPerPage(getPerPage());
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
