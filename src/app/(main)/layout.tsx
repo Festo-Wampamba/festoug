@@ -15,7 +15,7 @@ export default function MainLayout({
         <div className="flex-1 min-w-0 relative">
           <Navbar />
 
-          <main className="bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-[30px] xl:pt-[75px] shadow-1 relative z-10 border border-jet">
+          <main id="main-content" tabIndex={-1} className="bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-[30px] xl:pt-[75px] shadow-1 relative z-10 border border-jet outline-none">
             {children}
           </main>
         </div>

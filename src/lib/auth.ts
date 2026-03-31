@@ -5,6 +5,8 @@ import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "@/lib/db/schema";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -28,17 +30,28 @@ declare module "next-auth" {
  * DrizzleAdapter requires the real drizzle instance (not a Proxy).
  * Returns undefined when DATABASE_URL is absent (e.g., during build).
  */
+function isNeonUrl(url: string) {
+  return url.includes("neon.tech") || url.includes("neon.cloud");
+}
+
 function createAuthDb() {
   const url = process.env.DATABASE_URL;
   if (!url) return undefined;
-  // Use Neon HTTP driver — required for Vercel serverless (no raw TCP)
-  // Strip -pooler and channel_binding (TCP param not supported by HTTP driver)
-  const httpUrl = url
-    .replace("-pooler", "")
-    .replace(/[?&]channel_binding=[^&]*/g, "")
-    .replace(/\?$/, "");
-  const sql = neon(httpUrl);
-  return drizzle(sql, { schema });
+
+  if (isNeonUrl(url)) {
+    // Neon HTTP driver — required for Vercel serverless (no raw TCP)
+    // Strip -pooler and channel_binding (TCP param not supported by HTTP driver)
+    const httpUrl = url
+      .replace("-pooler", "")
+      .replace(/[?&]channel_binding=[^&]*/g, "")
+      .replace(/\?$/, "");
+    const sql = neon(httpUrl);
+    return drizzle(sql, { schema }) as any;
+  } else {
+    // Local / Docker PostgreSQL via postgres.js
+    const sql = postgres(url, { max: 5 });
+    return drizzlePg(sql, { schema });
+  }
 }
 
 const authDb = createAuthDb();

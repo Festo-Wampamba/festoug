@@ -32,19 +32,19 @@ export default function ResumePage() {
             institution="Makerere University Business School - Nakawa, Uganda"
             program="Bachelor's Degree in Business Computing"
             period="2023 - Current"
-            description="This program focuses on integrating business principles with modern computing techniques, preparing me for a dynamic career in business and technology.\nThe curriculum includes courses in data analysis, information systems, and business management, providing a strong foundation for roles that require both technical and business acumen."
+            description={`This program focuses on integrating business principles with modern computing techniques, preparing me for a dynamic career in business and technology.\nThe curriculum includes courses in data analysis, information systems, and business management, providing a strong foundation for roles that require both technical and business acumen.`}
           />
           <TimelineItem
-            institution="JAIN (Deemed-to-be University) - Bangalore India"
-            program="Bachelor of Computer Applications"
-            period="2023 - Current"
-            description="This program offers in-depth knowledge of computer science and applications, emphasizing practical skills and industry-relevant technologies.\nThe coursework covers programming, database management, software engineering, and cloud technology, equipping me with the skills needed to excel in the software development field."
+            institution="University of the People - Online"
+            program="Bachelor's Degree in Computer Science"
+            period="2025 - Current"
+            description={`This program provides a comprehensive foundation in computer science, covering software engineering, algorithms, data structures, and systems design.\nThe curriculum emphasizes practical problem-solving and prepares graduates for careers in software development, data science, and technology leadership.`}
           />
           <TimelineItem
             institution="ALX - Nairobi, Kenya"
             program="Certificate in Software Engineering"
             period="2023 - 2024"
-            description="This intensive program focused on hands-on learning and real-world problem-solving, covering key areas such as coding, system design, and project management.\nThe program was designed to rapidly build technical skills and prepare me for a successful career in software engineering."
+            description={`This intensive program focused on hands-on learning and real-world problem-solving, covering key areas such as coding, system design, and project management.\nThe program was designed to rapidly build technical skills and prepare me for a successful career in software engineering.`}
           />
         </ol>
       </div>
@@ -64,13 +64,13 @@ export default function ResumePage() {
             role="Software Developer"
             institution="Online"
             period="2022 — Present"
-            description="Optimized application performance by regularly conducting code reviews and refactoring, leading to a 25% improvement in system efficiency across major projects like NextEvent UG.\nEnhanced user experience by designing and implementing intuitive user interfaces, which improved customer satisfaction ratings by 35% according to user feedback surveys.\nBoosted customer satisfaction rates through timely resolution of reported technical issues during the support phase of projects."
+            description={`Optimized application performance by regularly conducting code reviews and refactoring, leading to a 25% improvement in system efficiency across major projects like NextEvent UG.\nEnhanced user experience by designing and implementing intuitive user interfaces, which improved customer satisfaction ratings by 35% according to user feedback surveys.\nBoosted customer satisfaction rates through timely resolution of reported technical issues during the support phase of projects.`}
           />
           <TimelineItem
             role="Programmer"
             institution="Araknerd Software Development Company, Uganda"
             period="2019 — 2023"
-            description="Designed and implemented robust databases and table structures for 5 major web applications, enhancing data retrieval speeds and supporting daily transactions for over 10,000 users.\nEnhanced customer experience by providing timely technical support to end users, successfully resolving over 200+ technical issues per month with a 95% satisfaction rate, contributing to a 20% increase in customer retention."
+            description={`Designed and implemented robust databases and table structures for 5 major web applications, enhancing data retrieval speeds and supporting daily transactions for over 10,000 users.\nEnhanced customer experience by providing timely technical support to end users, successfully resolving over 200+ technical issues per month with a 95% satisfaction rate, contributing to a 20% increase in customer retention.`}
           />
         </ol>
       </div>
