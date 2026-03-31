@@ -45,11 +45,11 @@ export default async function DashboardLayout({
                 {user.name?.charAt(0) || "U"}
               </div>
             )}
-            <div className="hidden sm:flex flex-col leading-tight">
+            <div className="flex flex-col leading-tight">
               <span className="text-white-2 font-medium text-sm">{user.name}</span>
               <span className="text-orange-yellow-crayola text-xs">{user.role} · Edit Profile</span>
             </div>
-            <UserCircle className="w-4 h-4 text-light-gray-70 group-hover:text-orange-yellow-crayola transition-colors hidden sm:block ml-1" />
+            <UserCircle className="w-4 h-4 text-light-gray-70 group-hover:text-orange-yellow-crayola transition-colors ml-1" />
           </Link>
         </div>
       </header>
