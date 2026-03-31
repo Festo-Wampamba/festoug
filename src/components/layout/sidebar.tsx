@@ -22,9 +22,7 @@ export function Sidebar() {
     setIsSidebarActive(!isSidebarActive);
   };
 
-  const emailLink = isDesktop
-    ? "https://mail.google.com/mail/?view=cm&fs=1&to=festotechug@gmail.com"
-    : "mailto:festotechug@gmail.com";
+  const emailLink = "mailto:festotechug@gmail.com";
 
   return (
     <aside
