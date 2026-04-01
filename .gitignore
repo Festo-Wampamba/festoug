@@ -58,3 +58,6 @@ skills-lock.json
 # Screenshot artifacts
 navbar-*.png
 verify-*.png
+
+# Local upload artifacts (now handled by Cloudinary)
+public/uploads/
