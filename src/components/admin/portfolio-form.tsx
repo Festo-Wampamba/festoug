@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast-provider";
+import { ImagePlus, Loader2 } from "lucide-react";
 
 interface PortfolioFormProps {
   project?: {
@@ -32,9 +33,33 @@ export function PortfolioForm({ project }: PortfolioFormProps) {
   const { toast } = useToast();
   const isEdit = !!project;
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState(project?.image || "");
   const [title, setTitle] = useState(project?.title || "");
   const [slug, setSlug] = useState(project?.slug || "");
   const [slugTouched, setSlugTouched] = useState(false);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) {
+        setImageUrl(data.url);
+        toast.success("Image uploaded");
+      } else {
+        toast.error(data.error || "Upload failed");
+      }
+    } catch {
+      toast.error("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   function handleTitleChange(value: string) {
     setTitle(value);
@@ -156,15 +181,27 @@ export function PortfolioForm({ project }: PortfolioFormProps) {
       </div>
 
       <div>
-        <label htmlFor="image" className="block text-light-gray text-sm font-medium mb-2">Image URL</label>
-        <input
-          id="image"
-          name="image"
-          type="text"
-          defaultValue={project?.image || ""}
-          placeholder="images/project-1.jpg"
-          className="w-full bg-eerie-black-2 border border-jet rounded-xl px-4 py-3 text-white-2 text-sm placeholder:text-light-gray-70 focus:outline-none focus:border-orange-yellow-crayola transition-colors"
-        />
+        <label className="block text-light-gray text-sm font-medium mb-2">Image</label>
+        <div className="flex items-center gap-3">
+          <input
+            name="image"
+            type="text"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="Paste URL or upload"
+            className="flex-1 bg-eerie-black-2 border border-jet rounded-xl px-4 py-3 text-white-2 text-sm placeholder:text-light-gray-70 focus:outline-none focus:border-orange-yellow-crayola transition-colors"
+          />
+          <label className="shrink-0 flex items-center gap-2 bg-jet text-light-gray px-4 py-3 rounded-xl text-sm cursor-pointer hover:text-white-2 transition-colors">
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+            {uploading ? "Uploading..." : "Upload"}
+            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
+          </label>
+          {imageUrl && (
+            <div className="w-12 h-12 rounded-xl overflow-hidden border border-jet shrink-0">
+              <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
 import { Providers } from "@/components/layout/providers";
 import { AiAssistant } from "@/components/chat/ai-assistant";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -87,6 +88,7 @@ export default function RootLayout({
           {children}
           <AiAssistant />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
