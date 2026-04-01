@@ -41,22 +41,17 @@ export async function POST(req: Request) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          { folder: "festoug", resource_type: "image" },
-          (error, res) => {
-            if (error || !res) reject(error ?? new Error("Upload failed"));
-            else resolve(res as { secure_url: string });
-          }
-        )
-        .end(buffer);
+    const result = await cloudinary.uploader.upload(base64, {
+      folder: "festoug",
+      resource_type: "image",
     });
 
     return NextResponse.json({ url: result.secure_url }, { status: 201 });
-  } catch (error) {
-    console.error("Upload Error:", error);
-    return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Upload Error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
