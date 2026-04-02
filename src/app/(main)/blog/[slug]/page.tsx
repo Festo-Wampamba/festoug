@@ -1,5 +1,5 @@
 import { withRetry } from "@/lib/db";
-import { blogPosts, users } from "@/lib/db/schema";
+import { blogPosts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -33,12 +33,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   );
 
   if (!post || !post.isPublished) notFound();
-
-  const author = post.authorId
-    ? await withRetry((db) =>
-        db.query.users.findFirst({ where: eq(users.id, post.authorId!) })
-      ).catch(() => null)
-    : null;
 
   const dateStr = new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -81,12 +75,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <span className="bg-orange-yellow-crayola/10 text-orange-yellow-crayola px-2.5 py-1 rounded-md text-xs tracking-wide">
             {post.category || "Uncategorized"}
           </span>
-          {author?.name && (
-            <>
-              <span className="hidden sm:inline text-jet">•</span>
-              <span>By {author.name}</span>
-            </>
-          )}
         </div>
       </div>
 
