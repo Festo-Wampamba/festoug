@@ -1,5 +1,5 @@
 import { withRetry } from "@/lib/db";
-import { blogPosts } from "@/lib/db/schema";
+import { blogPosts, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -26,12 +26,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const post = await withRetry((db) => db.query.blogPosts.findFirst({
-    where: eq(blogPosts.slug, slug),
-    with: { author: true },
-  }));
+  // Avoid relational `with` query — Neon HTTP driver can fail on it.
+  // Fetch post and author as two separate simple queries instead.
+  const post = await withRetry((db) =>
+    db.query.blogPosts.findFirst({ where: eq(blogPosts.slug, slug) })
+  );
 
   if (!post || !post.isPublished) notFound();
+
+  const author = post.authorId
+    ? await withRetry((db) =>
+        db.query.users.findFirst({ where: eq(users.id, post.authorId!) })
+      ).catch(() => null)
+    : null;
 
   const dateStr = new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -74,22 +81,23 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <span className="bg-orange-yellow-crayola/10 text-orange-yellow-crayola px-2.5 py-1 rounded-md text-xs tracking-wide">
             {post.category || "Uncategorized"}
           </span>
-          {post.author?.name && (
+          {author?.name && (
             <>
               <span className="hidden sm:inline text-jet">•</span>
-              <span>By {post.author.name}</span>
+              <span>By {author.name}</span>
             </>
           )}
         </div>
       </div>
 
       {post.coverImage && (
-        <div className="w-full aspect-[16/9] relative mb-12 rounded-2xl overflow-hidden border border-jet bg-eerie-black-1">
+        <div className="w-full mb-12 rounded-2xl overflow-hidden border border-jet bg-eerie-black-1 flex items-center justify-center">
           <Image
             src={post.coverImage}
             alt={post.title}
-            fill
-            className="object-cover"
+            width={900}
+            height={600}
+            className="w-full h-auto max-h-[600px] object-contain"
             priority
           />
         </div>

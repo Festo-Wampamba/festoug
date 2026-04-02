@@ -52,7 +52,7 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
       ) : (
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-[30px] mb-10">
           {posts.map((post) => {
-            const dateStr = (post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
+            const dateStr = new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
               year: "numeric",
               month: "short",
               day: "numeric",
