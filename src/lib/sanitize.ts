@@ -1,12 +1,13 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtmlLib from "sanitize-html";
 
 /**
  * Sanitize HTML content from Tiptap/rich-text editors.
- * Allows safe formatting tags while stripping scripts, event handlers, etc.
+ * Uses sanitize-html (pure Node.js, no DOM/jsdom dependency) so it works
+ * reliably in Next.js server components and Vercel serverless functions.
  */
 export function sanitizeHtml(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
-    ALLOWED_TAGS: [
+  return sanitizeHtmlLib(dirty, {
+    allowedTags: [
       "h1", "h2", "h3", "h4", "h5", "h6",
       "p", "br", "hr",
       "ul", "ol", "li",
@@ -16,11 +17,11 @@ export function sanitizeHtml(dirty: string): string {
       "table", "thead", "tbody", "tr", "th", "td",
       "span", "div",
     ],
-    ALLOWED_ATTR: [
-      "href", "target", "rel",
-      "src", "alt", "width", "height",
-      "class",
-    ],
-    ALLOW_DATA_ATTR: false,
+    allowedAttributes: {
+      a: ["href", "target", "rel"],
+      img: ["src", "alt", "width", "height"],
+      "*": ["class"],
+    },
+    allowedSchemes: ["http", "https", "mailto"],
   });
 }
