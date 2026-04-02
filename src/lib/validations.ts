@@ -34,7 +34,7 @@ export const blogPostSchema = z.object({
   excerpt: z.string().max(1000).nullable().optional(),
   content: z.string().max(100_000).nullable().optional(),
   category: z.string().max(100).nullable().optional(),
-  coverImage: z.string().max(500).nullable().optional(),
+  coverImage: z.string().max(2000).nullable().optional(),
   isPublished: z.boolean().optional().default(false),
   isFeatured: z.boolean().optional().default(false),
 });

@@ -33,7 +33,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   if (!post || !post.isPublished) notFound();
 
-  const dateStr = (post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
+  const dateStr = new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       </div>
 
       {post.coverImage && (
-        <div className="w-full aspect-[21/9] sm:aspect-[2/1] relative mb-12 rounded-2xl overflow-hidden border border-jet bg-eerie-black-1">
+        <div className="w-full aspect-[16/9] relative mb-12 rounded-2xl overflow-hidden border border-jet bg-eerie-black-1">
           <Image
             src={post.coverImage}
             alt={post.title}

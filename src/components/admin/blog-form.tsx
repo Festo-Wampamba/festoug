@@ -26,7 +26,18 @@ export function BlogForm({ initialData }: BlogFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [content, setContent] = useState(initialData?.content || "");
   const [coverImageUrl, setCoverImageUrl] = useState(initialData?.coverImage || "");
+  const [slug, setSlug] = useState(initialData?.slug || "");
   const isEdit = !!initialData?.id;
+
+  function toSlug(value: string) {
+    return value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -85,7 +96,15 @@ export function BlogForm({ initialData }: BlogFormProps) {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Failed to save.");
+        // Show specific field errors when validation fails
+        if (data.details?.length) {
+          const messages = data.details.map((d: { path: string[]; message: string }) =>
+            `${d.path.join(".")}: ${d.message}`
+          );
+          setError(messages.join(" · "));
+        } else {
+          setError(data.error || "Failed to save.");
+        }
         setSaving(false);
         return;
       }
@@ -161,13 +180,29 @@ export function BlogForm({ initialData }: BlogFormProps) {
           <label className="text-light-gray text-xs font-medium uppercase tracking-wider mb-1.5 block">
             Title *
           </label>
-          <input name="title" required defaultValue={initialData?.title} className={inputClass} placeholder="My Awesome Post" />
+          <input
+            name="title"
+            required
+            defaultValue={initialData?.title}
+            className={inputClass}
+            placeholder="My Awesome Post"
+            onChange={(e) => {
+              if (!isEdit) setSlug(toSlug(e.target.value));
+            }}
+          />
         </div>
         <div>
           <label className="text-light-gray text-xs font-medium uppercase tracking-wider mb-1.5 block">
-            Slug *
+            Slug * <span className="text-light-gray-70 normal-case font-light">(lowercase, hyphens only)</span>
           </label>
-          <input name="slug" required defaultValue={initialData?.slug} className={inputClass} placeholder="my-awesome-post" />
+          <input
+            name="slug"
+            required
+            value={slug}
+            onChange={(e) => setSlug(toSlug(e.target.value))}
+            className={inputClass}
+            placeholder="my-awesome-post"
+          />
         </div>
       </div>
 

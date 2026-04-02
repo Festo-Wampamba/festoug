@@ -19,7 +19,7 @@ export function BlogCard({ title, category, date, image, description, link, isFe
         <div className="relative bg-gradient-to-br from-jet to-jet/0 p-0 rounded-[14px] shadow-2 z-10 h-full flex flex-col overflow-hidden transition-shadow duration-300 group-hover:shadow-[0_0_0_1px_rgba(56,189,248,0.3)]">
           <div className="absolute inset-[1px] bg-eerie-black-1 rounded-[14px] -z-10" />
 
-          <figure className="relative w-full aspect-[4/3] rounded-t-[14px] overflow-hidden bg-bg-gradient-onyx">
+          <figure className="relative w-full aspect-video rounded-t-[14px] overflow-hidden bg-bg-gradient-onyx">
             <Image
               src={image}
               alt={title}
