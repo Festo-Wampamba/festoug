@@ -58,9 +58,7 @@ export function ClientLogos() {
         aria-hidden="true"
       >
         {logos.map((num) => logoItem(num, "a"))}
-        <div className="contents">
-          {logos.map((num) => logoItem(num, "b"))}
-        </div>
+        {logos.map((num) => logoItem(num, "b"))}
       </div>
     </div>
   );
