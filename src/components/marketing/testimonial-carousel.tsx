@@ -13,9 +13,12 @@ interface Testimonial {
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const [currentPage, setCurrentPage] = useState(0);
-  // Start with 1 (matches SSR), then correct on the client after hydration
   const [perPage, setPerPage] = useState(1);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Touch / mouse drag state
+  const dragStartX = useRef<number | null>(null);
+  const isDragging = useRef(false);
 
   useEffect(() => {
     const getPerPage = () => (window.innerWidth >= 768 ? 2 : 1);
@@ -26,7 +29,6 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
   }, []);
 
   const totalPages = Math.ceil(testimonials.length / perPage);
-  // Derived safe page — no setState in effect needed; modulo naturally wraps out-of-bounds pages
   const safePage = totalPages > 0 ? currentPage % totalPages : 0;
 
   const goNext = useCallback(() => {
@@ -47,7 +49,10 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [startTimer]);
 
-  const pause = () => { if (timerRef.current) clearInterval(timerRef.current); };
+  const pause = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, []);
+
   const resume = startTimer;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -55,17 +60,65 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
     if (e.key === "ArrowRight") { e.preventDefault(); goNext(); pause(); }
   };
 
+  // ── Touch handlers (mobile swipe) ──────────────────────────────────────────
+  const onTouchStart = (e: React.TouchEvent) => {
+    dragStartX.current = e.touches[0].clientX;
+    pause();
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (dragStartX.current === null) return;
+    const diff = dragStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      diff > 0 ? goNext() : goPrev();
+    }
+    dragStartX.current = null;
+    resume();
+  };
+
+  // ── Mouse drag handlers (desktop) ──────────────────────────────────────────
+  const onMouseDown = (e: React.MouseEvent) => {
+    dragStartX.current = e.clientX;
+    isDragging.current = false;
+    pause();
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (dragStartX.current === null) return;
+    if (Math.abs(e.clientX - dragStartX.current) > 5) isDragging.current = true;
+  };
+
+  const onMouseUp = (e: React.MouseEvent) => {
+    if (dragStartX.current === null) return;
+    const diff = dragStartX.current - e.clientX;
+    if (Math.abs(diff) > 40) {
+      diff > 0 ? goNext() : goPrev();
+    }
+    dragStartX.current = null;
+    resume();
+  };
+
+  const onMouseLeaveDrag = (e: React.MouseEvent) => {
+    if (dragStartX.current !== null) onMouseUp(e);
+    resume();
+  };
+
   const startIdx = safePage * perPage;
   const visible = testimonials.slice(startIdx, startIdx + perPage);
 
   return (
     <div
-      className="relative"
+      className="relative select-none cursor-grab active:cursor-grabbing"
       onMouseEnter={pause}
-      onMouseLeave={resume}
+      onMouseLeave={onMouseLeaveDrag}
       onFocus={pause}
       onBlur={resume}
       onKeyDown={handleKeyDown}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
       role="region"
       aria-label="Testimonials carousel"
       aria-roledescription="carousel"
@@ -76,7 +129,7 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
         aria-live="polite"
         aria-atomic="true"
         aria-label={`Slide ${safePage + 1} of ${totalPages}`}
-        className="flex gap-4"
+        className="flex gap-4 pointer-events-none"
       >
         {visible.map((t, i) => (
           <TestimonialCard
@@ -88,7 +141,6 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
             testimonial={t.testimonial}
           />
         ))}
-        {/* Ghost spacer when showing 2 per page but only 1 card left */}
         {perPage === 2 && visible.length === 1 && <div className="flex-1" />}
       </div>
 
