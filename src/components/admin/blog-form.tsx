@@ -149,6 +149,8 @@ export function BlogForm({ initialData }: BlogFormProps) {
                 <input
                   type="file"
                   accept="image/*"
+                  title="Upload cover image"
+                  aria-label="Upload cover image"
                   onChange={handleImageUpload}
                   disabled={uploadingImage}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
