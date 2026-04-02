@@ -25,9 +25,9 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-5 md:p-6 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative lg:overflow-visible lg:h-auto ${
+      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-5 md:p-6 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative lg:overflow-visible lg:h-auto lg:self-start ${
         isSidebarActive ? "max-h-[800px]" : "max-h-[112px] sm:max-h-[120px] md:max-h-[148px] lg:max-h-none"
-      } lg:w-[280px] shrink-0 lg:sticky lg:top-[30px]`}
+      } lg:w-[300px] shrink-0 lg:sticky lg:top-[30px]`}
     >
       {/* Profile section — fixed height, never shrinks */}
       <div className="flex items-center gap-[15px] md:gap-5 lg:flex-col lg:gap-4 lg:text-center">
@@ -42,7 +42,7 @@ export function Sidebar() {
         </figure>
 
         <div className="flex-1 min-w-0 lg:w-full">
-          <h1 className="text-white-2 text-2xl md:text-3xl font-medium tracking-tight mb-[10px] lg:mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
+          <h1 className="text-white-2 text-2xl md:text-3xl font-medium tracking-tight mb-[10px] lg:mb-4 whitespace-nowrap overflow-hidden text-ellipsis lg:whitespace-normal lg:overflow-visible">
             Wampamba Festo
           </h1>
           <p className="text-white-1 bg-onyx text-[13px] md:text-[14px] font-light w-max px-3 py-1 rounded-lg lg:mx-auto">
@@ -139,7 +139,7 @@ function ContactItem({ icon, title, href, value, download, target, rel, iconClas
           download={download}
           target={target}
           rel={rel}
-          className="text-white-2 text-[15px] font-light transition-colors hover:text-orange-yellow-crayola truncate block"
+          className="text-white-2 text-[15px] font-light transition-colors hover:text-orange-yellow-crayola truncate lg:whitespace-normal lg:overflow-visible block"
         >
           {value}
         </a>
