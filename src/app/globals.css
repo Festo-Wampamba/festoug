@@ -225,56 +225,12 @@ html:not(.dark) main {
   box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
 }
 
-/* Marquee Animation */
-@keyframes marquee {
-  0%   { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-50%, 0, 0); }
-}
-
-.animate-marquee {
-  display: flex;
-  flex-wrap: nowrap;
-  /* Use a fixed large width instead of max-content — max-content is unreliable
-     on Huawei EMUI, older Android WebView, and some Chromium-based mobile browsers */
-  width: fit-content;
-  min-width: 200%;
-  animation: marquee 30s linear infinite;
-  /* translate3d forces GPU compositing on all browsers including Huawei */
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  /* Avoid will-change on low-end devices — it can cause the browser to
-     silently drop the animation as a memory/performance trade-off */
+/* Marquee — JS-driven via requestAnimationFrame (bypasses EMUI CSS animation bugs) */
+.marquee-track {
+  /* GPU compositing layer so translate3d updates are cheap on all devices */
+  will-change: transform;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-}
-
-.marquee-paused {
-  -webkit-animation-play-state: paused;
-  animation-play-state: paused;
-}
-
-.marquee-running {
-  -webkit-animation-play-state: running;
-  animation-play-state: running;
-}
-
-/* Desktop hover: pause marquee and reveal logo color — only on true hover devices */
-@media (hover: hover) {
-  .animate-marquee:hover {
-    -webkit-animation-play-state: paused;
-    animation-play-state: paused;
-  }
-  .logo-item:hover img {
-    filter: grayscale(0%) !important;
-    opacity: 1 !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-marquee {
-    -webkit-animation: none;
-    animation: none;
-  }
 }
 
 /* Skip navigation link (keyboard only) */
