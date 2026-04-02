@@ -157,7 +157,7 @@ export function Navbar() {
     <>
       {/* ── Mobile + Tablet (< xl): Floating Pill ─────────────────────────────── */}
       <nav
-        className={`xl:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-in-out max-w-[calc(100vw-2rem)] ${
+        className={`lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-in-out max-w-[calc(100vw-2rem)] ${
           navOpaque ? "opacity-100 translate-y-0" : "opacity-[0.18] translate-y-1 hover:opacity-100 hover:translate-y-0"
         }`}
         onMouseEnter={() => setIsNavFocused(true)}
@@ -236,7 +236,7 @@ export function Navbar() {
       </nav>
 
       {/* ── Desktop (xl+): Glassmorphism top-right nav ───────────────────────── */}
-      <nav className="hidden xl:block absolute top-0 right-0 z-50
+      <nav className="hidden lg:block absolute top-0 right-0 z-50
         bg-white/[0.04] backdrop-blur-2xl
         border border-white/[0.08]
         rounded-tr-[20px] rounded-bl-[24px]

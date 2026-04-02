@@ -6,14 +6,13 @@ import { Mail, Phone, MessageCircle, FileText, MapPin, Eye } from "lucide-react"
 
 export function Sidebar() {
   const [isSidebarActive, setIsSidebarActive] = useState(false);
-  // Lazy initializer avoids synchronous setState-in-effect; only the change handler fires setState
-  const [isDesktop, setIsDesktop] = useState(() =>
-    typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
-  );
 
   useEffect(() => {
-    const mql = window.matchMedia("(min-width: 768px)");
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    const mql = window.matchMedia("(min-width: 1024px)");
+    // Collapse mobile sidebar when switching to desktop
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setIsSidebarActive(false);
+    };
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, []);
@@ -26,12 +25,13 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-5 md:p-6 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative ${
-        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] sm:max-h-[120px] md:max-h-[148px] xl:max-h-none"
-      } xl:w-[280px] shrink-0 xl:sticky xl:top-[60px] xl:h-[calc(100vh-120px)]`}
+      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-5 md:p-6 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative lg:overflow-visible ${
+        isSidebarActive ? "max-h-[800px]" : "max-h-[112px] sm:max-h-[120px] md:max-h-[148px] lg:max-h-none"
+      } lg:w-[280px] shrink-0 lg:sticky lg:top-[60px] lg:h-[calc(100vh-120px)] lg:flex lg:flex-col`}
     >
-      <div className="flex items-center gap-[15px] md:gap-5 xl:flex-col xl:gap-4 xl:text-center">
-        <figure className="shrink-0 w-[70px] h-[70px] sm:w-[84px] sm:h-[84px] md:w-[110px] md:h-[110px] xl:w-[150px] xl:h-[150px] xl:mx-auto">
+      {/* Profile section — fixed height, never shrinks */}
+      <div className="flex items-center gap-[15px] md:gap-5 lg:flex-col lg:gap-4 lg:text-center lg:shrink-0">
+        <figure className="shrink-0 w-[70px] h-[70px] sm:w-[84px] sm:h-[84px] md:w-[110px] md:h-[110px] lg:w-[150px] lg:h-[150px] lg:mx-auto">
           <Image
             src="/images/festo-profile.png"
             alt="Festo"
@@ -41,17 +41,17 @@ export function Sidebar() {
           />
         </figure>
 
-        <div className="flex-1 min-w-0 xl:w-full">
-          <h1 className="text-white-2 text-2xl md:text-3xl font-medium tracking-tight mb-[10px] xl:mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
+        <div className="flex-1 min-w-0 lg:w-full">
+          <h1 className="text-white-2 text-2xl md:text-3xl font-medium tracking-tight mb-[10px] lg:mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
             Wampamba Festo
           </h1>
-          <p className="text-white-1 bg-onyx text-[13px] md:text-[14px] font-light w-max px-3 py-1 rounded-lg xl:mx-auto">
+          <p className="text-white-1 bg-onyx text-[13px] md:text-[14px] font-light w-max px-3 py-1 rounded-lg lg:mx-auto">
             Software Engineer
           </p>
         </div>
 
         <button
-          className="xl:hidden shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl text-orange-yellow-crayola bg-gradient-to-br from-jet to-onyx shadow-2 transition-all hover:from-jet/80 hover:to-onyx/80 hover:scale-105 active:scale-95"
+          className="lg:hidden shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px] rounded-xl text-orange-yellow-crayola bg-gradient-to-br from-jet to-onyx shadow-2 transition-all hover:from-jet/80 hover:to-onyx/80 hover:scale-105 active:scale-95"
           onClick={toggleSidebar}
           aria-label={isSidebarActive ? "Hide contact info" : "Show contact information"}
           aria-expanded={isSidebarActive ? "true" : "false"}
@@ -60,13 +60,14 @@ export function Sidebar() {
         </button>
       </div>
 
+      {/* Contact section — fills remaining space and scrolls on desktop */}
       <div
-        className={`transition-all duration-500 xl:opacity-100 xl:visible xl:overflow-y-auto custom-scrollbar xl:h-[calc(100%-180px)] ${
-          isSidebarActive ? "opacity-100 visible mt-4" : "opacity-0 invisible h-0 xl:h-auto xl:mt-8"
+        className={`transition-all duration-500 lg:opacity-100 lg:visible lg:overflow-y-auto custom-scrollbar lg:flex-1 lg:min-h-0 ${
+          isSidebarActive ? "opacity-100 visible mt-4" : "opacity-0 invisible h-0 lg:h-auto lg:mt-8"
         }`}
       >
-        <hr className="w-full h-[1px] bg-jet my-4 xl:my-8 border-none" />
-        <ul className="grid grid-cols-1 gap-4 xl:gap-8">
+        <hr className="w-full h-[1px] bg-jet my-4 lg:my-8 border-none" />
+        <ul className="grid grid-cols-1 gap-4 lg:gap-6">
           <ContactItem
             icon={<Mail className="w-4 h-4" />}
             title="Email"
