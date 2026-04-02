@@ -25,12 +25,12 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-5 md:p-6 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative lg:overflow-visible ${
+      className={`bg-eerie-black-2 rounded-[20px] p-[15px] sm:p-5 md:p-6 shadow-1 z-10 border border-jet transition-all duration-500 overflow-hidden relative lg:overflow-visible lg:h-auto ${
         isSidebarActive ? "max-h-[800px]" : "max-h-[112px] sm:max-h-[120px] md:max-h-[148px] lg:max-h-none"
-      } lg:w-[280px] shrink-0 lg:sticky lg:top-[60px] lg:h-[calc(100vh-120px)] lg:flex lg:flex-col`}
+      } lg:w-[280px] shrink-0 lg:sticky lg:top-[30px]`}
     >
       {/* Profile section — fixed height, never shrinks */}
-      <div className="flex items-center gap-[15px] md:gap-5 lg:flex-col lg:gap-4 lg:text-center lg:shrink-0">
+      <div className="flex items-center gap-[15px] md:gap-5 lg:flex-col lg:gap-4 lg:text-center">
         <figure className="shrink-0 w-[70px] h-[70px] sm:w-[84px] sm:h-[84px] md:w-[110px] md:h-[110px] lg:w-[150px] lg:h-[150px] lg:mx-auto">
           <Image
             src="/images/festo-profile.png"
@@ -60,14 +60,14 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Contact section — fills remaining space and scrolls on desktop */}
+      {/* Contact section — always fully visible on desktop, no internal scroll */}
       <div
-        className={`transition-all duration-500 lg:opacity-100 lg:visible lg:overflow-y-auto custom-scrollbar lg:flex-1 lg:min-h-0 ${
-          isSidebarActive ? "opacity-100 visible mt-4" : "opacity-0 invisible h-0 lg:h-auto lg:mt-8"
+        className={`transition-all duration-500 lg:opacity-100 lg:visible ${
+          isSidebarActive ? "opacity-100 visible mt-4" : "opacity-0 invisible h-0 lg:h-auto lg:mt-6"
         }`}
       >
-        <hr className="w-full h-[1px] bg-jet my-4 lg:my-8 border-none" />
-        <ul className="grid grid-cols-1 gap-4 lg:gap-6">
+        <hr className="w-full h-[1px] bg-jet my-4 lg:my-6 border-none" />
+        <ul className="grid grid-cols-1 gap-4">
           <ContactItem
             icon={<Mail className="w-4 h-4" />}
             title="Email"
