@@ -41,6 +41,22 @@ export const reviewStatusEnum = pgEnum("review_status", [
   "PENDING",
   "REJECTED",
 ]);
+export const maintenancePlanEnum = pgEnum("maintenance_plan", [
+  "BASIC",
+  "PRO",
+  "ENTERPRISE",
+]);
+export const billingCycleEnum = pgEnum("billing_cycle", ["MONTHLY", "ANNUAL"]);
+export const trialStatusEnum = pgEnum("trial_status", [
+  "ACTIVE",
+  "EXPIRED",
+  "CONVERTED",
+]);
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "ACTIVE",
+  "CANCELLED",
+  "EXPIRED",
+]);
 
 // ─── Auth.js Required Tables ─────────────────────────────────────────────────
 export const users = pgTable("user", {
@@ -315,17 +331,64 @@ export const chatMessages = pgTable(
   })
 );
 
+// ─── Maintenance Trials ───────────────────────────────────────────────────────
+export const maintenanceTrials = pgTable(
+  "maintenance_trial",
+  {
+    id:            uuid("id").primaryKey().defaultRandom(),
+    userId:        uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    plan:          maintenancePlanEnum("plan").notNull(),
+    billingCycle:  billingCycleEnum("billing_cycle").notNull(),
+    websiteUrl:    text("website_url").notNull(),
+    status:        trialStatusEnum("status").notNull().default("ACTIVE"),
+    trialStartsAt: timestamp("trial_starts_at").notNull().defaultNow(),
+    trialEndsAt:   timestamp("trial_ends_at").notNull(),
+    notifiedAt:    timestamp("notified_at"),
+    createdAt:     timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    userIdx:   index("trial_user_idx").on(t.userId),
+    statusIdx: index("trial_status_idx").on(t.status),
+    endsIdx:   index("trial_ends_idx").on(t.trialEndsAt),
+  })
+);
+
+// ─── Subscriptions ────────────────────────────────────────────────────────────
+export const subscriptions = pgTable(
+  "subscription",
+  {
+    id:               uuid("id").primaryKey().defaultRandom(),
+    userId:           uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    trialId:          uuid("trial_id").references(() => maintenanceTrials.id, { onDelete: "set null" }),
+    plan:             maintenancePlanEnum("plan").notNull(),
+    billingCycle:     billingCycleEnum("billing_cycle").notNull(),
+    status:           subscriptionStatusEnum("status").notNull().default("ACTIVE"),
+    lsSubscriptionId: text("ls_subscription_id").notNull().unique(),
+    lsVariantId:      text("ls_variant_id").notNull(),
+    currentPeriodEnd: timestamp("current_period_end").notNull(),
+    cancelledAt:      timestamp("cancelled_at"),
+    createdAt:        timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    userIdx:   index("sub_user_idx").on(t.userId),
+    statusIdx: index("sub_status_idx").on(t.status),
+    lsIdx:     index("sub_ls_idx").on(t.lsSubscriptionId),
+  })
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 import { relations } from "drizzle-orm";
 
 export const usersRelations = relations(users, ({ many }) => ({
-  orders: many(orders),
-  licenses: many(licenses),
-  accounts: many(accounts),
-  sessions: many(sessions),
-  blogPosts: many(blogPosts),
-  reviews: many(reviews),
-  chatMessages: many(chatMessages),
+  orders:             many(orders),
+  licenses:           many(licenses),
+  accounts:           many(accounts),
+  sessions:           many(sessions),
+  blogPosts:          many(blogPosts),
+  reviews:            many(reviews),
+  chatMessages:       many(chatMessages),
+  maintenanceTrials:  many(maintenanceTrials),
+  subscriptions:      many(subscriptions),
 }));
 
 export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
@@ -383,4 +446,13 @@ export const reviewsRelations = relations(reviews, ({ one, many }) => ({
 export const reviewHelpfulVotesRelations = relations(reviewHelpfulVotes, ({ one }) => ({
   review: one(reviews, { fields: [reviewHelpfulVotes.reviewId], references: [reviews.id] }),
   user: one(users, { fields: [reviewHelpfulVotes.userId], references: [users.id] }),
+}));
+
+export const maintenanceTrialsRelations = relations(maintenanceTrials, ({ one }) => ({
+  user: one(users, { fields: [maintenanceTrials.userId], references: [users.id] }),
+}));
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
+  trial: one(maintenanceTrials, { fields: [subscriptions.trialId], references: [maintenanceTrials.id] }),
 }));
