@@ -375,6 +375,26 @@ export const subscriptions = pgTable(
   })
 );
 
+// ─── Project Inquiries ────────────────────────────────────────────────────────
+export const projectInquiries = pgTable(
+  "project_inquiry",
+  {
+    id:        uuid("id").primaryKey().defaultRandom(),
+    name:      text("name").notNull(),
+    email:     text("email").notNull(),
+    company:   text("company"),
+    plan:      text("plan").notNull(),
+    timeline:  text("timeline").notNull(),
+    vision:    text("vision").notNull(),
+    status:    text("status").notNull().default("NEW"),  // NEW | REVIEWED | CLOSED
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    statusIdx: index("inquiry_status_idx").on(t.status),
+    emailIdx:  index("inquiry_email_idx").on(t.email),
+  })
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 import { relations } from "drizzle-orm";
 
