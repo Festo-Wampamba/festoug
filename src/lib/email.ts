@@ -157,6 +157,44 @@ export async function sendSubscriptionConfirmedEmail(
   });
 }
 
+export async function sendPaymentAcknowledgmentEmail(inquiry: {
+  name: string;
+  email: string;
+  plan: string;
+  paymentStatus: string;
+  paymentNote?: string | null;
+}) {
+  const resend = getResend();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const isDeposit = inquiry.paymentStatus === "DEPOSIT_RECEIVED";
+  const subject = isDeposit
+    ? `Deposit received — your project is confirmed`
+    : `Payment received in full — let's get started!`;
+  const heading = isDeposit
+    ? `Deposit Received, ${inquiry.name}!`
+    : `Full Payment Received, ${inquiry.name}!`;
+  const body = isDeposit
+    ? `I've received your deposit for the <strong style="color:#fbbf24;">${inquiry.plan}</strong>. Your project is now confirmed and I'll be in touch within 24 hours to kick things off.`
+    : `I've received your full payment for the <strong style="color:#fbbf24;">${inquiry.plan}</strong>. Development begins now — I'll reach out shortly with next steps and timelines.`;
+
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",
+    to: inquiry.email,
+    subject,
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;background:#080c14;color:#e2e8f0;">
+        <h2 style="color:#f8fafc;margin-bottom:8px;">${heading} ✅</h2>
+        <p style="color:#64748b;font-size:14px;line-height:1.7;">${body}</p>
+        ${inquiry.paymentNote ? `<div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-top:20px;"><p style="color:#94a3b8;font-size:12px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Note from Festo</p><p style="color:#e2e8f0;font-size:13px;margin:0;">${inquiry.paymentNote}</p></div>` : ""}
+        <a href="${appUrl}/get-started" style="display:inline-block;background:#f59e0b;color:#0f172a;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;margin-top:28px;">
+          View Project Brief →
+        </a>
+        <p style="color:#334155;font-size:12px;margin-top:32px;">Questions? Reply to this email — I read every one.</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendProjectInquiryNotification(inquiry: {
   name: string;
   email: string;

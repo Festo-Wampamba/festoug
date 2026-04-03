@@ -386,8 +386,10 @@ export const projectInquiries = pgTable(
     plan:      text("plan").notNull(),
     timeline:  text("timeline").notNull(),
     vision:    text("vision").notNull(),
-    status:    text("status").notNull().default("NEW"),  // NEW | REVIEWED | CLOSED
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    status:        text("status").notNull().default("NEW"),          // NEW | REVIEWED | CLOSED
+    paymentStatus: text("payment_status").notNull().default("PENDING"), // PENDING | DEPOSIT_RECEIVED | PAID_IN_FULL
+    paymentNote:   text("payment_note"),
+    createdAt:     timestamp("created_at").defaultNow().notNull(),
   },
   (t) => ({
     statusIdx: index("inquiry_status_idx").on(t.status),
