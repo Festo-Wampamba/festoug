@@ -93,7 +93,7 @@ export async function POST(req: Request) {
       const plan         = customData.plan as "BASIC" | "PRO" | undefined;
       const billingCycle = customData.billing_cycle as "MONTHLY" | "ANNUAL" | undefined;
 
-      if (!userId || !plan || !billingCycle) {
+      if (!userId || !trialId || !plan || !billingCycle) {
         console.error("[WEBHOOK] subscription_created: missing custom_data fields", customData);
         return NextResponse.json({ error: "Missing custom data" }, { status: 422 });
       }
