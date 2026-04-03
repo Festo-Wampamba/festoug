@@ -397,6 +397,41 @@ export const projectInquiries = pgTable(
   })
 );
 
+// ─── Inquiry Payment Logs ────────────────────────────────────────────────────
+export const inquiryPaymentLogs = pgTable(
+  "inquiry_payment_log",
+  {
+    id:        uuid("id").primaryKey().defaultRandom(),
+    inquiryId: uuid("inquiry_id").notNull().references(() => projectInquiries.id, { onDelete: "cascade" }),
+    eventType: text("event_type").notNull(), // DEPOSIT | FULL_PAYMENT | NOTE | STATUS_CHANGE
+    amount:    text("amount"),
+    note:      text("note").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    inquiryIdx: index("plog_inquiry_idx").on(t.inquiryId),
+  })
+);
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+export const notifications = pgTable(
+  "notification",
+  {
+    id:        uuid("id").primaryKey().defaultRandom(),
+    userId:    uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    title:     text("title").notNull(),
+    message:   text("message").notNull(),
+    type:      text("type").notNull().default("INFO"), // INFO | WARNING | PAYMENT | ACCOUNT
+    read:      boolean("read").notNull().default(false),
+    link:      text("link"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    userIdx: index("notif_user_idx").on(t.userId),
+    readIdx: index("notif_read_idx").on(t.read),
+  })
+);
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 import { relations } from "drizzle-orm";
 
@@ -410,6 +445,19 @@ export const usersRelations = relations(users, ({ many }) => ({
   chatMessages:       many(chatMessages),
   maintenanceTrials:  many(maintenanceTrials),
   subscriptions:      many(subscriptions),
+  notifications:      many(notifications),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, { fields: [notifications.userId], references: [users.id] }),
+}));
+
+export const inquiryPaymentLogsRelations = relations(inquiryPaymentLogs, ({ one }) => ({
+  inquiry: one(projectInquiries, { fields: [inquiryPaymentLogs.inquiryId], references: [projectInquiries.id] }),
+}));
+
+export const projectInquiriesRelations = relations(projectInquiries, ({ many }) => ({
+  paymentLogs: many(inquiryPaymentLogs),
 }));
 
 export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({

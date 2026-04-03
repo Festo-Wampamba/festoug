@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 import Link from "next/link";
 import { UserCircle } from "lucide-react";
 
@@ -32,6 +33,8 @@ export default async function DashboardLayout({
             </p>
           </div>
 
+          <div className="flex items-center gap-2 shrink-0">
+            <NotificationBell />
           {/* Clickable Profile Card → goes to /dashboard/settings */}
           <Link
             href="/dashboard/settings"
@@ -51,6 +54,7 @@ export default async function DashboardLayout({
             </div>
             <UserCircle className="w-4 h-4 text-light-gray-70 group-hover:text-orange-yellow-crayola transition-colors ml-1" />
           </Link>
+          </div>
         </div>
       </header>
 

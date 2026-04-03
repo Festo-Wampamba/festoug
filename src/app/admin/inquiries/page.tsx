@@ -1,10 +1,13 @@
 import { withRetry } from "@/lib/db";
-import { projectInquiries } from "@/lib/db/schema";
+import { projectInquiries, users } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
 import { ChevronLeft, Inbox, Mail } from "lucide-react";
 import { UpdateInquiryStatus } from "@/components/admin/update-inquiry-status";
-import { UpdatePaymentStatus } from "@/components/admin/update-payment-status";
+import { InquiryPaymentPanel } from "@/components/admin/inquiry-payment-panel";
+import { AdminNotifyButton } from "@/components/admin/admin-notify-button";
+import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
 
 export const metadata = { title: "Admin | Project Inquiries" };
 export const dynamic = "force-dynamic";
@@ -31,6 +34,19 @@ export default async function AdminInquiriesPage() {
   const allInquiries = await withRetry((db) =>
     db.select().from(projectInquiries).orderBy(desc(projectInquiries.createdAt))
   );
+
+  // Fetch user IDs matched by email for notify button
+  const emailList = [...new Set(allInquiries.map((i) => i.email))];
+  const matchedUsers = emailList.length > 0
+    ? await db.select({ id: users.id, email: users.email }).from(users).where(
+        // check each email — in practice these are low volume
+      eq(users.email, emailList[0]) // placeholder; we'll match client-side below
+      ).limit(0) // we'll do a different approach
+    : [];
+
+  // Simpler: fetch all customer IDs+emails in one shot
+  const allMatchedUsers = await db.select({ id: users.id, email: users.email }).from(users);
+  const userByEmail = Object.fromEntries(allMatchedUsers.map((u) => [u.email, u.id]));
 
   const newCount = allInquiries.filter((i) => i.status === "NEW").length;
   const unpaidCount = allInquiries.filter((i) => i.paymentStatus === "PENDING").length;
@@ -70,62 +86,75 @@ export default async function AdminInquiriesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {allInquiries.map((inquiry) => (
-            <div
-              key={inquiry.id}
-              className={`bg-eerie-black-1 border rounded-2xl p-6 ${
-                inquiry.status === "NEW" ? "border-orange-yellow-crayola/30" : "border-jet"
-              }`}
-            >
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1 flex-wrap">
-                    <p className="text-white-2 font-semibold">{inquiry.name}</p>
-                    {inquiry.company && (
-                      <span className="text-light-gray-70 text-xs">· {inquiry.company}</span>
-                    )}
-                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[inquiry.status] ?? ""}`}>
-                      {inquiry.status}
-                    </span>
-                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${PAYMENT_COLORS[inquiry.paymentStatus] ?? ""}`}>
-                      {PAYMENT_LABELS[inquiry.paymentStatus] ?? inquiry.paymentStatus}
-                    </span>
-                  </div>
-                  <a
-                    href={`mailto:${inquiry.email}`}
-                    className="text-orange-yellow-crayola text-sm hover:underline flex items-center gap-1 mb-3"
-                  >
-                    <Mail className="w-3.5 h-3.5" /> {inquiry.email}
-                  </a>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-light-gray-70 mb-4">
-                    <span><strong className="text-light-gray">Plan:</strong> {inquiry.plan}</span>
-                    <span><strong className="text-light-gray">Timeline:</strong> {inquiry.timeline}</span>
-                    <span><strong className="text-light-gray">Received:</strong> {new Date(inquiry.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                  </div>
-                  <div className="bg-jet/40 rounded-xl p-4">
-                    <p className="text-xs text-light-gray-70 uppercase tracking-wider mb-2">Vision / Requirements</p>
-                    <p className="text-light-gray text-sm leading-relaxed whitespace-pre-wrap">{inquiry.vision}</p>
-                  </div>
-                  {inquiry.paymentNote && (
-                    <div className="mt-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl px-4 py-3">
-                      <p className="text-xs text-yellow-400/70 uppercase tracking-wider mb-1">Payment Note</p>
-                      <p className="text-light-gray text-sm">{inquiry.paymentNote}</p>
+          {allInquiries.map((inquiry) => {
+            const linkedUserId = userByEmail[inquiry.email];
+            return (
+              <div
+                key={inquiry.id}
+                className={`bg-eerie-black-1 border rounded-2xl p-6 ${
+                  inquiry.status === "NEW" ? "border-orange-yellow-crayola/30" : "border-jet"
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1 flex-wrap">
+                      <p className="text-white-2 font-semibold">{inquiry.name}</p>
+                      {inquiry.company && (
+                        <span className="text-light-gray-70 text-xs">· {inquiry.company}</span>
+                      )}
+                      <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${STATUS_COLORS[inquiry.status] ?? ""}`}>
+                        {inquiry.status}
+                      </span>
+                      <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${PAYMENT_COLORS[inquiry.paymentStatus] ?? ""}`}>
+                        {PAYMENT_LABELS[inquiry.paymentStatus] ?? inquiry.paymentStatus}
+                      </span>
                     </div>
-                  )}
-                </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <a
+                        href={`mailto:${inquiry.email}`}
+                        className="text-orange-yellow-crayola text-sm hover:underline flex items-center gap-1"
+                      >
+                        <Mail className="w-3.5 h-3.5" /> {inquiry.email}
+                      </a>
+                      {linkedUserId && (
+                        <AdminNotifyButton
+                          userId={linkedUserId}
+                          userName={inquiry.name}
+                          defaultType="PAYMENT"
+                          defaultLink="/dashboard"
+                        />
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-light-gray-70 mb-4">
+                      <span><strong className="text-light-gray">Plan:</strong> {inquiry.plan}</span>
+                      <span><strong className="text-light-gray">Timeline:</strong> {inquiry.timeline}</span>
+                      <span><strong className="text-light-gray">Received:</strong> {new Date(inquiry.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                    </div>
+                    <div className="bg-jet/40 rounded-xl p-4">
+                      <p className="text-xs text-light-gray-70 uppercase tracking-wider mb-2">Vision / Requirements</p>
+                      <p className="text-light-gray text-sm leading-relaxed whitespace-pre-wrap">{inquiry.vision}</p>
+                    </div>
+                    {inquiry.paymentNote && (
+                      <div className="mt-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl px-4 py-3">
+                        <p className="text-xs text-yellow-400/70 uppercase tracking-wider mb-1">Payment Note</p>
+                        <p className="text-light-gray text-sm">{inquiry.paymentNote}</p>
+                      </div>
+                    )}
+                  </div>
 
-                <div className="shrink-0 flex flex-col sm:flex-row gap-3 sm:gap-6">
-                  <UpdateInquiryStatus id={inquiry.id} currentStatus={inquiry.status} />
-                  <div className="hidden sm:block w-px bg-jet self-stretch" />
-                  <UpdatePaymentStatus
-                    id={inquiry.id}
-                    currentPaymentStatus={inquiry.paymentStatus}
-                    currentPaymentNote={inquiry.paymentNote}
-                  />
+                  <div className="shrink-0 flex flex-col sm:flex-row gap-3 sm:gap-6">
+                    <UpdateInquiryStatus id={inquiry.id} currentStatus={inquiry.status} />
+                    <div className="hidden sm:block w-px bg-jet self-stretch" />
+                    <InquiryPaymentPanel
+                      id={inquiry.id}
+                      currentPaymentStatus={inquiry.paymentStatus}
+                      currentPaymentNote={inquiry.paymentNote}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
