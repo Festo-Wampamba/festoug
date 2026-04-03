@@ -1,3 +1,9 @@
+CREATE TYPE "public"."maintenance_plan" AS ENUM('BASIC', 'PRO', 'ENTERPRISE');--> statement-breakpoint
+CREATE TYPE "public"."billing_cycle" AS ENUM('MONTHLY', 'ANNUAL');--> statement-breakpoint
+CREATE TYPE "public"."trial_status" AS ENUM('ACTIVE', 'EXPIRED', 'CONVERTED');--> statement-breakpoint
+CREATE TYPE "public"."subscription_status" AS ENUM('ACTIVE', 'CANCELLED', 'EXPIRED');--> statement-breakpoint
+CREATE TYPE "public"."review_status" AS ENUM('APPROVED', 'PENDING', 'REJECTED');--> statement-breakpoint
+CREATE TYPE "public"."account_status" AS ENUM('ACTIVE', 'SUSPENDED', 'BANNED');--> statement-breakpoint
 CREATE TABLE "banned_email" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" text NOT NULL,
