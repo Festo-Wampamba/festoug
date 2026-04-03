@@ -37,8 +37,8 @@ export function MaintenanceCards() {
   };
 
   const subPrices = {
-    BASIC: cycle === "ANNUAL" ? "or $29/month" : "billed monthly",
-    PRO:   cycle === "ANNUAL" ? "or $99/month" : "billed monthly",
+    BASIC: cycle === "ANNUAL" ? "$29/mo billed monthly" : "billed monthly",
+    PRO:   cycle === "ANNUAL" ? "$99/mo billed monthly" : "billed monthly",
   };
 
   return (

@@ -3,6 +3,7 @@ import { withRetry } from "@/lib/db";
 import { maintenanceTrials, subscriptions } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Shield, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,9 @@ const CYCLE_LABELS: Record<string, string> = {
 
 export default async function SubscriptionPage() {
   const session = await auth();
-  if (!session?.user?.id) return null;
+  if (!session?.user?.id) {
+    redirect("/auth/signin?callbackUrl=/dashboard/subscription");
+  }
 
   const [activeSub, activeTrial] = await Promise.all([
     withRetry((db) =>
@@ -43,7 +46,7 @@ export default async function SubscriptionPage() {
 
   // State 3 — Active subscription
   if (activeSub) {
-    const renewalDate = activeSub.currentPeriodEnd.toLocaleDateString("en-US", {
+    const renewalDate = new Date(activeSub.currentPeriodEnd).toLocaleDateString("en-US", {
       year: "numeric", month: "long", day: "numeric",
     });
     return (
@@ -76,9 +79,9 @@ export default async function SubscriptionPage() {
   // State 2 — Active trial
   if (activeTrial) {
     const now      = new Date();
-    const msLeft   = activeTrial.trialEndsAt.getTime() - now.getTime();
+    const msLeft   = new Date(activeTrial.trialEndsAt).getTime() - now.getTime();
     const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
-    const endDate  = activeTrial.trialEndsAt.toLocaleDateString("en-US", {
+    const endDate  = new Date(activeTrial.trialEndsAt).toLocaleDateString("en-US", {
       month: "long", day: "numeric", year: "numeric",
     });
     return (
