@@ -81,3 +81,51 @@ export function verifyWebhookSignature(payload: string, signature: string): bool
     return false;
   }
 }
+
+// ─── Subscription Variant Map ─────────────────────────────────────────────────
+
+type MaintenancePlan = "BASIC" | "PRO";
+type BillingCycle = "MONTHLY" | "ANNUAL";
+
+export function getSubscriptionVariantId(
+  plan: MaintenancePlan,
+  billingCycle: BillingCycle
+): string {
+  const map: Record<`${MaintenancePlan}_${BillingCycle}`, string> = {
+    BASIC_MONTHLY: process.env.LS_VARIANT_BASIC_MONTHLY!,
+    BASIC_ANNUAL:  process.env.LS_VARIANT_BASIC_ANNUAL!,
+    PRO_MONTHLY:   process.env.LS_VARIANT_PRO_MONTHLY!,
+    PRO_ANNUAL:    process.env.LS_VARIANT_PRO_ANNUAL!,
+  };
+
+  const variantId = map[`${plan}_${billingCycle}`];
+  if (!variantId) {
+    throw new Error(
+      `Missing LS variant ID for ${plan} ${billingCycle}. Set LS_VARIANT_${plan}_${billingCycle} in env.`
+    );
+  }
+  return variantId;
+}
+
+/**
+ * Generates a Lemon Squeezy subscription checkout URL.
+ */
+export async function getSubscriptionCheckoutUrl(
+  plan: MaintenancePlan,
+  billingCycle: BillingCycle,
+  userId: string,
+  trialId: string
+): Promise<string> {
+  const variantId = getSubscriptionVariantId(plan, billingCycle);
+
+  return generateCheckoutLink(
+    variantId,
+    process.env.LEMONSQUEEZY_STORE_ID!,
+    {
+      user_id:       userId,
+      trial_id:      trialId,
+      plan,
+      billing_cycle: billingCycle,
+    }
+  );
+}
