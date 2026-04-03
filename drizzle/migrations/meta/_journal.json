@@ -8,6 +8,13 @@
       "when": 1772982429922,
       "tag": "0000_sturdy_hedge_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775199811679,
+      "tag": "0001_orange_war_machine",
+      "breakpoints": true
     }
   ]
 }

@@ -13,6 +13,9 @@ import {
   Star,
   FolderKanban,
   MessageSquareQuote,
+  RefreshCw,
+  Shield,
+  Inbox,
 } from "lucide-react";
 
 const navItems = [
@@ -24,7 +27,10 @@ const navItems = [
   { label: "Portfolio",     short: "Portfolio", href: "/admin/portfolio",     icon: FolderKanban },
   { label: "Testimonials",  short: "Testim.",   href: "/admin/testimonials",  icon: MessageSquareQuote },
   { label: "Blog Posts",    short: "Blog",      href: "/admin/blog",          icon: FileText },
+  { label: "Inquiries",     short: "Inquiries", href: "/admin/inquiries",     icon: Inbox },
+  { label: "Subscriptions", short: "Subs",      href: "/admin/subscriptions", icon: Shield },
   { label: "New Post",      short: "New Post",  href: "/admin/blog/new",      icon: PenSquare },
+  { label: "LS Sync",       short: "LS Sync",   href: "/admin/ls-sync",       icon: RefreshCw },
 ];
 
 export function AdminNav() {
