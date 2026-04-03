@@ -23,6 +23,7 @@ export default auth((req: NextRequest & { auth: any }) => {
     // If they try to access any protected route, redirect to a banned page
     if (
       pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/trial") ||
       pathname.startsWith("/admin") ||
       pathname.startsWith("/api/admin") ||
       pathname.startsWith("/api/checkout")
@@ -39,6 +40,19 @@ export default auth((req: NextRequest & { auth: any }) => {
 
   // ── Protect customer dashboard ───────────────────────────────────────────
   if (pathname.startsWith("/dashboard")) {
+    if (!isLoggedIn) {
+      const signInUrl = new URL("/auth/signin", req.url);
+      signInUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+    // Admins should use /admin instead
+    if (role === "ADMIN") {
+      return NextResponse.redirect(new URL("/admin", req.url));
+    }
+  }
+
+  // ── Protect trial routes ─────────────────────────────────────────────────
+  if (pathname.startsWith("/trial")) {
     if (!isLoggedIn) {
       const signInUrl = new URL("/auth/signin", req.url);
       signInUrl.searchParams.set("callbackUrl", pathname);
