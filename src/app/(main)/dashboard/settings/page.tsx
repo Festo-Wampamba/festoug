@@ -2,7 +2,8 @@ import { auth } from "@/lib/auth";
 import { withRetry } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { UserCircle, Mail, Lock } from "lucide-react";
+import { UserCircle, Mail, Lock, AlertTriangle } from "lucide-react";
+import { DeleteAccountButton } from "@/components/dashboard/delete-account-button";
 
 export const dynamic = "force-dynamic";
 
@@ -104,6 +105,17 @@ export default async function SettingsPage() {
           </div>
 
         </form>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="bg-eerie-black-1 border border-red-500/20 rounded-2xl shadow-1 p-6 md:p-8 mt-6">
+        <h4 className="text-red-400 font-semibold flex items-center gap-2 mb-2">
+          <AlertTriangle className="w-4 h-4" /> Danger Zone
+        </h4>
+        <p className="text-light-gray-70 text-sm mb-5">
+          Permanently delete your account and all associated data. This cannot be undone.
+        </p>
+        <DeleteAccountButton />
       </div>
     </div>
   );

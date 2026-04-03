@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserCheck, UserX, Ban, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
+import { UserCheck, UserX, Ban, Loader2, ShieldAlert, ShieldCheck, Trash2 } from "lucide-react";
 
 type AccountStatus = "ACTIVE" | "SUSPENDED" | "BANNED";
 
@@ -49,6 +49,24 @@ export function CustomerActions({ customerId, accountStatus, customerName }: Cus
         throw new Error(data.error || "Failed");
       }
 
+      router.refresh();
+    } catch (error: any) {
+      alert(`Failed: ${error.message}`);
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm(`⚠️ PERMANENT ACTION!\n\nAre you sure you want to permanently DELETE ${customerName}'s account?\n\nThis will remove all their data and cannot be undone.`)) return;
+
+    setLoading("DELETE");
+    try {
+      const res = await fetch(`/api/admin/customers/${customerId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed");
+      }
       router.refresh();
     } catch (error: any) {
       alert(`Failed: ${error.message}`);
@@ -108,6 +126,21 @@ export function CustomerActions({ customerId, accountStatus, customerName }: Cus
           )}
         </button>
       )}
+
+      {/* Delete Account — Always visible */}
+      <button
+        type="button"
+        onClick={handleDelete}
+        disabled={isLoading}
+        className="p-2 rounded-lg hover:bg-rose-500/20 text-rose-500 transition-colors"
+        title="Delete Account Permanently"
+      >
+        {loading === "DELETE" ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <Trash2 className="w-4 h-4" />
+        )}
+      </button>
     </div>
   );
 }

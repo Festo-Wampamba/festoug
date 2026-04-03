@@ -64,3 +64,38 @@ export async function PATCH(
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (session?.user?.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    const { id } = await params;
+
+    const [targetUser] = await db
+      .select({ id: users.id, role: users.role })
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+
+    if (!targetUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (targetUser.role === "ADMIN") {
+      return NextResponse.json({ error: "Cannot delete admin accounts" }, { status: 403 });
+    }
+
+    await db.delete(users).where(eq(users.id, id));
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("[CUSTOMER_DELETE_ERROR]", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
