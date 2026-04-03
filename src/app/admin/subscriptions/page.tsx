@@ -2,7 +2,9 @@ import { withRetry } from "@/lib/db";
 import { maintenanceTrials, subscriptions } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
-import { ChevronLeft, Clock, CheckCircle, XCircle, RefreshCw } from "lucide-react";
+import { ChevronLeft, Clock, CheckCircle, XCircle } from "lucide-react";
+import { AdminNotifyButton } from "@/components/admin/admin-notify-button";
+import { CustomerActions } from "@/components/admin/toggle-customer";
 
 export const metadata = { title: "Admin | Subscriptions & Trials" };
 export const dynamic = "force-dynamic";
@@ -75,6 +77,7 @@ export default async function AdminSubscriptionsPage() {
                     <th className="px-5 py-3">Renews</th>
                     <th className="px-5 py-3">LS ID</th>
                     <th className="px-5 py-3">Since</th>
+                    <th className="px-5 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -97,6 +100,25 @@ export default async function AdminSubscriptionsPage() {
                       <td className="px-5 py-4 text-light-gray-70 text-xs font-mono">{sub.lsSubscriptionId}</td>
                       <td className="px-5 py-4 text-light-gray-70 text-xs">
                         {new Date(sub.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          {sub.user && (
+                            <>
+                              <AdminNotifyButton
+                                userId={sub.user.id}
+                                userName={sub.user.name ?? sub.user.email}
+                                defaultType="PAYMENT"
+                                defaultLink="/dashboard/subscription"
+                              />
+                              <CustomerActions
+                                customerId={sub.user.id}
+                                accountStatus={sub.user.accountStatus}
+                                customerName={sub.user.name ?? sub.user.email}
+                              />
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -128,6 +150,7 @@ export default async function AdminSubscriptionsPage() {
                     <th className="px-5 py-3">Website</th>
                     <th className="px-5 py-3">Notified</th>
                     <th className="px-5 py-3">Started</th>
+                    <th className="px-5 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -175,6 +198,25 @@ export default async function AdminSubscriptionsPage() {
                         </td>
                         <td className="px-5 py-4 text-light-gray-70 text-xs">
                           {new Date(trial.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center justify-end gap-1">
+                            {trial.user && (
+                              <>
+                                <AdminNotifyButton
+                                  userId={trial.user.id}
+                                  userName={trial.user.name ?? trial.user.email}
+                                  defaultType="INFO"
+                                  defaultLink="/dashboard/subscription"
+                                />
+                                <CustomerActions
+                                  customerId={trial.user.id}
+                                  accountStatus={trial.user.accountStatus}
+                                  customerName={trial.user.name ?? trial.user.email}
+                                />
+                              </>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );

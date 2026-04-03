@@ -4,6 +4,7 @@ import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { ChevronLeft, Ban, CheckCircle2, ShieldAlert } from "lucide-react";
 import { CustomerActions } from "@/components/admin/toggle-customer";
+import { AdminNotifyButton } from "@/components/admin/admin-notify-button";
 
 export const metadata = { title: "Admin | Customers" };
 
@@ -119,12 +120,20 @@ export default async function AdminCustomersPage() {
                         day: "numeric",
                       })}
                     </td>
-                    <td className="px-6 py-4 flex justify-end">
-                      <CustomerActions
-                        customerId={customer.id}
-                        accountStatus={customer.accountStatus}
-                        customerName={customer.name || customer.email}
-                      />
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <AdminNotifyButton
+                          userId={customer.id}
+                          userName={customer.name || customer.email}
+                          defaultType="ACCOUNT"
+                          defaultLink="/dashboard"
+                        />
+                        <CustomerActions
+                          customerId={customer.id}
+                          accountStatus={customer.accountStatus}
+                          customerName={customer.name || customer.email}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}
