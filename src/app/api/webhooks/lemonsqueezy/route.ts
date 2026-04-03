@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/payments/lemonsqueezy";
 import { db } from "@/lib/db";
-import { orders, licenses, products, users } from "@/lib/db/schema";
+import { orders, licenses, products, users, subscriptions, maintenanceTrials } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -81,6 +81,59 @@ export async function POST(req: Request) {
             isActive: true,
           });
         }
+      }
+    }
+
+    if (eventName === "subscription_created") {
+      const subData     = payload.data.attributes;
+      const customData  = payload.meta.custom_data || {};
+
+      const userId       = customData.user_id as string | undefined;
+      const trialId      = customData.trial_id as string | undefined;
+      const plan         = customData.plan as "BASIC" | "PRO" | undefined;
+      const billingCycle = customData.billing_cycle as "MONTHLY" | "ANNUAL" | undefined;
+
+      if (!userId || !plan || !billingCycle) {
+        console.error("[WEBHOOK] subscription_created: missing custom_data fields", customData);
+        return NextResponse.json({ error: "Missing custom data" }, { status: 422 });
+      }
+
+      const lsSubscriptionId = payload.data.id.toString();
+      const lsVariantId      = subData.variant_id?.toString() || "";
+      const renewsAt         = subData.renews_at
+        ? new Date(subData.renews_at)
+        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+      await db.insert(subscriptions).values({
+        userId,
+        trialId:          trialId || null,
+        plan,
+        billingCycle,
+        status:           "ACTIVE",
+        lsSubscriptionId,
+        lsVariantId,
+        currentPeriodEnd: renewsAt,
+      });
+
+      if (trialId) {
+        await db
+          .update(maintenanceTrials)
+          .set({ status: "CONVERTED" })
+          .where(eq(maintenanceTrials.id, trialId));
+      }
+
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+      });
+      if (user?.email) {
+        const { sendSubscriptionConfirmedEmail } = await import("@/lib/email");
+        await sendSubscriptionConfirmedEmail(
+          user.email,
+          user.name || "there",
+          plan,
+          billingCycle,
+          renewsAt
+        );
       }
     }
 
