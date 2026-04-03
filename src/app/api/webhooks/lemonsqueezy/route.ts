@@ -40,21 +40,24 @@ export async function POST(req: Request) {
         if (user) userId = user.id;
       }
 
-      // We need a dummy or actual product id. 
-      // Often you might map LS variant IDs to internal DB product IDs, 
-      // but for now we look up by some identifier in customData.
-      const productSlug = customData.product_slug || "custom-service-retainer";
+      const productSlug = customData.product_slug as string | undefined;
+
+      if (!productSlug) {
+        // Order came from outside the site checkout (e.g. direct LS link) — no product slug attached.
+        // Log it for manual reconciliation and acknowledge so LS doesn't retry endlessly.
+        console.warn(`[WEBHOOK] order_created (ID: ${externalOrderId}) has no product_slug in custom_data. Skipping order record. Custom data:`, JSON.stringify(customData));
+        return NextResponse.json({ message: "Order acknowledged (no product_slug — skipped)" }, { status: 200 });
+      }
+
       let product = await db.query.products.findFirst({
         where: eq(products.slug, productSlug)
       });
 
-      // Return an error so Lemon Squeezy retries the webhook
       if (!product) {
-        console.error(`[WEBHOOK] Product slug '${productSlug}' not found. Order ID: ${externalOrderId}`);
-        return NextResponse.json(
-          { error: `Product slug '${productSlug}' not found. Order could not be created.` },
-          { status: 422 }
-        );
+        // Product slug sent but not found in DB. Log and acknowledge — returning 500 would
+        // cause LS to retry indefinitely; 200 lets us handle it via manual reconciliation.
+        console.error(`[WEBHOOK] order_created: product slug '${productSlug}' not found in DB. Order ID: ${externalOrderId}. Add the product via /admin/products/new or /admin/ls-sync, then replay this order.`);
+        return NextResponse.json({ message: "Order acknowledged (product not in DB — skipped)" }, { status: 200 });
       }
 
       // Insert Order
