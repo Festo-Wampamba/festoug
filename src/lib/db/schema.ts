@@ -341,10 +341,10 @@ export const maintenanceTrials = pgTable(
     billingCycle:  billingCycleEnum("billing_cycle").notNull(),
     websiteUrl:    text("website_url").notNull(),
     status:        trialStatusEnum("status").notNull().default("ACTIVE"),
-    trialStartsAt: timestamp("trial_starts_at").notNull().defaultNow(),
+    trialStartsAt: timestamp("trial_starts_at").defaultNow().notNull(),
     trialEndsAt:   timestamp("trial_ends_at").notNull(),
     notifiedAt:    timestamp("notified_at"),
-    createdAt:     timestamp("created_at").notNull().defaultNow(),
+    createdAt:     timestamp("created_at").defaultNow().notNull(),
   },
   (t) => ({
     userIdx:   index("trial_user_idx").on(t.userId),
@@ -367,12 +367,11 @@ export const subscriptions = pgTable(
     lsVariantId:      text("ls_variant_id").notNull(),
     currentPeriodEnd: timestamp("current_period_end").notNull(),
     cancelledAt:      timestamp("cancelled_at"),
-    createdAt:        timestamp("created_at").notNull().defaultNow(),
+    createdAt:        timestamp("created_at").defaultNow().notNull(),
   },
   (t) => ({
     userIdx:   index("sub_user_idx").on(t.userId),
     statusIdx: index("sub_status_idx").on(t.status),
-    lsIdx:     index("sub_ls_idx").on(t.lsSubscriptionId),
   })
 );
 
