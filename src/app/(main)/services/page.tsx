@@ -1,217 +1,171 @@
-import { Metadata } from 'next';
-import { MonitorSmartphone, Search, Palette, Code2, Rocket, Share2 } from 'lucide-react';
-import { ServiceCard } from '@/components/marketing/service-card-new';
-import { PricingCard, PricingPlanProps } from '@/components/marketing/pricing-card';
-import { PortfolioGrid } from '@/components/marketing/portfolio-grid';
-import { withRetry } from '@/lib/db';
-import { projects as projectsTable } from '@/lib/db/schema';
-import { asc, eq } from 'drizzle-orm';
+// src/app/(main)/services/page.tsx
+import { Metadata } from "next";
+import Link from "next/link";
+import { Code2, MonitorSmartphone, Palette, Rocket, Search, Share2 } from "lucide-react";
+import { MaintenanceCards } from "@/components/marketing/maintenance-cards";
 
 export const metadata: Metadata = {
-  title: 'Services',
-  description: 'Premium software development, UI/UX design, and digital marketing services by Festo Muwanguzi.',
+  title:       "Services & Pricing | FestoUG",
+  description: "Web development, custom projects, and ongoing maintenance plans. Clear pricing, no hidden fees.",
 };
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+
+const SERVICE_CHIPS = [
+  { icon: <Code2  className="w-4 h-4" />, label: "Web Development"    },
+  { icon: <MonitorSmartphone className="w-4 h-4" />, label: "Mobile Apps" },
+  { icon: <Palette className="w-4 h-4" />, label: "UI / UX Design"    },
+  { icon: <Rocket  className="w-4 h-4" />, label: "E-commerce"        },
+  { icon: <Search  className="w-4 h-4" />, label: "SEO & Marketing"   },
+  { icon: <Share2  className="w-4 h-4" />, label: "Social Media"      },
+];
+
+const PROJECT_TIERS = [
+  {
+    name:    "Lite",
+    price:   "$999",
+    note:    "Best for landing pages & simple sites",
+    popular: false,
+    features: [
+      "Up to 5 pages",
+      "Responsive design",
+      "Basic SEO setup",
+      "Contact form",
+      "2 revision rounds",
+    ],
+  },
+  {
+    name:    "Premium",
+    price:   "$2,499",
+    note:    "Full website with CMS & authentication",
+    popular: true,
+    features: [
+      "Up to 15 pages",
+      "CMS integration",
+      "Auth system",
+      "Admin dashboard",
+      "API integrations",
+      "5 revision rounds",
+    ],
+  },
+  {
+    name:    "Pro",
+    price:   "$4,999",
+    note:    "Full platform with custom backend",
+    popular: false,
+    features: [
+      "Unlimited pages",
+      "Custom backend & API",
+      "Third-party integrations",
+      "Performance optimization",
+      "Deployment & CI/CD",
+      "Unlimited revisions",
+    ],
+  },
+];
 
 export default async function ServicesPage() {
-  const dbProjects = await withRetry((db) =>
-    db
-      .select()
-      .from(projectsTable)
-      .where(eq(projectsTable.isActive, true))
-      .orderBy(asc(projectsTable.sortOrder))
-  );
-  const projects = dbProjects.map((p) => ({
-    id: p.id,
-    title: p.title,
-    slug: p.slug,
-    category: p.category,
-    image: p.image || 'images/project-1.jpg',
-  }));
-  const services = [
-    {
-      title: 'Web Development',
-      icon: <Code2 className="w-6 h-6" />,
-      description: 'I offer reliable web development services to generate the most remarkable results which your business needs.',
-      features: [
-        'Performance & Load Time',
-        'Reusable Components',
-        'Responsiveness',
-        'Quality assurance and testing',
-        'Ongoing maintenance and updates'
-      ]
-    },
-    {
-      title: 'Digital Marketing (SEO)',
-      icon: <Search className="w-6 h-6" />,
-      description: 'My digital marketing services will take your business to the next level, driving traffic and improving brand awareness.',
-      features: [
-        'Marketing Strategy',
-        'Research On Customer',
-        'Monetize Products',
-        'Technical SEO Optimization',
-        'Analytics & Reporting'
-      ]
-    },
-    {
-      title: 'UI/UX Product Design',
-      icon: <Palette className="w-6 h-6" />,
-      description: 'I design digital products that are beautiful, intuitive, and highly functional for the best user experience.',
-      features: [
-        'User Research & Personas',
-        'Wireframing & Prototyping',
-        'High-Fidelity UI Design',
-        'Design Systems',
-        'Usability Testing'
-      ]
-    },
-    {
-      title: 'Mobile Development',
-      icon: <MonitorSmartphone className="w-6 h-6" />,
-      description: 'Expertise in iOS, Android, and cross-platform development using React Native and Flutter.',
-      features: [
-        'Native iOS & Android',
-        'Cross-Platform Apps',
-        'App Store Optimization',
-        'Push Notifications',
-        'Offline Capabilities'
-      ]
-    },
-    {
-      title: 'E-commerce Solutions',
-      icon: <Rocket className="w-6 h-6" />,
-      description: 'Custom e-commerce platforms built for scale, performance, and maximum conversion rates.',
-      features: [
-        'Custom Storefronts',
-        'Payment Gateway Integration',
-        'Inventory Management',
-        'Checkout Optimization',
-        'Order Fulfillment Flow'
-      ]
-    },
-    {
-      title: 'Social Media Management',
-      icon: <Share2 className="w-6 h-6" />,
-      description: 'Strategic social media planning and content creation to build your audience and authority online.',
-      features: [
-        'Content Strategy',
-        'Community Management',
-        'Paid Social Campaigns',
-        'Brand Voice Guide',
-        'Growth Analytics'
-      ]
-    }
-  ];
-
-  const pricingPlans: PricingPlanProps[] = [
-    {
-      name: 'Lite Plan',
-      target: 'Perfect Choice for individual',
-      price: 999.00,
-      interval: 'Project',
-      features: [
-        { name: 'Custom Landing Page', included: true },
-        { name: 'Mobile Responsive', included: true },
-        { name: 'Basic SEO Setup', included: true },
-        { name: 'Content Management System', included: false },
-        { name: 'E-commerce Functionality', included: false },
-        { name: 'Custom User Authentication', included: false },
-      ]
-    },
-    {
-      name: 'Premium Plan',
-      target: 'Perfect for small businesses',
-      price: 2499.00,
-      interval: 'Project',
-      isPopular: true,
-      features: [
-        { name: 'Custom 5-Page Website', included: true },
-        { name: 'Mobile Responsive', included: true },
-        { name: 'Advanced SEO Setup', included: true },
-        { name: 'Content Management System', included: true },
-        { name: 'Basic E-commerce (10 items)', included: true },
-        { name: 'Custom User Authentication', included: false },
-      ]
-    },
-    {
-      name: 'Pro Plan',
-      target: 'Perfect for established brands',
-      price: 4999.00,
-      interval: 'Project',
-      features: [
-        { name: 'Custom Web Application', included: true },
-        { name: 'Mobile Responsive', included: true },
-        { name: 'Advanced SEO Setup', included: true },
-        { name: 'Content Management System', included: true },
-        { name: 'Full E-commerce Functionality', included: true },
-        { name: 'Custom User Authentication', included: true },
-      ]
-    }
-  ];
-
   return (
     <div className="animate-in fade-in duration-500">
-      
+
       {/* Page Header */}
-      <header className="mb-10 md:mb-16 xl:max-w-[55%]">
+      <header className="mb-16 xl:max-w-[60%]">
         <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-orange-yellow-crayola before:rounded-sm">
-          Services <span className="text-light-gray-70 font-light">& Pricing</span>
+          Services <span className="text-light-gray-70 font-light">&amp; Pricing</span>
         </h2>
-        
-        <p className="text-light-gray text-base md:text-lg max-w-2xl leading-relaxed">
-          Elevating businesses through high-end web development, digital marketing, and bespoke software architecture. I deliver solutions that generate the most remarkable results your business needs.
+        <p className="text-light-gray text-base md:text-lg leading-relaxed">
+          From one-time builds to ongoing maintenance — clear pricing, no hidden fees.
         </p>
       </header>
 
-      {/* Services Grid */}
-      <section className="mb-24">
-        <h3 className="text-2xl font-semibold text-white-2 mb-8 flex items-center gap-3">
-          <span className="text-orange-yellow-crayola">01.</span> Core Services
+      {/* ── 01 What I Build ── */}
+      <section className="mb-16">
+        <h3 className="text-xl font-semibold text-white-2 mb-6 flex items-center gap-3">
+          <span className="text-orange-yellow-crayola">01.</span> What I Build
         </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, idx) => (
-            <ServiceCard 
-              key={idx}
-              title={service.title}
-              icon={service.icon}
-              description={service.description}
-              features={service.features}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Featured Proof of Work */}
-      <section className="mb-24">
-        <h3 className="text-2xl font-semibold text-white-2 mb-8 flex items-center gap-3">
-          <span className="text-orange-yellow-crayola">02.</span> Featured Work
-        </h3>
-        <PortfolioGrid projects={projects} limit={3} hideCategoryFilter={true} />
-      </section>
-
-      {/* Pricing Section */}
-      <section>
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-2 text-orange-yellow-crayola font-medium mb-3 tracking-widest text-sm">
-            <span>&gt;&gt;&gt;</span> PRICING PLAN
-          </div>
-          <h3 className="text-3xl md:text-5xl font-bold text-white-2 mb-4">
-            <span className="text-orange-yellow-crayola">03.</span> Pricing My Work
-          </h3>
-          <p className="text-light-gray max-w-xl mx-auto">
-            Transparent, straightforward pricing for high-quality engineering and design. Choose the package that fits your business needs.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {pricingPlans.map((plan, idx) => (
-            <div key={idx} className={plan.isPopular ? "md:-mt-4 md:mb-4 relative z-10" : ""}>
-              <PricingCard plan={plan} />
+        <div className="flex flex-wrap gap-3">
+          {SERVICE_CHIPS.map(({ icon, label }) => (
+            <div
+              key={label}
+              className="flex items-center gap-2 bg-eerie-black-1 border border-jet rounded-xl px-4 py-2.5 text-sm text-light-gray"
+            >
+              <span className="text-orange-yellow-crayola">{icon}</span>
+              {label}
             </div>
           ))}
         </div>
+      </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-jet to-transparent mb-16" />
+
+      {/* ── 02 Project Tiers ── */}
+      <section className="mb-16">
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-white-2 mb-2 flex items-center gap-3">
+            <span className="text-orange-yellow-crayola">02.</span> Custom Project Pricing
+          </h3>
+          <p className="text-light-gray text-sm">Fixed-scope builds. You own everything. One-time payment.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {PROJECT_TIERS.map((tier) => (
+            <div
+              key={tier.name}
+              className={`flex flex-col rounded-2xl p-6 border ${
+                tier.popular
+                  ? "bg-eerie-black-1 border-orange-yellow-crayola/60 relative"
+                  : "bg-eerie-black-1 border-jet"
+              }`}
+            >
+              {tier.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-yellow-crayola text-smoky-black text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wide whitespace-nowrap">
+                  Most Popular
+                </div>
+              )}
+              <p className="text-xs font-semibold uppercase tracking-widest text-light-gray-70 mb-4">
+                {tier.name}
+              </p>
+              <div className="mb-1">
+                <span className="text-3xl font-extrabold text-white-2 tracking-tight">{tier.price}</span>
+              </div>
+              <p className="text-xs text-light-gray-70 mb-6">one-time payment · {tier.note}</p>
+              <ul className="flex-1 space-y-2 mb-6">
+                {tier.features.map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-light-gray">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-yellow-crayola flex-shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={`/get-started?tier=${tier.name.toLowerCase()}`}
+                className={`block text-center py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                  tier.popular
+                    ? "bg-orange-yellow-crayola text-smoky-black hover:bg-orange-yellow-crayola/90"
+                    : "border border-jet text-light-gray-70 hover:bg-jet hover:text-white-2"
+                }`}
+              >
+                Get Started →
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-jet to-transparent mb-16" />
+
+      {/* ── 03 Maintenance Plans ── */}
+      <section>
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-white-2 mb-2 flex items-center gap-3">
+            <span className="text-orange-yellow-crayola">03.</span> Monthly Maintenance &amp; Support
+          </h3>
+          <p className="text-light-gray text-sm">
+            Keep your site fast, secure, and up to date — without lifting a finger.
+          </p>
+        </div>
+
+        <MaintenanceCards />
       </section>
 
     </div>
