@@ -156,3 +156,45 @@ export async function sendSubscriptionConfirmedEmail(
     `,
   });
 }
+
+export async function sendProjectInquiryNotification(inquiry: {
+  name: string;
+  email: string;
+  company?: string | null;
+  plan: string;
+  timeline: string;
+  vision: string;
+}) {
+  const resend = getResend();
+  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "festotechug@gmail.com";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",
+    to: adminEmail,
+    subject: `New Project Inquiry — ${inquiry.plan} from ${inquiry.name}`,
+    html: `
+      <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:40px 20px;background:#080c14;color:#e2e8f0;">
+        <h2 style="color:#f8fafc;margin-bottom:4px;">New Project Inquiry</h2>
+        <p style="color:#64748b;font-size:14px;margin-bottom:24px;">Someone just submitted a project brief via <strong style="color:#fbbf24;">${inquiry.plan}</strong>.</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+          <tr><td style="padding:8px 0;color:#94a3b8;font-size:13px;width:120px;">Name</td><td style="padding:8px 0;color:#f1f5f9;font-size:13px;">${inquiry.name}</td></tr>
+          <tr><td style="padding:8px 0;color:#94a3b8;font-size:13px;">Email</td><td style="padding:8px 0;font-size:13px;"><a href="mailto:${inquiry.email}" style="color:#fb923c;">${inquiry.email}</a></td></tr>
+          ${inquiry.company ? `<tr><td style="padding:8px 0;color:#94a3b8;font-size:13px;">Company</td><td style="padding:8px 0;color:#f1f5f9;font-size:13px;">${inquiry.company}</td></tr>` : ""}
+          <tr><td style="padding:8px 0;color:#94a3b8;font-size:13px;">Plan</td><td style="padding:8px 0;color:#fbbf24;font-size:13px;font-weight:700;">${inquiry.plan}</td></tr>
+          <tr><td style="padding:8px 0;color:#94a3b8;font-size:13px;">Timeline</td><td style="padding:8px 0;color:#f1f5f9;font-size:13px;">${inquiry.timeline}</td></tr>
+        </table>
+
+        <div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:16px;margin-bottom:24px;">
+          <p style="color:#94a3b8;font-size:12px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Vision / Requirements</p>
+          <p style="color:#e2e8f0;font-size:14px;line-height:1.7;margin:0;">${inquiry.vision.replace(/\n/g, "<br/>")}</p>
+        </div>
+
+        <a href="${appUrl}/admin/inquiries" style="display:inline-block;background:#f59e0b;color:#0f172a;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">
+          View in Admin →
+        </a>
+      </div>
+    `,
+  });
+}
