@@ -402,7 +402,7 @@ public/uploads/
 ### Rule for Future Developers
 - `.vscode/` contains editor-specific settings that differ per developer. Commit it only if your team has agreed on shared settings via a `settings.json` template.
 - `public/uploads/` should never be committed. In production, all uploads go to Cloudinary. Locally, uploads to this folder are temporary.
-- `.playwright-mcp/` is created by the Claude Playwright MCP server for browser automation state. It is machine-specific and should always be ignored.
+- `.playwright-mcp/` is created by the Playwright MCP server for browser automation state. It is machine-specific and should always be ignored.
 
 ---
 
