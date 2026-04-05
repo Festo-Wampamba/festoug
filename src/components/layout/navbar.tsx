@@ -265,7 +265,9 @@ export function Navbar() {
             );
           })}
           <li className="flex items-center pl-2 ml-1 border-l border-white/[0.08] shrink-0 gap-1">
-            <ThemeToggle />
+            <div className="w-8 h-8 flex items-center justify-center shrink-0">
+              <ThemeToggle />
+            </div>
             {status === "loading" ? null : session?.user ? (
               <button
                 ref={desktopButtonRef}
@@ -275,9 +277,9 @@ export function Navbar() {
                 title="Your account"
               >
                 <UserAvatar size="md" />
-                <div className="flex flex-col items-start leading-none">
-                  <span className="text-white-2 text-xs font-medium">{session.user.name?.split(" ")[0]}</span>
-                  <span className="text-orange-yellow-crayola text-[10px] uppercase tracking-wide">{session.user.role}</span>
+                <div className="flex flex-col items-start justify-center text-left">
+                  <span className="text-white-2 text-[13px] font-medium leading-tight truncate max-w-[120px]">{session.user.name}</span>
+                  <span className="text-orange-yellow-crayola text-[10px] uppercase tracking-wider mt-[2px] leading-none">{session.user.role}</span>
                 </div>
               </button>
             ) : (
