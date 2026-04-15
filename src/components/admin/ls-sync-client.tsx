@@ -38,8 +38,8 @@ export function LsSyncClient() {
       if (!res.ok) throw new Error(data.error || "Failed to load");
       setLsProducts(data.lsProducts);
       setLsVariants(data.lsVariants);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -63,8 +63,8 @@ export function LsSyncClient() {
       const data = await res.json();
       if (!res.ok && res.status !== 409) throw new Error(data.error || "Import failed");
       await load();
-    } catch (e: any) {
-      alert(`Import failed: ${e.message}`);
+    } catch (e) {
+      alert(`Import failed: ${e instanceof Error ? e.message : "Unknown error"}`);
     } finally {
       setImporting(null);
     }
@@ -164,6 +164,7 @@ export function LsSyncClient() {
                   ) : (
                     <div className="flex items-center gap-2 shrink-0">
                       <select
+                        aria-label={`Category for ${variant.name}`}
                         value={categories[variant.id] || "OTHER"}
                         onChange={(e) => setCategories((prev) => ({ ...prev, [variant.id]: e.target.value }))}
                         className="text-xs bg-jet border border-jet rounded-lg px-2 py-1.5 text-light-gray focus:outline-none focus:border-orange-yellow-crayola"
