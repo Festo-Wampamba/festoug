@@ -42,6 +42,7 @@ export default async function EditProductPage({
           variantId: product.variantId || "",
           downloadUrl: product.downloadUrl || "",
           thumbnailUrl: product.thumbnailUrl || "",
+          screenshots: product.screenshots ?? [],
           isActive: product.isActive,
         }}
       />

@@ -15,6 +15,13 @@
       "when": 1775199811679,
       "tag": "0001_orange_war_machine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776321055307,
+      "tag": "0002_blushing_wind_dancer",
+      "breakpoints": true
     }
   ]
 }

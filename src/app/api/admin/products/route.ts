@@ -47,6 +47,7 @@ export async function POST(req: Request) {
       variantId: data.variantId || null,
       downloadUrl: data.downloadUrl || null,
       thumbnailUrl: data.thumbnailUrl || null,
+      screenshots: data.screenshots ?? [],
       isActive: data.isActive ?? true,
     })
     .returning();

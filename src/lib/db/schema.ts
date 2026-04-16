@@ -129,6 +129,7 @@ export const products = pgTable(
     variantId: text("variant_id"), // Lemon Squeezy Variant ID
     downloadUrl: text("download_url"),
     thumbnailUrl: text("thumbnail_url"),
+    screenshots: text("screenshots").array().default([]).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),

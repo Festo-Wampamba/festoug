@@ -17,6 +17,7 @@ export const productSchema = z.object({
   variantId: z.string().max(100).nullable().optional(),
   downloadUrl: z.string().url("Must be a valid URL").max(500).nullable().optional(),
   thumbnailUrl: z.string().max(500).nullable().optional(),
+  screenshots: z.array(z.string().url()).optional().default([]),
   isActive: z.boolean().optional().default(true),
 });
 

@@ -26,9 +26,10 @@ import {
 interface TiptapEditorProps {
   content?: string;
   onChange: (html: string) => void;
+  placeholder?: string;
 }
 
-export function TiptapEditor({ content = "", onChange }: TiptapEditorProps) {
+export function TiptapEditor({ content = "", onChange, placeholder = "Start writing..." }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -40,9 +41,7 @@ export function TiptapEditor({ content = "", onChange }: TiptapEditorProps) {
           class: "rounded-xl border border-jet my-6 max-w-full h-auto shadow-1",
         },
       }),
-      Placeholder.configure({
-        placeholder: "Start writing your blog post...",
-      }),
+      Placeholder.configure({ placeholder }),
     ],
     content,
     immediatelyRender: false,
@@ -95,12 +94,13 @@ export function TiptapEditor({ content = "", onChange }: TiptapEditorProps) {
 
   return (
     <div className="border border-jet rounded-2xl overflow-hidden bg-eerie-black-1">
-      <input 
-        type="file" 
-        accept="image/*" 
-        ref={fileInputRef} 
-        onChange={handleImageUpload} 
-        className="hidden" 
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        className="hidden"
+        aria-label="Upload inline image"
       />
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-jet bg-eerie-black-2/50">

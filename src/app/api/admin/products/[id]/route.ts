@@ -51,6 +51,7 @@ export async function PATCH(
       variantId: data.variantId || null,
       downloadUrl: data.downloadUrl || null,
       thumbnailUrl: data.thumbnailUrl || null,
+      screenshots: data.screenshots ?? [],
       isActive: data.isActive ?? true,
       updatedAt: new Date(),
     })
