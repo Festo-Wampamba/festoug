@@ -2,7 +2,7 @@
 
 # FestoUG
 
-**Premium Developer Portfolio & Digital Storefront**
+**Full-Stack Developer Portfolio, Digital Storefront & Services Platform**
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org/)
@@ -11,9 +11,9 @@
 [![Auth.js](https://img.shields.io/badge/Auth.js-v5-7C3AED?logo=auth0&logoColor=white)](https://authjs.dev/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-D22128?logo=apache&logoColor=white)](LICENSE)
 
-A high-end, dynamic developer portfolio that doubles as a full-scale digital storefront — built to sell software, scripts, and digital services globally and locally.
+A production-grade personal platform combining a developer portfolio, digital product store, services showcase, and full admin CMS — built and deployed for real clients worldwide.
 
-[Live Site](https://festoug.vercel.app) · [Report Bug](https://github.com/Festo-Wampamba/festoug/issues) · [Request Feature](https://github.com/Festo-Wampamba/festoug/issues)
+[Live Site](http://festoug.com) · [Report Bug](https://github.com/Festo-Wampamba/festoug/issues) · [Request Feature](https://github.com/Festo-Wampamba/festoug/issues)
 
 </div>
 
@@ -21,20 +21,40 @@ A high-end, dynamic developer portfolio that doubles as a full-scale digital sto
 
 ## ✨ Features
 
-### Portfolio
-- **About** — Personal introduction, services overview, and client testimonials
+### Portfolio & Presence
+- **About** — Personal introduction, skills overview, and client testimonials
 - **Resume** — Education, work experience, and animated skill bars
-- **Portfolio** — Filterable project gallery with modal previews
-- **Blog** — Database-driven posts with server-side pagination
+- **Portfolio** — Filterable project gallery with rich detail pages
+- **Blog** — Database-driven posts with Tiptap rich-text editor and server-side pagination
 - **Contact** — Server-side EmailJS integration (API keys never exposed to the browser)
+
+### Services
+- **Services & Expertise** — Web development, server administration, web server management, network engineering, and IT infrastructure — no pricing lists, inquiry-driven
+- **Get Started** — Project scoping form for new client inquiries
+
+### Digital Store
+- **Product Catalog** — Digital products with image uploads, rich descriptions, and slug-based URLs
+- **LemonSqueezy Checkout** — Hosted payment flow with webhook order fulfillment
+- **License Key Delivery** — Automatic license generation and customer delivery post-purchase
+- **Customer Dashboard** — Order history, license management, and subscription overview
+
+### Admin Dashboard
+- **Overview** — Revenue, orders, product, and customer stats at a glance
+- **Products CMS** — Create, edit, and manage digital products with Tiptap editor and screenshot uploads
+- **Orders & Licenses** — Full order lifecycle and license key management
+- **Blog CMS** — Write and publish posts with rich-text editing
+- **Portfolio CMS** — Manage portfolio projects from the admin panel
+- **Testimonials** — Approve and manage client testimonials
+- **Reviews** — Moderate customer product reviews
+- **Customers** — View and manage customer accounts
+- **Inquiries** — Track and respond to client contact form submissions
 
 ### Platform
 - **Authentication** — Email/password, GitHub OAuth, and Google OAuth via Auth.js v5
 - **Role-Based Access Control** — `ADMIN` and `CUSTOMER` roles enforced at the proxy and data-access layers
 - **Database** — PostgreSQL with Drizzle ORM, type-safe schema, and migration tooling
-- **Digital Store** _(coming soon)_ — Product catalog, checkout, and license key delivery
-- **Admin Dashboard** _(coming soon)_ — Product/order/user management and blog CMS
-- **AI Assistant** _(coming soon)_ — Context-aware chatbot powered by Google Gemini 2.5 Flash
+- **Notifications** — Admin-to-user notification system
+- **LemonSqueezy Sync** — Product sync from LS store to local DB
 
 ---
 
@@ -44,9 +64,11 @@ A high-end, dynamic developer portfolio that doubles as a full-scale digital sto
 |---|---|
 | **Framework** | [Next.js 16](https://nextjs.org/) (App Router, Turbopack) |
 | **Language** | [TypeScript](https://typescriptlang.org/) (strict mode) |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/) |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) |
+| **Rich Text** | [Tiptap](https://tiptap.dev/) (blog & product descriptions) |
 | **Database** | [PostgreSQL](https://www.postgresql.org/) + [Drizzle ORM](https://orm.drizzle.team/) |
 | **Auth** | [Auth.js v5](https://authjs.dev/) (JWT sessions, OAuth, credentials) |
+| **Payments** | [LemonSqueezy](https://www.lemonsqueezy.com/) (checkout + webhooks) |
 | **Email** | [EmailJS](https://www.emailjs.com/) (server-side via Server Actions) |
 | **Package Manager** | [pnpm](https://pnpm.io/) |
 | **Deployment** | [Vercel](https://vercel.com/) |
@@ -58,24 +80,33 @@ A high-end, dynamic developer portfolio that doubles as a full-scale digital sto
 ```
 festoug/
 ├── drizzle/                    # Auto-generated SQL migrations
+├── docs/                       # Design specs and implementation plans
 ├── public/                     # Static assets (images, resume PDF)
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── (marketing)/        # Public pages (resume, portfolio, contact)
-│   │   ├── api/                # API routes (auth, registration)
-│   │   ├── auth/               # Sign-in & sign-up pages
-│   │   ├── blog/               # Blog listing
-│   │   └── page.tsx            # Landing / About page
+│   ├── app/
+│   │   ├── (main)/             # Public-facing pages
+│   │   │   ├── about/          # About / landing
+│   │   │   ├── blog/           # Blog listing & post pages
+│   │   │   ├── contact/        # Contact form
+│   │   │   ├── get-started/    # Client inquiry / scoping form
+│   │   │   ├── portfolio/      # Project gallery
+│   │   │   ├── resume/         # Resume page
+│   │   │   ├── services/       # Services & expertise
+│   │   │   ├── store/          # Digital product store
+│   │   │   └── dashboard/      # Customer dashboard (orders, licenses)
+│   │   ├── admin/              # Admin dashboard (CMS + management)
+│   │   ├── api/                # API routes (auth, webhooks, admin)
+│   │   └── layout.tsx          # Root layout
 │   ├── components/
-│   │   ├── blog/               # Blog card components
-│   │   ├── layout/             # Sidebar, Navbar
-│   │   └── marketing/          # Service cards, testimonials, skill bars
+│   │   ├── admin/              # Admin-specific UI components
+│   │   ├── layout/             # Sidebar, Navbar, Footer
+│   │   ├── marketing/          # Service cards, testimonials, skill bars
+│   │   └── ui/                 # Shared UI primitives
 │   ├── lib/
 │   │   ├── auth.ts             # Auth.js configuration
-│   │   └── db/                 # Drizzle client, schema, seed script
-│   └── proxy.ts                # Next.js 16 RBAC route guard
-├── drizzle.config.ts           # Drizzle Kit configuration
-├── tailwind.config.ts          # Tailwind theme
+│   │   └── db/                 # Drizzle client, schema, migrations
+│   └── middleware.ts           # Next.js RBAC route guard
+├── drizzle.config.ts
 └── package.json
 ```
 
@@ -118,7 +149,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Environment Variables
 
-Create a `.env.local` file in the project root with the following variables:
+Create a `.env.local` file in the project root:
 
 | Variable | Description | Required |
 |---|---|---|
@@ -132,6 +163,8 @@ Create a `.env.local` file in the project root with the following variables:
 | `EMAILJS_TEMPLATE_ID` | EmailJS template identifier | Optional |
 | `EMAILJS_USER_ID` | EmailJS public key | Optional |
 | `EMAILJS_PRIVATE_KEY` | EmailJS private key | Optional |
+| `LEMONSQUEEZY_API_KEY` | LemonSqueezy API key | Optional |
+| `LEMONSQUEEZY_WEBHOOK_SECRET` | LemonSqueezy webhook signing secret | Optional |
 | `NEXT_PUBLIC_APP_URL` | Application URL (default: `http://localhost:3000`) | Optional |
 
 ---
@@ -154,13 +187,13 @@ Create a `.env.local` file in the project root with the following variables:
 
 ## 🗺️ Roadmap
 
-- [x] Phase 1 — Foundation & component migration
-- [x] Phase 2 — Database, authentication, and RBAC
-- [ ] Phase 3 — Digital store & customer dashboard
-- [ ] Phase 4 — Admin dashboard & blog CMS
-- [ ] Phase 5 — AI assistant chatbot (Gemini 2.5 Flash)
-- [ ] Phase 6 — Social proof & developer features
-- [ ] Phase 7 — Docker & CI/CD deployment
+- [x] Phase 1 — Foundation: portfolio, blog, resume, contact
+- [x] Phase 2 — Authentication & RBAC (Auth.js v5, OAuth, role guards)
+- [x] Phase 3 — Digital store, LemonSqueezy checkout & license delivery
+- [x] Phase 4 — Admin dashboard & full CMS (products, blog, portfolio, testimonials)
+- [x] Phase 5 — Services & expertise page (web dev, server admin, networking)
+- [x] Phase 6 — Social proof (testimonials, reviews, customer notifications)
+- [ ] Phase 7 — Docker & CI/CD deployment pipeline
 
 ---
 
@@ -184,9 +217,9 @@ This project is licensed under the **Apache License 2.0** — see the [LICENSE](
 
 ## 📬 Contact
 
-**Festo Muwanguzi**
+**Festo Wampamba**
 
-- 🌐 Website: [festoug.vercel.app](https://festoug.vercel.app)
+- 🌐 Website: [festoug.com](http://festoug.com)
 - 📧 Email: [festotechug@gmail.com](mailto:festotechug@gmail.com)
 - 💼 LinkedIn: [Festo Wampamba](https://www.linkedin.com/in/festo-wampamba/)
 - 🐙 GitHub: [@Festo-Wampamba](https://github.com/Festo-Wampamba)
@@ -195,6 +228,6 @@ This project is licensed under the **Apache License 2.0** — see the [LICENSE](
 
 <div align="center">
 
-**Built with ❤️ in Kampala, Uganda 🇺🇬**
+**Built and designed by [Festo UG](http://festoug.com) · Kampala, Uganda 🇺🇬**
 
 </div>
