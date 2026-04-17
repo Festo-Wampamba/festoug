@@ -2,81 +2,99 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const RADIUS = 42;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS; // ≈ 263.9
+
 interface SkillBarProps {
   title: string;
   value: number;
+  index?: number;
 }
 
-export function SkillBar({ title, value }: SkillBarProps) {
-  const progressRef = useRef<HTMLDivElement>(null);
-  const [displayedValue, setDisplayedValue] = useState(0);
+export function SkillBar({ title, value, index = 0 }: SkillBarProps) {
+  const wrapRef  = useRef<HTMLLIElement>(null);
+  const [visible,   setVisible]   = useState(false);
+  const [displayed, setDisplayed] = useState(0);
+
+  const targetOffset = CIRCUMFERENCE - (value / 100) * CIRCUMFERENCE;
 
   useEffect(() => {
-    const progressBar = progressRef.current;
-    if (!progressBar) return;
-
-    const duration = 2000; // 2 seconds animation
-
-    const handleAnimation = () => {
-      let startTime: number | null = null;
-      let frameId: number;
-
-      const animate = (currentTime: number) => {
-        if (!startTime) startTime = currentTime;
-        const elapsedTime = currentTime - startTime;
-        const progress = Math.min(elapsedTime / duration, 1);
-        
-        // Easing function for smoother finish
-        const easeOutQuad = progress * (2 - progress);
-        const currentValue = Math.floor(easeOutQuad * value);
-        
-        setDisplayedValue(currentValue);
-        progressBar.style.width = `${currentValue}%`;
-
-        if (progress < 1) {
-          frameId = requestAnimationFrame(animate);
-        }
-      };
-
-      frameId = requestAnimationFrame(animate);
-      return () => cancelAnimationFrame(frameId);
-    };
-
+    const el = wrapRef.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          handleAnimation();
-        } else {
-          setDisplayedValue(0);
-          progressBar.style.width = "0%";
+          setVisible(true);
+          observer.unobserve(el);
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.25 }
     );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
-    observer.observe(progressBar);
-
-    return () => {
-      observer.unobserve(progressBar);
+  useEffect(() => {
+    if (!visible) return;
+    const duration = 1400;
+    let start: number | null = null;
+    let frameId: number;
+    const tick = (now: number) => {
+      if (!start) start = now;
+      const p    = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setDisplayed(Math.round(ease * value));
+      if (p < 1) frameId = requestAnimationFrame(tick);
     };
-  }, [value]);
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, [visible, value]);
 
   return (
-    <li className="mb-[25px]">
-      <div className="flex items-center gap-[5px] mb-[8px]">
-        <h5 className="text-white-2 text-[15px] font-medium capitalize font-sans">{title}</h5>
-        <data className="text-light-gray text-[15px] font-light font-sans ml-auto" value={value}>
-          {displayedValue}%
-        </data>
+    <li
+      ref={wrapRef}
+      className={`skill-card skill-card-delay-${index}
+        flex flex-col items-center gap-3 rounded-2xl p-5
+        bg-eerie-black-1 border border-jet
+        hover:border-orange-yellow-crayola/30
+        transition-colors duration-300 group`}
+    >
+      {/* Circular progress ring */}
+      <div className="relative w-[96px] h-[96px]">
+        <svg width="96" height="96" viewBox="0 0 100 100" className="-rotate-90">
+          {/* Track */}
+          <circle
+            cx="50" cy="50" r={RADIUS}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="6"
+            className="text-jet"
+          />
+          {/* Filled arc */}
+          <circle
+            cx="50" cy="50" r={RADIUS}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeDasharray={CIRCUMFERENCE}
+            strokeDashoffset={visible ? targetOffset : CIRCUMFERENCE}
+            className="text-orange-yellow-crayola ring-progress"
+          />
+        </svg>
+
+        {/* Percentage */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-white-2 text-[18px] font-bold tabular-nums leading-none">
+            {displayed}<span className="text-[11px] text-light-gray font-normal">%</span>
+          </span>
+        </div>
       </div>
-      
-      <div className="bg-jet w-full h-[8px] rounded-[10px] overflow-hidden">
-        <div
-          ref={progressRef}
-          className="bg-orange-yellow-crayola h-full rounded-[10px]"
-          style={{ width: "0%" }}
-        />
-      </div>
+
+      {/* Label */}
+      <p className="text-light-gray group-hover:text-white-2 text-[12px] font-medium text-center leading-snug transition-colors duration-200">
+        {title}
+      </p>
     </li>
   );
 }

@@ -77,8 +77,8 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
         <Image src={icon} alt={title} width={26} height={26} className="object-contain" />
       </div>
 
-      {/* Content — pr-10 keeps everything clear of the absolute number */}
-      <div className="flex-1 min-w-0 pt-0.5 pr-10">
+      {/* Content — pr-16 gives 24px clearance from the absolute number */}
+      <div className="flex-1 min-w-0 pt-0.5 pr-16">
         <h4 className="text-white-2 text-sm font-bold uppercase tracking-wider mb-2 leading-snug">
           {title}
         </h4>

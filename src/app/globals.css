@@ -167,6 +167,51 @@
   --theme-cm-muted: hsl(220 9% 55%);
 }
 
+/* ─── Education icon — scanning text lines ─── */
+@keyframes edu-scan {
+  0%   { stroke-dashoffset: 20;  opacity: 0.25; }
+  50%  { stroke-dashoffset: 0;   opacity: 1;    }
+  100% { stroke-dashoffset: -20; opacity: 0.25; }
+}
+.edu-line          { stroke-dasharray: 20; animation: edu-scan 2.4s ease-in-out infinite; }
+.edu-line-0        { animation-delay: 0ms;   }
+.edu-line-1        { animation-delay: 220ms; }
+.edu-line-2        { animation-delay: 440ms; }
+
+/* ─── Work icon — gentle float ─── */
+@keyframes work-float {
+  0%, 100% { transform: translateY(0);     }
+  50%       { transform: translateY(-3px); }
+}
+.work-icon-float { animation: work-float 2s ease-in-out infinite; }
+
+/* ─── Timeline item scroll reveal ─── */
+.reveal-item {
+  opacity: 0;
+  transform: translateX(-18px);
+  transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1), transform 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal-item.is-revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ─── Skill ring SVG transition ─── */
+.ring-progress { transition: stroke-dashoffset 1.4s cubic-bezier(0.22,1,0.36,1); }
+
+/* ─── Skill card entry ─── */
+@keyframes skill-reveal {
+  from { opacity: 0; transform: translateY(22px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+.skill-card          { animation: skill-reveal 0.5s cubic-bezier(0.22,1,0.36,1) forwards; opacity: 0; }
+.skill-card-delay-0  { animation-delay: 0ms;   }
+.skill-card-delay-1  { animation-delay: 100ms; }
+.skill-card-delay-2  { animation-delay: 200ms; }
+.skill-card-delay-3  { animation-delay: 300ms; }
+.skill-card-delay-4  { animation-delay: 400ms; }
+.skill-card-delay-5  { animation-delay: 500ms; }
+
 /* ─── Service Card Entry Animation ─── */
 @keyframes card-reveal {
   from { opacity: 0; transform: translateY(18px); }
