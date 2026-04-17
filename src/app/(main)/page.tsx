@@ -81,6 +81,7 @@ export default async function AboutPage() {
                 title={service.title}
                 icon={service.icon}
                 description={service.description}
+                index={index}
               />
             </li>
           ))}
