@@ -65,7 +65,7 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
         ${accent.leftBar} ${accent.borderHover} ${accent.glow}`}
     >
       {/* Muted background number */}
-      <span className={`absolute top-3 right-4 text-5xl font-black select-none leading-none tabular-nums ${accent.numColor}`} aria-hidden>
+      <span className={`absolute top-3 right-3 text-4xl sm:text-5xl font-black select-none leading-none tabular-nums ${accent.numColor}`} aria-hidden>
         {num}
       </span>
 
@@ -79,7 +79,7 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
 
       {/* Content */}
       <div className="flex-1 min-w-0 pt-0.5">
-        <h4 className="text-white-2 text-sm font-bold uppercase tracking-wider mb-2 leading-snug">
+        <h4 className="text-white-2 text-sm font-bold uppercase tracking-wider mb-2 leading-snug pr-10">
           {title}
         </h4>
 

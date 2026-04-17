@@ -42,7 +42,7 @@ export function Sidebar() {
         </figure>
 
         <div className="flex-1 min-w-0 lg:w-full">
-          <h1 className="text-white-2 text-2xl md:text-3xl font-medium tracking-tight mb-[10px] lg:mb-4 whitespace-nowrap overflow-hidden text-ellipsis lg:whitespace-normal lg:overflow-visible">
+          <h1 className="text-white-2 text-xl sm:text-2xl md:text-3xl font-medium tracking-tight mb-[10px] lg:mb-4 break-words">
             Wampamba Festo
           </h1>
           <p className="text-white-1 bg-onyx text-[13px] md:text-[14px] font-light w-max px-3 py-1 rounded-lg lg:mx-auto">
