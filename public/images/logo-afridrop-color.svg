@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 110" fill="none">
+  <!-- Water wave / drop background -->
+  <ellipse cx="255" cy="58" rx="52" ry="52" fill="#29b6f6"/>
+  <ellipse cx="238" cy="58" rx="38" ry="38" fill="#0288d1"/>
+  <ellipse cx="270" cy="34" rx="22" ry="22" fill="#4fc3f7"/>
+  <!-- Inner dark circle (eye of the wave) -->
+  <ellipse cx="242" cy="62" rx="18" ry="18" fill="#0077b6"/>
+  <!-- Droplets -->
+  <ellipse cx="222" cy="24" rx="6" ry="9" fill="#29b6f6" transform="rotate(-20 222 24)"/>
+  <ellipse cx="240" cy="12" rx="5" ry="8" fill="#4fc3f7" transform="rotate(-10 240 12)"/>
+  <!-- Burst / sparkle -->
+  <line x1="207" y1="30" x2="218" y2="40" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="212" y1="20" x2="218" y2="34" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="220" y1="15" x2="222" y2="30" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Text: AFRIDROP -->
+  <text x="8" y="52" font-family="'Arial Black', 'Impact', sans-serif" font-size="36" font-weight="900" fill="#d32f2f" letter-spacing="1">AFRIDROP</text>
+  <!-- Text: SOLUTIONS -->
+  <text x="8" y="80" font-family="'Arial Black', 'Impact', sans-serif" font-size="24" font-weight="900" fill="#d32f2f" letter-spacing="2">SOLUTIONS</text>
+</svg>

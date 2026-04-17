@@ -30,20 +30,26 @@ export function ClientLogos() {
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
   }, []);
 
-  const logos = [1, 2, 3, 4, 5, 6];
+  const logos: { src: string; alt: string; width: number }[] = [
+    { src: "/images/logo-1-color.png",        alt: "Client 1",          width: 120 },
+    { src: "/images/logo-2-color.png",        alt: "Client 2",          width: 120 },
+    { src: "/images/logo-3-color.png",        alt: "Client 3",          width: 120 },
+    { src: "/images/logo-4-color.png",        alt: "Client 4",          width: 120 },
+    { src: "/images/logo-5-color.png",        alt: "Client 5",          width: 120 },
+    { src: "/images/logo-6-color.png",        alt: "Client 6",          width: 120 },
+    { src: "/images/logo-afridrop-color.svg", alt: "Afridrop Solutions", width: 150 },
+  ];
 
-  const logoItem = (num: number, prefix: string) => {
-    const key = `${prefix}-${num}`;
+  const logoItem = (logo: typeof logos[0], prefix: string, idx: number) => {
+    const key = `${prefix}-${idx}`;
     const isActive = activeKey === key;
 
     return (
       <div
         key={key}
         className="mx-6 sm:mx-8 flex items-center shrink-0 cursor-pointer"
-        // Desktop hover
         onMouseEnter={() => { isPausedRef.current = true; setActiveKey(key); }}
         onMouseLeave={() => { isPausedRef.current = false; setActiveKey(null); }}
-        // Touch (mobile/EMUI)
         onTouchStart={() => {
           if (resumeTimer.current) clearTimeout(resumeTimer.current);
           isPausedRef.current = true;
@@ -57,9 +63,9 @@ export function ClientLogos() {
         }}
       >
         <Image
-          src={`/images/logo-${num}-color.png`}
-          alt={`Client ${num}`}
-          width={120}
+          src={logo.src}
+          alt={logo.alt}
+          width={logo.width}
           height={40}
           className={`transition-all duration-500 object-contain select-none ${
             isActive ? "grayscale-0 opacity-100 scale-110" : "grayscale opacity-40"
@@ -76,8 +82,8 @@ export function ClientLogos() {
       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-eerie-black-2 to-transparent z-10 pointer-events-none" />
 
       <div ref={trackRef} className="flex flex-nowrap marquee-track" aria-hidden="true">
-        {logos.map((num) => logoItem(num, "a"))}
-        {logos.map((num) => logoItem(num, "b"))}
+        {logos.map((logo, i) => logoItem(logo, "a", i))}
+        {logos.map((logo, i) => logoItem(logo, "b", i))}
       </div>
     </div>
   );
