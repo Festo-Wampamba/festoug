@@ -81,13 +81,17 @@ export default function ResumePage() {
         <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">
           My Skills
         </h3>
-        <ul className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <SkillBar title="Software Development"                          value={95} index={0} />
-          <SkillBar title="Python, JavaScript, PHP, C"                    value={85} index={1} />
-          <SkillBar title="Git & GitHub"                                  value={90} index={2} />
-          <SkillBar title="Database Programming"                          value={85} index={3} />
-          <SkillBar title="Team Collaboration"                            value={80} index={4} />
-          <SkillBar title="Effective Communication"                       value={95} index={5} />
+        <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Technical — from four areas of expertise */}
+          <SkillBar title="Web Development"      value={92} index={0} />
+          <SkillBar title="Server Administration" value={85} index={1} />
+          <SkillBar title="Network Engineering"   value={80} index={2} />
+          <SkillBar title="IT Infrastructure"     value={83} index={3} />
+          {/* Soft skills */}
+          <SkillBar title="Problem Solving"       value={90} index={4} />
+          <SkillBar title="Team Collaboration"    value={85} index={5} />
+          <SkillBar title="Communication"         value={93} index={6} />
+          <SkillBar title="Project Management"    value={78} index={7} />
         </ul>
       </div>
     </div>

@@ -6,12 +6,19 @@ interface TestimonialCardProps {
   role?: string;
   rating: number;
   testimonial: string;
+  isActive?: boolean;
 }
 
-export function TestimonialCard({ name, avatar, role, rating, testimonial }: TestimonialCardProps) {
+export function TestimonialCard({ name, avatar, role, rating, testimonial, isActive }: TestimonialCardProps) {
   return (
     <div className="flex-1 min-w-0 pt-6">
-      <div className="relative bg-gradient-to-br from-cm-surface to-cm-bg border border-cm-border rounded-[14px] p-5 pt-4 shadow-lg flex flex-col min-h-[180px] h-full">
+      <div
+        className={`relative bg-gradient-to-br from-cm-surface to-cm-bg rounded-[14px] p-5 pt-4 shadow-lg flex flex-col min-h-[180px] h-full border transition-all duration-700 ease-in-out ${
+          isActive
+            ? "border-orange-yellow-crayola/50 shadow-[0_0_28px_rgba(202,165,93,0.18)] -translate-y-1"
+            : "border-cm-border"
+        }`}
+      >
         {/* Avatar overlapping top-left */}
         <figure className="absolute -top-5 left-4 w-11 h-11">
           <Image
