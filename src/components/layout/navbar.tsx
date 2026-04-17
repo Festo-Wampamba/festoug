@@ -157,8 +157,8 @@ export function Navbar() {
     <>
       {/* ── Mobile + Tablet (< xl): Floating Pill ─────────────────────────────── */}
       <nav
-        className={`lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-in-out max-w-[calc(100vw-2rem)] ${
-          navOpaque ? "opacity-100 translate-y-0" : "opacity-[0.18] translate-y-1 hover:opacity-100 hover:translate-y-0"
+        className={`lg:hidden fixed bottom-5 left-1/2 z-50 nav-pill transition-[opacity] duration-700 ease-in-out max-w-[calc(100vw-2rem)] ${
+          navOpaque ? "opacity-100" : "opacity-[0.18] hover:opacity-100"
         }`}
         onMouseEnter={() => setIsNavFocused(true)}
         onMouseLeave={() => setIsNavFocused(false)}

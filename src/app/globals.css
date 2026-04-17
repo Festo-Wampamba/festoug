@@ -377,6 +377,14 @@ html:not(.dark) main {
   backface-visibility: hidden;
 }
 
+/* Mobile nav pill — GPU layer to prevent flicker during page transitions */
+.nav-pill {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translate(-50%, 0) translateZ(0);
+  will-change: opacity;
+}
+
 /* Skip navigation link (keyboard only) */
 .skip-nav {
   position: absolute;
