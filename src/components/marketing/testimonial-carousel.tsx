@@ -12,37 +12,29 @@ interface Testimonial {
 }
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
-  const [isGrid, setIsGrid]       = useState(false);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [perPage, setPerPage]     = useState(1);
-  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const total = testimonials.length;
+  const [current,   setCurrent]   = useState(0);
+  const [direction, setDirection] = useState<"next" | "prev">("next");
+  const [isMobile,  setIsMobile]  = useState(false);
+  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
   const dragStartX = useRef<number | null>(null);
-  const isDragging = useRef(false);
 
   useEffect(() => {
-    const update = () => {
-      const w = window.innerWidth;
-      setIsGrid(w >= 1024);
-      setPerPage(w >= 768 ? 2 : 1);
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Grid mode: cycle the spotlight card every 3 s
-  useEffect(() => {
-    if (!isGrid || testimonials.length === 0) return;
-    const id = setInterval(() => setActiveIdx(p => (p + 1) % testimonials.length), 3000);
-    return () => clearInterval(id);
-  }, [isGrid, testimonials.length]);
+  const goNext = useCallback(() => {
+    setDirection("next");
+    setCurrent(p => (p + 1) % total);
+  }, [total]);
 
-  const totalPages = Math.ceil(testimonials.length / perPage);
-  const safePage   = totalPages > 0 ? currentPage % totalPages : 0;
-
-  const goNext = useCallback(() => setCurrentPage(p => (p + 1) % totalPages), [totalPages]);
-  const goPrev = useCallback(() => setCurrentPage(p => (p - 1 + totalPages) % totalPages), [totalPages]);
+  const goPrev = useCallback(() => {
+    setDirection("prev");
+    setCurrent(p => (p - 1 + total) % total);
+  }, [total]);
 
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -50,10 +42,9 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
   }, [goNext]);
 
   useEffect(() => {
-    if (isGrid) { if (timerRef.current) clearInterval(timerRef.current); return; }
     startTimer();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [startTimer, isGrid]);
+  }, [startTimer]);
 
   const pause  = useCallback(() => { if (timerRef.current) clearInterval(timerRef.current); }, []);
   const resume = startTimer;
@@ -72,28 +63,51 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
     resume();
   };
 
-  const onMouseDown = (e: React.MouseEvent) => { dragStartX.current = e.clientX; isDragging.current = false; pause(); };
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (dragStartX.current === null) return;
-    if (Math.abs(e.clientX - dragStartX.current) > 5) isDragging.current = true;
-  };
-  const onMouseUp = (e: React.MouseEvent) => {
+  const onMouseDown     = (e: React.MouseEvent) => { dragStartX.current = e.clientX; pause(); };
+  const onMouseUp       = (e: React.MouseEvent) => {
     if (dragStartX.current === null) return;
     const diff = dragStartX.current - e.clientX;
     if (Math.abs(diff) > 40) diff > 0 ? goNext() : goPrev();
     dragStartX.current = null;
     resume();
   };
-  const onMouseLeaveDrag = (e: React.MouseEvent) => {
+  const onMouseLeave = (e: React.MouseEvent) => {
     if (dragStartX.current !== null) onMouseUp(e);
     resume();
   };
 
-  // ── Grid mode (lg+): static 2×2 with cycling spotlight ──────────────────────
-  if (isGrid) {
-    return (
-      <div className="grid grid-cols-2 gap-4">
-        {testimonials.map((t, i) => (
+  // Always show 2 cards, wrapping around — on mobile show 1
+  const cardCount = isMobile ? 1 : 2;
+  const visible = Array.from({ length: cardCount }, (_, i) =>
+    testimonials[(current + i) % total]
+  );
+
+  return (
+    <div
+      className="relative select-none cursor-grab active:cursor-grabbing"
+      onMouseEnter={pause}
+      onMouseLeave={onMouseLeave}
+      onFocus={pause}
+      onBlur={resume}
+      onKeyDown={handleKeyDown}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      role="region"
+      aria-label="Testimonials carousel"
+      tabIndex={0}
+    >
+      {/* Cards — key on `current` triggers re-mount → CSS animation fires */}
+      <div
+        key={current}
+        aria-live="polite"
+        aria-atomic="true"
+        className={`flex gap-4 pointer-events-none ${
+          direction === "next" ? "testimonial-slide-next" : "testimonial-slide-prev"
+        }`}
+      >
+        {visible.map((t, i) => (
           <TestimonialCard
             key={i}
             name={t.name}
@@ -101,66 +115,23 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
             role={t.role ?? undefined}
             rating={t.rating}
             testimonial={t.testimonial}
-            isActive={i === activeIdx}
           />
         ))}
       </div>
-    );
-  }
 
-  // ── Carousel mode (< lg) ────────────────────────────────────────────────────
-  const startIdx = safePage * perPage;
-  const visible  = testimonials.slice(startIdx, startIdx + perPage);
-
-  return (
-    <div
-      className="relative select-none cursor-grab active:cursor-grabbing"
-      onMouseEnter={pause}
-      onMouseLeave={onMouseLeaveDrag}
-      onFocus={pause}
-      onBlur={resume}
-      onKeyDown={handleKeyDown}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-      onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-      role="region"
-      aria-label="Testimonials carousel"
-      aria-roledescription="carousel"
-      tabIndex={0}
-    >
-      <div
-        aria-live="polite"
-        aria-atomic="true"
-        aria-label={`Slide ${safePage + 1} of ${totalPages}`}
-        className="flex gap-4 pointer-events-none"
-      >
-        {visible.map((t, i) => (
-          <TestimonialCard
-            key={startIdx + i}
-            name={t.name}
-            avatar={t.avatar || "/images/avatar-1.png"}
-            role={t.role ?? undefined}
-            rating={t.rating}
-            testimonial={t.testimonial}
-          />
-        ))}
-        {perPage === 2 && visible.length === 1 && <div className="flex-1" />}
-      </div>
-
-      {totalPages > 1 && (
+      {/* Dots */}
+      {total > 1 && (
         <div className="flex justify-center gap-2 mt-5" role="tablist" aria-label="Carousel navigation">
-          {Array.from({ length: totalPages }).map((_, i) => (
+          {Array.from({ length: total }).map((_, i) => (
             <button
               key={i}
               type="button"
               role="tab"
-              aria-selected={i === safePage}
-              aria-label={`Go to slide ${i + 1} of ${totalPages}`}
-              onClick={() => { setCurrentPage(i); pause(); }}
+              aria-selected={i === current}
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => { setDirection(i > current ? "next" : "prev"); setCurrent(i); pause(); }}
               className={`h-2 rounded-full transition-all duration-300 focus-visible:outline-2 focus-visible:outline-orange-yellow-crayola focus-visible:outline-offset-2 ${
-                i === safePage ? "w-5 bg-orange-yellow-crayola" : "w-2 bg-jet hover:bg-light-gray-70"
+                i === current ? "w-5 bg-orange-yellow-crayola" : "w-2 bg-jet hover:bg-light-gray-70"
               }`}
             />
           ))}

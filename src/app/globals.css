@@ -167,6 +167,18 @@
   --theme-cm-muted: hsl(220 9% 55%);
 }
 
+/* ─── Testimonial carousel slide animations ─── */
+@keyframes slide-in-right {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes slide-in-left {
+  from { transform: translateX(-40px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.testimonial-slide-next { animation: slide-in-right 0.4s cubic-bezier(0.22,1,0.36,1); }
+.testimonial-slide-prev { animation: slide-in-left  0.4s cubic-bezier(0.22,1,0.36,1); }
+
 /* ─── Education icon — scanning text lines ─── */
 @keyframes edu-scan {
   0%   { stroke-dashoffset: 20;  opacity: 0.25; }
