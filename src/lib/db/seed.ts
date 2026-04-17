@@ -51,10 +51,10 @@ const rawTestimonials = [
 ];
 
 const rawServices = [
-  { title: "Software Development", icon: "/images/icon-dev.svg", description: "Leveraging Python, Java, C++, JavaScript and PHP to deliver high quality software solutions." },
-  { title: "Data Modeling", icon: "/images/icon-dm.svg", description: "Expertise in database programming and management using industry leading tools and practices." },
-  { title: "Web Designing", icon: "/images/icon-design.svg", description: "Creating responsive and user-friendly web interfaces with Javascript, Tailwind CSS, React and NextJS." },
-  { title: "Database Management", icon: "/images/icon-db.svg", description: "Skilled in managing and optimizing databases for performance and reliability." },
+  { title: "Full-Stack Web Development", icon: "/images/icon-dev.svg", description: "Building modern websites and web applications using Next.js, React, TypeScript, and PostgreSQL from front to back." },
+  { title: "Server Administration", icon: "/images/icon-dm.svg", description: "Setting up, securing, and managing Linux servers, Nginx and Apache web servers, and cloud infrastructure for production workloads." },
+  { title: "Network Engineering", icon: "/images/icon-design.svg", description: "Designing and configuring enterprise networks including firewalls, VPN setup, DNS management, and LAN/WAN connectivity." },
+  { title: "IT Infrastructure", icon: "/images/icon-db.svg", description: "Planning and maintaining scalable IT systems with automated backups, uptime monitoring, CI/CD pipelines, and SSL certificate management." },
 ];
 
 // ── Seed runner ───────────────────────────────────────────────────────────────

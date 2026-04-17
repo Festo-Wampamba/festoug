@@ -89,7 +89,7 @@ export default async function ServicesPage() {
           Services <span className="text-light-gray-70 font-light">&amp; Expertise</span>
         </h2>
         <p className="text-light-gray text-base md:text-lg leading-relaxed">
-          From building websites to managing servers and networks — here&apos;s how I can help.
+          I build websites, manage servers, and configure networks. Here is what I offer.
         </p>
       </header>
 
@@ -119,7 +119,7 @@ export default async function ServicesPage() {
           <h3 className="text-xl font-semibold text-white-2 mb-2 flex items-center gap-3">
             <span className="text-orange-yellow-crayola">02.</span> What I Work On
           </h3>
-          <p className="text-light-gray text-sm">Tell me what you need — I&apos;ll give you a quote.</p>
+          <p className="text-light-gray text-sm">Tell me what you need and I will give you a tailored quote.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -180,7 +180,7 @@ export default async function ServicesPage() {
             <span className="text-orange-yellow-crayola">03.</span> Ongoing Support
           </h3>
           <p className="text-light-gray text-sm">
-            Keep your site and systems running — I handle the technical side.
+            Keep your site and systems running. I handle the technical side.
           </p>
         </div>
 
