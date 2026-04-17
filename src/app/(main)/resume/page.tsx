@@ -83,15 +83,15 @@ export default function ResumePage() {
         </h3>
         <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Technical — from four areas of expertise */}
-          <SkillBar title="Web Development"      value={92} index={0} />
-          <SkillBar title="Server Administration" value={85} index={1} />
-          <SkillBar title="Network Engineering"   value={80} index={2} />
+          <SkillBar title="Web Development"      value={90} index={0} />
+          <SkillBar title="Server Administration" value={99} index={1} />
+          <SkillBar title="Network Engineering"   value={95} index={2} />
           <SkillBar title="IT Infrastructure"     value={83} index={3} />
           {/* Soft skills */}
           <SkillBar title="Problem Solving"       value={90} index={4} />
           <SkillBar title="Team Collaboration"    value={85} index={5} />
           <SkillBar title="Communication"         value={93} index={6} />
-          <SkillBar title="Project Management"    value={78} index={7} />
+          <SkillBar title="Project Management"    value={80} index={7} />
         </ul>
       </div>
     </div>
