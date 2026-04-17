@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 
 const TIERS = [
@@ -12,7 +10,7 @@ const TIERS = [
       "Uptime checks",
       "Email support",
     ],
-    cta: { label: "Get Started →", href: "/get-started?service=support" },
+    cta: { label: "Get Started →", href: "/get-started" },
     featured: false,
   },
   {
@@ -25,7 +23,7 @@ const TIERS = [
       "Priority support",
       "Monthly report",
     ],
-    cta: { label: "Get Started →", href: "/get-started?service=support" },
+    cta: { label: "Get Started →", href: "/get-started" },
     featured: true,
   },
   {
