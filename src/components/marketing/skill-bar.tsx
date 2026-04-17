@@ -54,12 +54,10 @@ export function SkillBar({ title, value, index = 0 }: SkillBarProps) {
   const showThumbs = isHovered && tier === "thumbs";
 
   return (
-    // Outer <li> is the rotating rainbow border wrapper
     <li
       ref={wrapRef}
-      className={`skill-card skill-card-delay-${index} skill-rotating-border`}
+      className={`skill-card skill-card-delay-${index}`}
     >
-      {/* Inner card surface — sits above the conic layer via z-index in CSS */}
       <div
         className="skill-card-inner h-full"
         onMouseEnter={() => setIsHovered(true)}
