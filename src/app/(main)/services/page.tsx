@@ -22,6 +22,8 @@ const SERVICE_CHIPS = [
 const PROJECT_TYPES = [
   {
     name: "Web Projects",
+    num: "01",
+    Icon: Globe,
     items: [
       "Custom websites & web apps",
       "CMS integration",
@@ -29,9 +31,18 @@ const PROJECT_TYPES = [
       "SEO-ready builds",
       "Performance optimization",
     ],
+    borderHover:  "hover:border-orange-yellow-crayola/50",
+    shadowHover:  "hover:shadow-[0_8px_32px_rgba(202,165,93,0.14)]",
+    iconBg:       "bg-orange-yellow-crayola/10",
+    iconColor:    "text-orange-yellow-crayola",
+    accentBar:    "bg-orange-yellow-crayola",
+    dot:          "bg-orange-yellow-crayola",
+    btnHover:     "group-hover:border-orange-yellow-crayola/40 group-hover:text-orange-yellow-crayola",
   },
   {
     name: "Infrastructure & Servers",
+    num: "02",
+    Icon: Server,
     items: [
       "Server setup, hardening & deployment",
       "Nginx / Apache / cPanel setup",
@@ -39,9 +50,18 @@ const PROJECT_TYPES = [
       "Automated backups & monitoring",
       "CI/CD pipelines",
     ],
+    borderHover:  "hover:border-red-400/50",
+    shadowHover:  "hover:shadow-[0_8px_32px_rgba(248,113,113,0.14)]",
+    iconBg:       "bg-red-400/10",
+    iconColor:    "text-red-400",
+    accentBar:    "bg-red-400",
+    dot:          "bg-red-400",
+    btnHover:     "group-hover:border-red-400/40 group-hover:text-red-400",
   },
   {
     name: "Networking",
+    num: "03",
+    Icon: Network,
     items: [
       "Network design & configuration",
       "Firewall & VPN setup",
@@ -49,6 +69,13 @@ const PROJECT_TYPES = [
       "IP addressing & subnetting",
       "DNS management",
     ],
+    borderHover:  "hover:border-cyan-400/50",
+    shadowHover:  "hover:shadow-[0_8px_32px_rgba(34,211,238,0.14)]",
+    iconBg:       "bg-cyan-400/10",
+    iconColor:    "text-cyan-400",
+    accentBar:    "bg-cyan-400",
+    dot:          "bg-cyan-400",
+    btnHover:     "group-hover:border-cyan-400/40 group-hover:text-cyan-400",
   },
 ];
 
@@ -71,11 +98,11 @@ export default async function ServicesPage() {
         <h3 className="text-xl font-semibold text-white-2 mb-6 flex items-center gap-3">
           <span className="text-orange-yellow-crayola">01.</span> What I Offer
         </h3>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {SERVICE_CHIPS.map(({ icon, label }) => (
             <div
               key={label}
-              className="flex items-center gap-2 bg-eerie-black-1 border border-jet rounded-xl px-4 py-2.5 text-sm text-light-gray"
+              className="flex items-center gap-2 bg-eerie-black-1 border border-jet rounded-xl px-4 py-3 text-sm text-light-gray hover:border-orange-yellow-crayola/40 hover:text-white-2 hover:bg-jet/50 transition-all duration-200 cursor-default"
             >
               <span className="text-orange-yellow-crayola">{icon}</span>
               {label}
@@ -99,22 +126,45 @@ export default async function ServicesPage() {
           {PROJECT_TYPES.map((type) => (
             <div
               key={type.name}
-              className="flex flex-col rounded-2xl p-6 bg-eerie-black-1 border border-jet"
+              className={`group relative flex flex-col rounded-2xl p-6 bg-eerie-black-1 border border-jet overflow-hidden
+                transition-all duration-300 hover:-translate-y-1.5
+                ${type.borderHover} ${type.shadowHover}`}
             >
-              <p className="text-sm font-semibold text-white-2 mb-4">{type.name}</p>
-              <ul className="flex-1 space-y-2 mb-6">
+              {/* Top accent bar — revealed on hover */}
+              <div className={`absolute top-0 left-0 right-0 h-0.5 ${type.accentBar} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+              {/* Muted background number */}
+              <span className="absolute top-4 right-4 text-6xl font-black text-white/[0.035] select-none leading-none tabular-nums">
+                {type.num}
+              </span>
+
+              {/* Icon */}
+              <div className={`w-10 h-10 rounded-xl ${type.iconBg} flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3`}>
+                <type.Icon className={`w-5 h-5 ${type.iconColor}`} />
+              </div>
+
+              {/* Title */}
+              <p className="text-sm font-bold text-white-2 mb-5 tracking-wide">{type.name}</p>
+
+              {/* Items */}
+              <ul className="flex-1 space-y-2.5 mb-6">
                 {type.items.map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-light-gray">
-                    <span className="w-1.5 h-1.5 rounded-full bg-orange-yellow-crayola flex-shrink-0" />
+                  <li key={item} className="flex items-center gap-2.5 text-sm text-light-gray">
+                    <span className={`w-1.5 h-1.5 rounded-full ${type.dot} flex-shrink-0 transition-transform duration-300 group-hover:scale-125`} />
                     {item}
                   </li>
                 ))}
               </ul>
+
+              {/* CTA */}
               <Link
                 href="/get-started"
-                className="block text-center py-2.5 rounded-xl border border-jet text-light-gray-70 text-sm font-semibold hover:bg-jet hover:text-white-2 transition-colors"
+                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border border-jet text-light-gray-70 text-sm font-semibold
+                  transition-all duration-300 hover:bg-jet hover:text-white-2
+                  ${type.btnHover}`}
               >
-                Get Started →
+                <span>Get Started</span>
+                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
             </div>
           ))}
