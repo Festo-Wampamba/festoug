@@ -95,3 +95,69 @@ export const testimonialSchema = z.object({
 });
 
 export type TestimonialInput = z.infer<typeof testimonialSchema>;
+
+// ─── Auth Schemas ────────────────────────────────────────────────────────────
+
+export const registerSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name is too long").trim(),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-zA-Z]/, "Password must contain at least one letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+});
+export type RegisterInput = z.infer<typeof registerSchema>;
+
+export const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+export type SignInInput = z.infer<typeof signInSchema>;
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-zA-Z]/, "Must contain at least one letter")
+      .regex(/[0-9]/, "Must contain at least one number"),
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, {
+    message: "Passwords do not match",
+    path: ["confirm"],
+  });
+
+// ─── Profile Schemas ─────────────────────────────────────────────────────────
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name is too long").trim(),
+});
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-zA-Z]/, "Must contain at least one letter")
+      .regex(/[0-9]/, "Must contain at least one number"),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+const ALLOWED_AVATAR_MIME = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const;
+export const avatarUploadSchema = z.object({
+  mimeType: z.enum(ALLOWED_AVATAR_MIME, { error: "Only JPEG, PNG, GIF, or WebP allowed" }),
+  sizeBytes: z.number().max(1_048_576, "File must be under 1MB"),
+});
