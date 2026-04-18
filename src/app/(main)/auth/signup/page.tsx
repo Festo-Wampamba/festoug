@@ -143,7 +143,7 @@ export default function SignUpPage() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {fieldErrors.password && <p role="alert" className="text-cm-muted text-xs mt-1">{fieldErrors.password}</p>}
+              {fieldErrors.password && <p role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.password}</p>}
             </div>
 
             <div>
