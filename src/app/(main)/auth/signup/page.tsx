@@ -5,48 +5,64 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { registerSchema } from "@/lib/validations";
+
+type FieldErrors = { name?: string; email?: string; password?: string; confirm?: string };
 
 export default function SignUpPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setIsLoading("credentials");
+    setFieldErrors({});
 
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const confirm = formData.get("confirm");
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirm = formData.get("confirm") as string;
 
     if (password !== confirm) {
-      setError("Passwords do not match.");
-      setIsLoading(null);
+      setFieldErrors({ confirm: "Passwords do not match." });
       return;
     }
 
+    // Client-side Zod validation
+    const parsed = registerSchema.safeParse({ name, email, password });
+    if (!parsed.success) {
+      const errs: FieldErrors = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0] as keyof FieldErrors;
+        if (!errs[field]) errs[field] = issue.message;
+      }
+      setFieldErrors(errs);
+      return;
+    }
+
+    setIsLoading("credentials");
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify(parsed.data),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
         setError(data.error || "Registration failed. Please try again.");
-        setIsLoading(null);
         return;
       }
 
       router.push("/auth/signin?registered=true");
     } catch {
       setError("An unexpected error occurred.");
+    } finally {
       setIsLoading(null);
     }
   };
@@ -60,7 +76,6 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-cm-bg flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-cm-surface border border-cm-border p-8 rounded-2xl shadow-2xl">
-          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-cm-text text-3xl font-semibold tracking-tight mb-2 font-[family-name:var(--font-inter)]">
               Create your account
@@ -68,7 +83,6 @@ export default function SignUpPage() {
             <p className="text-cm-muted text-sm">Join FestoUG to access digital products</p>
           </div>
 
-          {/* Error message */}
           {error && (
             <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm text-center">
               {error}
@@ -103,33 +117,40 @@ export default function SignUpPage() {
             <hr className="flex-1 border-cm-border" />
           </div>
 
-          {/* Registration Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Full Name</label>
               <input id="name" type="text" name="name" placeholder="John Doe" required autoComplete="name"
-                className="w-full bg-cm-bg border border-cm-border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50" />
+                className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.name ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
+              {fieldErrors.name && <p role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.name}</p>}
             </div>
+
             <div>
               <label htmlFor="email" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Email</label>
               <input id="email" type="email" name="email" placeholder="you@example.com" required autoComplete="email"
-                className="w-full bg-cm-bg border border-cm-border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50" />
+                className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
+              {fieldErrors.email && <p role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.email}</p>}
             </div>
+
             <div>
               <label htmlFor="password" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Password</label>
               <div className="relative">
-                <input id="password" type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 characters" required minLength={8} autoComplete="new-password"
-                  className="w-full bg-cm-bg border border-cm-border text-cm-text text-[15px] px-4 py-3 pr-12 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50" />
+                <input id="password" type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 characters, letters + numbers" required minLength={8} autoComplete="new-password"
+                  className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 pr-12 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
                 <button type="button" onClick={() => setShowPassword((s) => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-cm-muted hover:text-cm-text transition-colors">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {fieldErrors.password && <p role="alert" className="text-cm-muted text-xs mt-1">{fieldErrors.password}</p>}
             </div>
+
             <div>
               <label htmlFor="confirm" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Confirm Password</label>
               <input id="confirm" type={showPassword ? "text" : "password"} name="confirm" placeholder="Re-enter password" required minLength={8} autoComplete="new-password"
-                className="w-full bg-cm-bg border border-cm-border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50" />
+                className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.confirm ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
+              {fieldErrors.confirm && <p role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.confirm}</p>}
             </div>
 
             <button type="submit" disabled={!!isLoading}
