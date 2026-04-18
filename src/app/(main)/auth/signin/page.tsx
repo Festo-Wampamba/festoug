@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { signInSchema } from "@/lib/validations";
 
 function SignInForm() {
   const router = useRouter();
@@ -33,11 +34,27 @@ function SignInForm() {
     setIsLoading("credentials");
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const parsed = signInSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message);
+      setIsLoading(null);
+      return;
+    }
+
     const result = await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
+      email: parsed.data.email,
+      password: parsed.data.password,
       redirect: false,
     });
+
+    if (result?.error === "ACCOUNT_BANNED") {
+      setError("Your account has been suspended. Contact support if you believe this is an error.");
+      setIsLoading(null);
+      return;
+    }
 
     if (result?.error) {
       setError("Invalid email or password.");
