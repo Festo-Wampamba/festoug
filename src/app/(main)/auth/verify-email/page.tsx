@@ -13,6 +13,8 @@ function VerifyEmailContent() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
     if (!token) {
       setStatus("error");
       setErrorMsg("No verification token found. Please use the link from your email.");
@@ -23,7 +25,7 @@ function VerifyEmailContent() {
       .then(async (res) => {
         if (res.ok) {
           setStatus("success");
-          setTimeout(() => router.push("/dashboard"), 2000);
+          timeoutId = setTimeout(() => router.push("/dashboard"), 2000);
         } else {
           const data = await res.json();
           setStatus("error");
@@ -34,7 +36,9 @@ function VerifyEmailContent() {
         setStatus("error");
         setErrorMsg("An unexpected error occurred. Please try again.");
       });
-  }, [token, router]);
+
+    return () => clearTimeout(timeoutId);
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-cm-bg flex items-center justify-center p-4">
