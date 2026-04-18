@@ -118,6 +118,7 @@ export type SignInInput = z.infer<typeof signInSchema>;
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 
 export const resetPasswordSchema = z
   .object({
@@ -125,14 +126,15 @@ export const resetPasswordSchema = z
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
-      .regex(/[a-zA-Z]/, "Must contain at least one letter")
-      .regex(/[0-9]/, "Must contain at least one number"),
+      .regex(/[a-zA-Z]/, "Password must contain at least one letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
     confirm: z.string(),
   })
   .refine((d) => d.password === d.confirm, {
     message: "Passwords do not match",
     path: ["confirm"],
   });
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 
 // ─── Profile Schemas ─────────────────────────────────────────────────────────
 
@@ -147,17 +149,19 @@ export const changePasswordSchema = z
     newPassword: z
       .string()
       .min(8, "Password must be at least 8 characters")
-      .regex(/[a-zA-Z]/, "Must contain at least one letter")
-      .regex(/[0-9]/, "Must contain at least one number"),
+      .regex(/[a-zA-Z]/, "Password must contain at least one letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
     confirmPassword: z.string(),
   })
   .refine((d) => d.newPassword === d.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
 const ALLOWED_AVATAR_MIME = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const;
 export const avatarUploadSchema = z.object({
   mimeType: z.enum(ALLOWED_AVATAR_MIME, { error: "Only JPEG, PNG, GIF, or WebP allowed" }),
   sizeBytes: z.number().max(1_048_576, "File must be under 1MB"),
 });
+export type AvatarUploadInput = z.infer<typeof avatarUploadSchema>;
