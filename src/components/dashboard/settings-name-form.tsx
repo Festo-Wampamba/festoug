@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { updateProfile, type ProfileActionState } from "@/actions/user";
 import { UserCircle, Loader2 } from "lucide-react";
@@ -11,10 +11,12 @@ export function SettingsNameForm({ initialName }: { initialName: string }) {
     updateProfile,
     null
   );
+  const [successCount, setSuccessCount] = useState(0);
 
   useEffect(() => {
     if (state?.success) {
       updateSession();
+      setSuccessCount((c) => c + 1);
     }
   }, [state, updateSession]);
 
@@ -28,12 +30,14 @@ export function SettingsNameForm({ initialName }: { initialName: string }) {
       </label>
       <form action={formAction} className="flex gap-3">
         <input
+          key={successCount}
           id="name"
           type="text"
           name="name"
           defaultValue={initialName}
           required
           maxLength={100}
+          aria-describedby={state?.error ? "name-error" : undefined}
           className="flex-1 bg-eerie-black-2 border border-jet text-white-2 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all placeholder:text-light-gray-70"
           placeholder="Your full name"
         />
@@ -47,10 +51,10 @@ export function SettingsNameForm({ initialName }: { initialName: string }) {
         </button>
       </form>
       {state?.error && (
-        <p className="text-red-400 text-xs mt-2">{state.error}</p>
+        <p id="name-error" role="alert" className="text-red-400 text-xs mt-2">{state.error}</p>
       )}
       {state?.success && (
-        <p className="text-green-400 text-xs mt-2">Name updated successfully.</p>
+        <p role="status" className="text-green-400 text-xs mt-2">Name updated successfully.</p>
       )}
     </div>
   );
