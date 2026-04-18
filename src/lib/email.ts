@@ -33,6 +33,33 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   });
 }
 
+export async function sendVerificationEmail(email: string, token: string) {
+  const resend = getResend();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const verifyUrl = `${appUrl}/auth/verify-email?token=${token}`;
+
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",
+    to: email,
+    subject: "Verify your FestoUG email address",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
+        <h2 style="color: #D6E4F0; margin-bottom: 16px;">Verify your email</h2>
+        <p style="color: #5D7A9A; font-size: 14px; line-height: 1.6;">
+          Thanks for signing up! Click the button below to verify your email address.
+          This link expires in 24 hours.
+        </p>
+        <a href="${verifyUrl}" style="display: inline-block; background: #5BA4CF; color: #0B1120; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px;">
+          Verify Email
+        </a>
+        <p style="color: #5D7A9A; font-size: 12px; margin-top: 24px;">
+          If you didn't create an account, you can safely ignore this email.
+        </p>
+      </div>
+    `,
+  });
+}
+
 export async function sendTrialWelcomeEmail(
   email: string,
   name: string,
