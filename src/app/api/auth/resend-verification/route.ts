@@ -1,21 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { auth } from "@/lib/auth";
 import { withRetry } from "@/lib/db";
 import { users, verificationTokens } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { sendVerificationEmail } from "@/lib/email";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Rate limit: 1 resend per 5 minutes per user
-    const limiter = rateLimit(`resend-verification:${session.user.id}`, {
+    // Rate limit by both userId and IP for defense-in-depth
+    const ip = getClientIp(req);
+    const limiter = rateLimit(`resend-verification:${session.user.id}:${ip}`, {
       limit: 1,
       windowSeconds: 300,
     });
@@ -26,7 +27,6 @@ export async function POST() {
       );
     }
 
-    // Fetch current emailVerified status
     const [user] = await withRetry((db) =>
       db
         .select({ email: users.email, emailVerified: users.emailVerified })
@@ -43,14 +43,13 @@ export async function POST() {
       return NextResponse.json({ error: "Email is already verified" }, { status: 400 });
     }
 
-    // Delete any existing tokens for this email
+    // Delete any existing tokens for this email, then insert a fresh one
     await withRetry((db) =>
       db
         .delete(verificationTokens)
         .where(eq(verificationTokens.identifier, user.email))
     );
 
-    // Create a new token
     const token = crypto.randomBytes(32).toString("hex");
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 

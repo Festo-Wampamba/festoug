@@ -10,20 +10,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Token is required" }, { status: 400 });
     }
 
-    // Find a non-expired token
-    const [tokenRow] = await withRetry((db) =>
+    // Atomically delete the token and get the identifier back.
+    // This prevents race conditions — only the first request succeeds.
+    const deleted = await withRetry((db) =>
       db
-        .select()
-        .from(verificationTokens)
+        .delete(verificationTokens)
         .where(
           and(
             eq(verificationTokens.token, token),
             gt(verificationTokens.expires, new Date())
           )
         )
-        .limit(1)
+        .returning({ identifier: verificationTokens.identifier })
     );
 
+    const tokenRow = deleted[0];
     if (!tokenRow) {
       return NextResponse.json(
         { error: "This link is invalid or has expired. Please request a new one." },
@@ -37,18 +38,6 @@ export async function GET(req: NextRequest) {
         .update(users)
         .set({ emailVerified: new Date() })
         .where(eq(users.email, tokenRow.identifier))
-    );
-
-    // Delete the used token
-    await withRetry((db) =>
-      db
-        .delete(verificationTokens)
-        .where(
-          and(
-            eq(verificationTokens.identifier, tokenRow.identifier),
-            eq(verificationTokens.token, token)
-          )
-        )
     );
 
     return NextResponse.json({ success: true });
