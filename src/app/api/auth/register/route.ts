@@ -27,7 +27,8 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const { name, email, password } = parsed.data;
+    const { name, password } = parsed.data;
+    const email = parsed.data.email.toLowerCase();
 
     const [banned] = await db
       .select({ id: bannedEmails.id })
