@@ -1,13 +1,15 @@
 import { db } from "@/lib/db";
-import { users, bannedEmails } from "@/lib/db/schema";
+import { users, bannedEmails, verificationTokens } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { registerSchema } from "@/lib/validations";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   try {
-    // Rate limit: 5 registration attempts per IP per 15 minutes
     const ip = getClientIp(req);
     const limiter = rateLimit(`register:${ip}`, { limit: 5, windowSeconds: 900 });
     if (!limiter.success) {
@@ -17,20 +19,16 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, email, password } = await req.json();
-
-    if (!name || !email || !password) {
-      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
-    }
-
-    if (password.length < 8) {
+    const body = await req.json();
+    const parsed = registerSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters." },
+        { error: parsed.error.issues[0].message },
         { status: 400 }
       );
     }
+    const { name, email, password } = parsed.data;
 
-    // Check if email is permanently banned
     const [banned] = await db
       .select({ id: bannedEmails.id })
       .from(bannedEmails)
@@ -44,7 +42,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if user already exists
     const [existing] = await db
       .select({ id: users.id })
       .from(users)
@@ -58,10 +55,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Insert new user
     await db.insert(users).values({
       name,
       email,
@@ -69,12 +64,24 @@ export async function POST(req: Request) {
       role: "CUSTOMER",
     });
 
-    return NextResponse.json({ success: true }, { status: 201 });
-  } catch (error: any) {
-    console.error("[REGISTER]", error);
-    return NextResponse.json(
-      { error: "Internal server error." },
-      { status: 500 }
+    // Generate and store email verification token (24h expiry)
+    const token = crypto.randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await db.insert(verificationTokens).values({
+      identifier: email,
+      token,
+      expires,
+    });
+
+    // Fire-and-forget — don't fail registration if email send fails
+    sendVerificationEmail(email, token).catch((err) =>
+      console.error("[REGISTER] Verification email failed:", err)
     );
+
+    return NextResponse.json({ success: true }, { status: 201 });
+  } catch (error: unknown) {
+    console.error("[REGISTER]", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }
 }
