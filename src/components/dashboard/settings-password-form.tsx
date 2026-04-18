@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { changePasswordSchema } from "@/lib/validations";
 
 export function SettingsPasswordForm({ hasPassword }: { hasPassword: boolean }) {
