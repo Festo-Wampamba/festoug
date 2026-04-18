@@ -179,6 +179,12 @@
 .testimonial-slide-next { animation: slide-in-right 0.4s cubic-bezier(0.22,1,0.36,1); }
 .testimonial-slide-prev { animation: slide-in-left  0.4s cubic-bezier(0.22,1,0.36,1); }
 
+/* Contain animation reflows so nothing outside the carousel shifts */
+.testimonial-viewport {
+  contain: layout style;
+  min-height: 220px;
+}
+
 /* ─── Education icon — scanning text lines ─── */
 @keyframes edu-scan {
   0%   { stroke-dashoffset: 20;  opacity: 0.25; }

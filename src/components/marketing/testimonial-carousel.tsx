@@ -18,6 +18,7 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
   const [isMobile,  setIsMobile]  = useState(false);
   const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
   const dragStartX = useRef<number | null>(null);
+  const cardsRef   = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -45,6 +46,16 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
     startTimer();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [startTimer]);
+
+  // Restart CSS animation without remounting (prevents layout-reflow flicker)
+  useEffect(() => {
+    const el = cardsRef.current;
+    if (!el) return;
+    const cls = direction === "next" ? "testimonial-slide-next" : "testimonial-slide-prev";
+    el.classList.remove("testimonial-slide-next", "testimonial-slide-prev");
+    void el.getBoundingClientRect(); // force reflow locally
+    el.classList.add(cls);
+  }, [current, direction]);
 
   const pause  = useCallback(() => { if (timerRef.current) clearInterval(timerRef.current); }, []);
   const resume = startTimer;
@@ -84,7 +95,7 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
 
   return (
     <div
-      className="relative select-none cursor-grab active:cursor-grabbing"
+      className="relative select-none cursor-grab active:cursor-grabbing testimonial-viewport"
       onMouseEnter={pause}
       onMouseLeave={onMouseLeave}
       onFocus={pause}
@@ -98,14 +109,11 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
       aria-label="Testimonials carousel"
       tabIndex={0}
     >
-      {/* Cards — key on `current` triggers re-mount → CSS animation fires */}
       <div
-        key={current}
+        ref={cardsRef}
         aria-live="polite"
         aria-atomic="true"
-        className={`flex gap-4 pointer-events-none ${
-          direction === "next" ? "testimonial-slide-next" : "testimonial-slide-prev"
-        }`}
+        className="flex gap-4 pointer-events-none"
       >
         {visible.map((t, i) => (
           <TestimonialCard
