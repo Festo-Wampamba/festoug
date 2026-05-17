@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withRetry } from "@/lib/db";
 import { users, verificationTokens } from "@/lib/db/schema";
 import { eq, and, gt } from "drizzle-orm";
+import { sendEmailVerifiedEmail } from "@/lib/email";
 
 export async function GET(req: NextRequest) {
   try {
@@ -32,12 +33,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Mark email as verified
-    await withRetry((db) =>
+    // Mark email as verified and get user name for confirmation email
+    const [updatedUser] = await withRetry((db) =>
       db
         .update(users)
         .set({ emailVerified: new Date() })
         .where(eq(users.email, tokenRow.identifier))
+        .returning({ name: users.name })
+    );
+
+    sendEmailVerifiedEmail(tokenRow.identifier, updatedUser?.name ?? null).catch(
+      (e) => console.error("[VERIFY_EMAIL_CONFIRM_ERROR]", e)
     );
 
     return NextResponse.json({ success: true });
