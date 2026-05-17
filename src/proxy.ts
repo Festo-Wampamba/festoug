@@ -33,7 +33,7 @@ export default auth((req: NextRequest & { auth: any }) => {
   }
 
   // ── Redirect auth pages when already signed in ──────────────────────────
-  if (isLoggedIn && pathname.startsWith("/auth")) {
+  if (isLoggedIn && pathname.startsWith("/auth") && pathname !== "/auth/verify-email") {
     const dest = role === "ADMIN" ? "/admin" : "/dashboard";
     return NextResponse.redirect(new URL(dest, req.url));
   }
