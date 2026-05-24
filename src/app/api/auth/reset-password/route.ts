@@ -1,33 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { withRetry } from "@/lib/db";
 import { users, passwordResetTokens } from "@/lib/db/schema";
 import { eq, and, gt } from "drizzle-orm";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { resetPasswordSchema } from "@/lib/validations";
+
+function hashToken(raw: string): string {
+  return crypto.createHash("sha256").update(raw).digest("hex");
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { token, password } = await req.json();
-
-    if (!token || !password || typeof password !== "string") {
-      return NextResponse.json({ error: "Token and password are required" }, { status: 400 });
+    const ip = getClientIp(req);
+    const limiter = rateLimit(`reset-password:${ip}`, { limit: 10, windowSeconds: 900 });
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please try again later." },
+        { status: 429 }
+      );
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
+    const body = await req.json();
+    // The form submits `confirm` separately; if absent, default it to password
+    // so server-side validation matches what the client enforced.
+    const parsed = resetPasswordSchema.safeParse({
+      token: body?.token,
+      password: body?.password,
+      confirm: body?.confirm ?? body?.password,
+    });
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0].message },
+        { status: 400 }
+      );
     }
+    const { token, password } = parsed.data;
 
-    const [resetToken] = await withRetry((db) =>
-      db.select()
-        .from(passwordResetTokens)
+    // Tokens are stored hashed; hash the incoming token before lookup.
+    const tokenHash = hashToken(token);
+
+    // Atomically consume the token to prevent double-use / race conditions.
+    const consumed = await withRetry((db) =>
+      db
+        .delete(passwordResetTokens)
         .where(
           and(
-            eq(passwordResetTokens.token, token),
+            eq(passwordResetTokens.token, tokenHash),
             gt(passwordResetTokens.expiresAt, new Date())
           )
         )
-        .limit(1)
+        .returning({ userId: passwordResetTokens.userId })
     );
 
+    const resetToken = consumed[0];
     if (!resetToken) {
       return NextResponse.json(
         { error: "Invalid or expired reset link. Please request a new one." },
@@ -43,6 +70,7 @@ export async function POST(req: NextRequest) {
         .where(eq(users.id, resetToken.userId))
     );
 
+    // Belt-and-braces: drop any other outstanding tokens for this user
     await withRetry((db) =>
       db.delete(passwordResetTokens)
         .where(eq(passwordResetTokens.userId, resetToken.userId))
