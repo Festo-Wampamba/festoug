@@ -56,8 +56,14 @@ export function rateLimit(
 }
 
 /** Extract client IP from request headers */
-export function getClientIp(req: Request): string {
+export function getClientIp(req: Request | any): string {
+  // If running in an environment where req.ip is populated (e.g. Next.js Edge/Middleware)
+  if (req.ip) return req.ip;
+  // Fallback to proxy headers. Prioritize x-real-ip as it's typically set by the immediate proxy (e.g. Nginx, Vercel).
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
+  // Fallback to x-forwarded-for, but be aware it can be spoofed if not stripped by the proxy.
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
-  return req.headers.get("x-real-ip") || "unknown";
+  return "unknown";
 }

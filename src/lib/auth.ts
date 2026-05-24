@@ -130,8 +130,11 @@ export const authConfig: NextAuthConfig = {
       return true;
     },
 
-    // Attach role + accountStatus to the JWT on sign-in
+    // Attach role + accountStatus to the JWT on sign-in,
+    // and refresh from DB on every request (with short TTL) so that
+    // bans / role changes take effect without requiring sign-out.
     async jwt({ token, user }) {
+      // ── Initial sign-in: seed the token from the user object ───────────
       if (user) {
         token.id = user.id;
         // @ts-expect-error role is a custom field
@@ -155,7 +158,32 @@ export const authConfig: NextAuthConfig = {
 
         token.role = role ?? "CUSTOMER";
         token.accountStatus = accountStatus ?? "ACTIVE";
+        token.statusCheckedAt = Date.now();
+        return token;
       }
+
+      // ── Subsequent requests: refresh role + status from DB ──────────────
+      // Prevents stale-JWT bypass where a banned/demoted user keeps using a
+      // pre-ban token until expiry. Uses a 30s TTL to bound DB load.
+      const REFRESH_INTERVAL_MS = 30 * 1000;
+      const lastChecked = (token.statusCheckedAt as number | undefined) ?? 0;
+      const isStale = Date.now() - lastChecked > REFRESH_INTERVAL_MS;
+
+      if (isStale && authDb && token.id) {
+        const [dbUser] = await authDb
+          .select({ role: users.role, accountStatus: users.accountStatus })
+          .from(users)
+          .where(eq(users.id, token.id as string))
+          .limit(1);
+
+        // User deleted → invalidate the token entirely
+        if (!dbUser) return null;
+
+        token.role = dbUser.role;
+        token.accountStatus = dbUser.accountStatus;
+        token.statusCheckedAt = Date.now();
+      }
+
       return token;
     },
 
