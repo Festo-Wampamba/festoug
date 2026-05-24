@@ -7,10 +7,22 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { signInSchema } from "@/lib/validations";
 
+/**
+ * Only allow relative same-origin redirects. Blocks `//evil.com`,
+ * `https://evil.com`, and protocol-bypass variants (`/\\evil.com`).
+ */
+function safeCallbackUrl(raw: string | null): string {
+  const fallback = "/dashboard";
+  if (!raw) return fallback;
+  if (!raw.startsWith("/")) return fallback;
+  if (raw.startsWith("//") || raw.startsWith("/\\")) return fallback;
+  return raw;
+}
+
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
