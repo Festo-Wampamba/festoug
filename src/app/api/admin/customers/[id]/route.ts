@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users, bannedEmails } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { sendAccountBannedEmail } from "@/lib/email";
 
 export async function PATCH(
   request: Request,
@@ -42,16 +43,21 @@ export async function PATCH(
     await db.update(users).set({ accountStatus: action }).where(eq(users.id, id));
 
     if (action === "BANNED") {
+      const banReason = reason || "Terms of service violation";
       try {
         await db.insert(bannedEmails).values({
           email: targetUser.email.toLowerCase(),
-          reason: reason || "Terms of service violation",
+          reason: banReason,
           bannedBy: session.user.id,
         });
       } catch (e: any) {
         // Ignore unique-constraint violation (email already in banned list)
         if (!e.message?.includes("unique")) throw e;
       }
+      // Fire-and-forget — don't block the response
+      sendAccountBannedEmail(targetUser.email, targetUser.name, banReason).catch(
+        (e) => console.error("[BAN_EMAIL_ERROR]", e)
+      );
     }
 
     if (action === "ACTIVE") {

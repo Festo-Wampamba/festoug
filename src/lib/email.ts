@@ -222,6 +222,64 @@ export async function sendPaymentAcknowledgmentEmail(inquiry: {
   });
 }
 
+export async function sendEmailVerifiedEmail(email: string, name: string | null) {
+  const resend = getResend();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const dashboardUrl = `${appUrl}/dashboard`;
+  const displayName = name || "there";
+
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",
+    to: email,
+    subject: "Your FestoUG email has been verified",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;background:#080c14;color:#e2e8f0;">
+        <h2 style="color:#f8fafc;margin-bottom:8px;">Email verified, ${displayName}! ✅</h2>
+        <p style="color:#64748b;font-size:14px;line-height:1.7;">
+          Your email address <strong style="color:#f1f5f9;">${email}</strong> has been successfully verified.
+          Your account is now fully active.
+        </p>
+        <a href="${dashboardUrl}" style="display:inline-block;background:#10b981;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:24px;">
+          Go to Dashboard →
+        </a>
+        <p style="color:#334155;font-size:12px;margin-top:32px;">
+          Questions? Reply to this email — I read every one.
+        </p>
+      </div>
+    `,
+  });
+}
+
+export async function sendAccountBannedEmail(
+  email: string,
+  name: string | null,
+  reason: string
+) {
+  const resend = getResend();
+  const displayName = name || "there";
+
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",
+    to: email,
+    subject: "Your FestoUG account has been suspended",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;background:#080c14;color:#e2e8f0;">
+        <h2 style="color:#f87171;margin-bottom:8px;">Account Suspended, ${displayName}</h2>
+        <p style="color:#64748b;font-size:14px;line-height:1.7;">
+          Your FestoUG account associated with <strong style="color:#f1f5f9;">${email}</strong> has been permanently suspended.
+        </p>
+        <div style="background:#1c0a0a;border:1px solid #7f1d1d;border-radius:10px;padding:14px;margin-top:20px;">
+          <p style="color:#94a3b8;font-size:12px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Reason</p>
+          <p style="color:#fca5a5;font-size:13px;margin:0;">${reason}</p>
+        </div>
+        <p style="color:#475569;font-size:13px;margin-top:24px;">
+          If you believe this is a mistake, reply to this email to appeal.
+        </p>
+      </div>
+    `,
+  });
+}
+
 export async function sendProjectInquiryNotification(inquiry: {
   name: string;
   email: string;
