@@ -20,7 +20,17 @@ export default auth((req: NextRequest & { auth: any }) => {
 
   // ── Force banned users out of all protected routes ──────────────────────
   if (isLoggedIn && accountStatus === "BANNED") {
-    // If they try to access any protected route, redirect to a banned page
+    // Block ALL API mutations regardless of route — banned users cannot write
+    const method = req.method.toUpperCase();
+    const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+    const isApiRoute = pathname.startsWith("/api/") && !pathname.startsWith("/api/auth");
+    if (isMutation && isApiRoute) {
+      return NextResponse.json(
+        { error: "Your account has been permanently suspended." },
+        { status: 403 }
+      );
+    }
+    // Redirect from any protected page route
     if (
       pathname.startsWith("/dashboard") ||
       pathname.startsWith("/trial") ||
