@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     );
 
     const token = crypto.randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expires = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry
 
     await withRetry((db) =>
       db.insert(verificationTokens).values({

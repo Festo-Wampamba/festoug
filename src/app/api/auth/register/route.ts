@@ -65,9 +65,9 @@ export async function POST(req: Request) {
       role: "CUSTOMER",
     });
 
-    // Generate and store email verification token (24h expiry)
+    // Generate and store email verification token (5 min expiry)
     const token = crypto.randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expires = new Date(Date.now() + 5 * 60 * 1000);
 
     await db.insert(verificationTokens).values({
       identifier: email,
@@ -75,10 +75,14 @@ export async function POST(req: Request) {
       expires,
     });
 
-    // Fire-and-forget — don't fail registration if email send fails
-    sendVerificationEmail(email, token).catch((err) =>
-      console.error("[REGISTER] Verification email failed:", err)
-    );
+    // Await the send — on serverless a fire-and-forget promise is killed once
+    // the response returns, so the signup email never goes out. Awaiting (in a
+    // try/catch) guarantees delivery is attempted without failing registration.
+    try {
+      await sendVerificationEmail(email, token);
+    } catch (err) {
+      console.error("[REGISTER] Verification email failed:", err);
+    }
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error: unknown) {

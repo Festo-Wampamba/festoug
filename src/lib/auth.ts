@@ -161,7 +161,7 @@ export const authConfig: NextAuthConfig = {
     // Attach role + accountStatus to the JWT on sign-in,
     // and refresh from DB on every request (with short TTL) so that
     // bans / role changes take effect without requiring sign-out.
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       // ── Initial sign-in: seed the token from the user object ───────────
       if (user) {
         token.id = user.id;
@@ -200,8 +200,11 @@ export const authConfig: NextAuthConfig = {
       const REFRESH_INTERVAL_MS = 30 * 1000;
       const lastChecked = (token.statusCheckedAt as number | undefined) ?? 0;
       const isStale = Date.now() - lastChecked > REFRESH_INTERVAL_MS;
+      // A client-initiated session.update() bypasses the TTL so a just-verified
+      // user picks up emailVerified immediately instead of waiting 30s.
+      const forceRefresh = trigger === "update";
 
-      if (isStale && authDb && token.id) {
+      if ((isStale || forceRefresh) && authDb && token.id) {
         const [dbUser] = await authDb
           .select({ role: users.role, accountStatus: users.accountStatus, emailVerified: users.emailVerified })
           .from(users)
