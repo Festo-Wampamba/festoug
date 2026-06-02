@@ -29,7 +29,17 @@ export async function POST(req: Request) {
       const externalOrderId = payload.data.id.toString();
       const amount = (orderData.total / 100).toFixed(2); // LS sends amounts in cents
       const currency = orderData.currency.toUpperCase();
-      
+
+      // Idempotency: LS retries webhooks and can deliver the same event more than
+      // once. Skip if this order is already recorded — prevents duplicate rows and,
+      // critically, duplicate license issuance for a single payment.
+      const alreadyProcessed = await db.query.orders.findFirst({
+        where: eq(orders.externalOrderId, externalOrderId),
+      });
+      if (alreadyProcessed) {
+        return NextResponse.json({ message: "Order already processed" }, { status: 200 });
+      }
+
       // Look up user if passed in custom data
       let userId = null;
       if (customData.user_id) {
@@ -102,6 +112,15 @@ export async function POST(req: Request) {
       }
 
       const lsSubscriptionId = payload.data.id.toString();
+
+      // Idempotency: skip if this subscription is already recorded (LS retries).
+      const existingSub = await db.query.subscriptions.findFirst({
+        where: eq(subscriptions.lsSubscriptionId, lsSubscriptionId),
+      });
+      if (existingSub) {
+        return NextResponse.json({ message: "Subscription already processed" }, { status: 200 });
+      }
+
       const lsVariantId      = subData.variant_id?.toString() || "";
       const renewsAt         = subData.renews_at
         ? new Date(subData.renews_at)

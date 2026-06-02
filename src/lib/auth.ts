@@ -9,8 +9,9 @@ import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/lib/db/schema";
 import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import type { DefaultSession, NextAuthConfig } from "next-auth";
 
 // Extend the built-in session types to carry the user role
@@ -20,6 +21,7 @@ declare module "next-auth" {
       id: string;
       role: "ADMIN" | "CUSTOMER";
       accountStatus: "ACTIVE" | "SUSPENDED" | "BANNED";
+      isVerified: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -86,13 +88,26 @@ export const authConfig: NextAuthConfig = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password || !authDb) return null;
+
+        const email = (credentials.email as string).toLowerCase();
+
+        // Throttle password attempts before the expensive bcrypt compare.
+        // Keyed by email (+ IP when available) to slow credential brute-force.
+        // NOTE: in-memory store — effective per serverless instance only. For
+        // multi-instance production, back this with a shared store (Redis/KV).
+        let ip = "unknown";
+        try { ip = getClientIp(request as Request); } catch { /* no request ctx */ }
+        const limiter = rateLimit(`login:${email}:${ip}`, { limit: 5, windowSeconds: 900 });
+        if (!limiter.success) {
+          throw new Error("RATE_LIMITED");
+        }
 
         const [user] = await authDb
           .select()
           .from(users)
-          .where(eq(users.email, credentials.email as string))
+          .where(eq(users.email, email))
           .limit(1);
 
         if (!user?.passwordHash) return null;
@@ -116,6 +131,7 @@ export const authConfig: NextAuthConfig = {
           image: user.image,
           role: user.role,
           accountStatus: user.accountStatus,
+          emailVerified: !!user.emailVerified,
         };
       },
     }),
@@ -123,10 +139,22 @@ export const authConfig: NextAuthConfig = {
 
   callbacks: {
     // Allow OAuth sign-in even when adapter has issues
-    async signIn({ account }) {
+    async signIn({ account, user }) {
       // Always allow credentials (handled by authorize())
       if (account?.provider === "credentials") return true;
-      // Allow all OAuth providers
+
+      // OAuth providers (Google/GitHub) have already verified the user's email,
+      // so mark the account verified if the adapter didn't already set it.
+      if (account && authDb && user?.id) {
+        try {
+          await authDb
+            .update(users)
+            .set({ emailVerified: new Date() })
+            .where(and(eq(users.id, user.id), isNull(users.emailVerified)));
+        } catch (e) {
+          console.error("[AUTH] OAuth emailVerified backfill failed:", e);
+        }
+      }
       return true;
     },
 
@@ -141,23 +169,27 @@ export const authConfig: NextAuthConfig = {
         let role = user.role;
         // @ts-expect-error accountStatus is a custom field
         let accountStatus = user.accountStatus;
+        // @ts-expect-error emailVerified is a custom field
+        let emailVerified = user.emailVerified;
 
         // For OAuth sign-ins the adapter user object may not carry
-        // custom columns (role, accountStatus). Fetch them from the DB.
-        if (!role && authDb && user.id) {
+        // custom columns (role, accountStatus, emailVerified). Fetch from DB.
+        if ((!role || emailVerified === undefined) && authDb && user.id) {
           const [dbUser] = await authDb
-            .select({ role: users.role, accountStatus: users.accountStatus })
+            .select({ role: users.role, accountStatus: users.accountStatus, emailVerified: users.emailVerified })
             .from(users)
             .where(eq(users.id, user.id))
             .limit(1);
           if (dbUser) {
             role = dbUser.role;
             accountStatus = dbUser.accountStatus;
+            emailVerified = !!dbUser.emailVerified;
           }
         }
 
         token.role = role ?? "CUSTOMER";
         token.accountStatus = accountStatus ?? "ACTIVE";
+        token.emailVerified = !!emailVerified;
         token.statusCheckedAt = Date.now();
         return token;
       }
@@ -171,7 +203,7 @@ export const authConfig: NextAuthConfig = {
 
       if (isStale && authDb && token.id) {
         const [dbUser] = await authDb
-          .select({ role: users.role, accountStatus: users.accountStatus })
+          .select({ role: users.role, accountStatus: users.accountStatus, emailVerified: users.emailVerified })
           .from(users)
           .where(eq(users.id, token.id as string))
           .limit(1);
@@ -181,18 +213,20 @@ export const authConfig: NextAuthConfig = {
 
         token.role = dbUser.role;
         token.accountStatus = dbUser.accountStatus;
+        token.emailVerified = !!dbUser.emailVerified;
         token.statusCheckedAt = Date.now();
       }
 
       return token;
     },
 
-    // Expose role, id, and accountStatus on the session object for client use
+    // Expose role, id, accountStatus, and emailVerified on the session object
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
         session.user.role = (token.role as "ADMIN" | "CUSTOMER") ?? "CUSTOMER";
         session.user.accountStatus = (token.accountStatus as "ACTIVE" | "SUSPENDED" | "BANNED") ?? "ACTIVE";
+        session.user.isVerified = !!token.emailVerified;
       }
       return session;
     },
