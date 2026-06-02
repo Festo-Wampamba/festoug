@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { changePasswordSchema } from "@/lib/validations";
+import { authClient } from "@/lib/auth-client";
 
 export function SettingsPasswordForm({ hasPassword }: { hasPassword: boolean }) {
   const [showCurrent, setShowCurrent] = useState(false);
@@ -32,14 +33,13 @@ export function SettingsPasswordForm({ hasPassword }: { hasPassword: boolean }) 
 
     setLoading(true);
     try {
-      const res = await fetch("/api/user/password", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+      const { error: err } = await authClient.changePassword({
+        currentPassword: parsed.data.currentPassword,
+        newPassword: parsed.data.newPassword,
+        revokeOtherSessions: true,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Failed to update password.");
+      if (err) {
+        setError(err.message || "Failed to update password.");
         return;
       }
       setSuccess(true);

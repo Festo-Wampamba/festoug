@@ -1,37 +1,38 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { auth } from "@/lib/better-auth";
 
 /**
- * proxy.ts — Next.js 16 Auth Guard (replaces middleware.ts)
+ * Auth gate (Better Auth) — Next 16 proxy convention.
  *
- * Purpose: Optimistic, lightweight checks only.
- * - Reads the session cookie to decide on redirects.
- * - Does NOT do heavy DB lookups here (role-check is done in DAL / Server Actions).
- * - Enforces account status: BANNED users are force-signed-out, SUSPENDED users
- *   are allowed read-only access (write-blocking is handled at API/page level).
+ * Email/password users cannot obtain a session until verified
+ * (requireEmailVerification), so an unverified user simply has no session here.
+ * OAuth users are pre-verified by the provider.
  */
-export default auth((req: NextRequest & { auth: any }) => {
+export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const session = req.auth; // session from the JWT cookie (no DB hit)
-  const isLoggedIn = !!session?.user;
-  const role = session?.user?.role;
-  const accountStatus = session?.user?.accountStatus;
-  const emailVerified = session?.user?.isVerified;
 
-  // ── Force banned users out of all protected routes ──────────────────────
+  const session = await auth.api.getSession({ headers: req.headers });
+  const user = session?.user as
+    | { role?: "ADMIN" | "CUSTOMER"; accountStatus?: "ACTIVE" | "SUSPENDED" | "BANNED" }
+    | undefined;
+
+  const isLoggedIn = !!user;
+  const role = user?.role;
+  const accountStatus = user?.accountStatus;
+
+  const method = req.method.toUpperCase();
+  const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+  const isApiRoute = pathname.startsWith("/api/") && !pathname.startsWith("/api/auth");
+
+  // ── Banned users: blocked everywhere ────────────────────────────────────
   if (isLoggedIn && accountStatus === "BANNED") {
-    // Block ALL API mutations regardless of route — banned users cannot write
-    const method = req.method.toUpperCase();
-    const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
-    const isApiRoute = pathname.startsWith("/api/") && !pathname.startsWith("/api/auth");
     if (isMutation && isApiRoute) {
       return NextResponse.json(
         { error: "Your account has been permanently suspended." },
         { status: 403 }
       );
     }
-    // Redirect from any protected page route
     if (
       pathname.startsWith("/dashboard") ||
       pathname.startsWith("/trial") ||
@@ -43,100 +44,46 @@ export default auth((req: NextRequest & { auth: any }) => {
     }
   }
 
-  // ── Require verified email (sign-in-then-gate) ──────────────────────────
-  // Unverified credential users may sign in but cannot use account features
-  // until they verify. OAuth sign-ins are auto-verified; admins are exempt.
-  // The verification page and all /api/auth routes (resend, verify, signout)
-  // stay reachable so the user can complete verification.
-  if (isLoggedIn && !emailVerified && role !== "ADMIN") {
-    const isAuthRoute = pathname.startsWith("/api/auth");
-    const isVerifyPage = pathname === "/auth/verify-email";
-
-    if (!isAuthRoute && !isVerifyPage) {
-      const method = req.method.toUpperCase();
-      const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
-
-      // Block all account-writing API calls
-      if (pathname.startsWith("/api/") && isMutation) {
-        return NextResponse.json(
-          { error: "Please verify your email address to continue." },
-          { status: 403 }
-        );
-      }
-      // Redirect protected pages to the verification gate
-      if (
-        pathname.startsWith("/dashboard") ||
-        pathname.startsWith("/trial") ||
-        pathname.startsWith("/admin")
-      ) {
-        return NextResponse.redirect(new URL("/auth/verify-email", req.url));
-      }
-    }
+  // ── Suspended users: read-only (block API writes) ───────────────────────
+  if (isLoggedIn && accountStatus === "SUSPENDED" && isMutation && isApiRoute) {
+    return NextResponse.json(
+      { error: "Your account is temporarily suspended. You can only view content." },
+      { status: 403 }
+    );
   }
 
-  // ── Redirect auth pages when already signed in ──────────────────────────
-  if (isLoggedIn && pathname.startsWith("/auth") && pathname !== "/auth/verify-email") {
+  // ── Already signed in → bounce away from auth pages ─────────────────────
+  if (isLoggedIn && pathname.startsWith("/auth")) {
     const dest = role === "ADMIN" ? "/admin" : "/dashboard";
     return NextResponse.redirect(new URL(dest, req.url));
   }
 
-  // ── Protect customer dashboard ───────────────────────────────────────────
-  if (pathname.startsWith("/dashboard")) {
+  // ── Customer dashboard / trial ──────────────────────────────────────────
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/trial")) {
     if (!isLoggedIn) {
       const signInUrl = new URL("/auth/signin", req.url);
       signInUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(signInUrl);
     }
-    // Admins should use /admin instead
     if (role === "ADMIN") {
       return NextResponse.redirect(new URL("/admin", req.url));
     }
   }
 
-  // ── Protect trial routes ─────────────────────────────────────────────────
-  if (pathname.startsWith("/trial")) {
-    if (!isLoggedIn) {
-      const signInUrl = new URL("/auth/signin", req.url);
-      signInUrl.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(signInUrl);
-    }
-    // Admins should use /admin instead
-    if (role === "ADMIN") {
-      return NextResponse.redirect(new URL("/admin", req.url));
-    }
-  }
-
-  // ── Protect admin routes (optimistic role hint from JWT) ─────────────────
+  // ── Admin routes ────────────────────────────────────────────────────────
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/auth/signin", req.url));
     }
     if (role !== "ADMIN") {
-      // Redirect non-admins to a 403 / home page
       return NextResponse.redirect(new URL("/?error=forbidden", req.url));
     }
   }
 
-  // ── Block SUSPENDED users from mutating API routes ──────────────────────
-  if (isLoggedIn && accountStatus === "SUSPENDED") {
-    const method = req.method.toUpperCase();
-    const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
-    const isApiRoute = pathname.startsWith("/api/") && !pathname.startsWith("/api/auth");
-
-    if (isMutation && isApiRoute) {
-      return NextResponse.json(
-        { error: "Your account is temporarily suspended. You can only view content." },
-        { status: 403 }
-      );
-    }
-  }
-
   return NextResponse.next();
-});
+}
 
 export const config = {
-  matcher: [
-    // Match all routes except static files and Next.js internals
-    "/((?!_next/static|_next/image|favicon.ico|images|icons).*)",
-  ],
+  // Proxy always runs on the Node.js runtime (required for auth.api.getSession).
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|images|icons).*)"],
 };

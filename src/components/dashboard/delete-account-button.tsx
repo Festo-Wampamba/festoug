@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signOut } from "next-auth/react";
+import { signOut } from "@/lib/auth-client";
 import { Trash2, Loader2 } from "lucide-react";
 
 export function DeleteAccountButton() {
@@ -17,7 +17,8 @@ export function DeleteAccountButton() {
         const data = await res.json();
         throw new Error(data.error || "Failed to delete account");
       }
-      await signOut({ callbackUrl: "/" });
+      await signOut();
+      window.location.href = "/";
     } catch (err: any) {
       alert(err.message);
       setLoading(false);

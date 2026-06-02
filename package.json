@@ -2,6 +2,11 @@
   "name": "festoug",
   "version": "0.1.0",
   "private": true,
+  "pnpm": {
+    "overrides": {
+      "kysely": "0.28.17"
+    }
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -22,6 +27,7 @@
     "@ai-sdk/react": "3.0.118",
     "@auth/drizzle-adapter": "^1.11.1",
     "@base-ui/react": "^1.2.0",
+    "@better-auth/infra": "^0.2.11",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@neondatabase/serverless": "^1.0.2",
     "@tiptap/extension-code-block-lowlight": "^3.20.1",
@@ -36,10 +42,11 @@
     "@vercel/analytics": "^2.0.1",
     "ai": "^6.0.116",
     "bcryptjs": "^3.0.3",
+    "better-auth": "^1.6.13",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "^0.45.2",
     "isomorphic-dompurify": "^3.1.0",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.577.0",
