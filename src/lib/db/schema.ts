@@ -147,7 +147,7 @@ export const orders = pgTable(
       .notNull()
       .references(() => products.id, { onDelete: "restrict" }),
     gateway: gatewayEnum("gateway").notNull(),
-    externalOrderId: text("external_order_id"),
+    externalOrderId: text("external_order_id").unique(),
     status: orderStatusEnum("status").default("PENDING").notNull(),
     amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
     currency: text("currency").default("USD").notNull(),
