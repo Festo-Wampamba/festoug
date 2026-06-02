@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -16,15 +17,13 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const { error: resetError } = await authClient.requestPasswordReset({
+        email,
+        redirectTo: "/auth/reset-password",
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Something went wrong.");
+      if (resetError) {
+        setError(resetError.message || "Something went wrong.");
         setIsLoading(false);
         return;
       }

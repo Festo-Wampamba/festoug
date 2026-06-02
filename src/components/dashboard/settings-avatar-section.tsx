@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { Loader2, Camera } from "lucide-react";
 
 const MAX_SIZE = 1_048_576; // 1MB
@@ -14,7 +14,6 @@ export function SettingsAvatarSection({
   initialImage: string | null;
   initialName: string;
 }) {
-  const { update: updateSession } = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(initialImage);
   const [uploading, setUploading] = useState(false);
@@ -53,7 +52,7 @@ export function SettingsAvatarSection({
       }
 
       setPreview(data.imageUrl);
-      await updateSession();
+      await authClient.getSession({ query: { disableCookieCache: true } });
     } catch {
       setError("An unexpected error occurred.");
       setPreview(initialImage);

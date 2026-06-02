@@ -89,6 +89,9 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
 
   // Always show 2 cards, wrapping around — on mobile show 1
   const cardCount = isMobile ? 1 : 2;
+  // No testimonials → render nothing (avoids `% 0` = NaN indexing into undefined).
+  if (total === 0) return null;
+
   const visible = Array.from({ length: cardCount }, (_, i) =>
     testimonials[(current + i) % total]
   );

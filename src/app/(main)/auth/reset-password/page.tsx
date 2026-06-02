@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -40,16 +41,13 @@ function ResetPasswordForm() {
     }
 
     try {
-      const res = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+      const { error: resetError } = await authClient.resetPassword({
+        newPassword: password,
+        token: token as string,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "Something went wrong.");
+      if (resetError) {
+        setError(resetError.message || "Something went wrong.");
         setIsLoading(false);
         return;
       }

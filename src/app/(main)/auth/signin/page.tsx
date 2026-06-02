@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, sendVerificationEmail } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -56,20 +56,19 @@ function SignInForm() {
       return;
     }
 
-    const result = await signIn("credentials", {
+    const { error: signInError } = await signIn.email({
       email: parsed.data.email,
       password: parsed.data.password,
-      redirect: false,
+      callbackURL: callbackUrl,
     });
 
-    if (result?.error === "ACCOUNT_BANNED") {
-      setError("Your account has been suspended. Contact support if you believe this is an error.");
-      setIsLoading(null);
-      return;
-    }
-
-    if (result?.error) {
-      setError("Invalid email or password.");
+    if (signInError) {
+      if (signInError.code === "EMAIL_NOT_VERIFIED" || signInError.status === 403) {
+        setError("Please verify your email — we've sent you a fresh verification link.");
+        await sendVerificationEmail({ email: parsed.data.email, callbackURL: callbackUrl }).catch(() => {});
+      } else {
+        setError("Invalid email or password.");
+      }
       setIsLoading(null);
       return;
     }
@@ -79,7 +78,7 @@ function SignInForm() {
 
   const handleOAuth = async (provider: "github" | "google") => {
     setIsLoading(provider);
-    await signIn(provider, { callbackUrl });
+    await signIn.social({ provider, callbackURL: callbackUrl });
   };
 
   return (

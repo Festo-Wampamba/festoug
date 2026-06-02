@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut } from "@/lib/auth-client";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -23,7 +23,7 @@ const links = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const desktopButtonRef = useRef<HTMLButtonElement>(null);
@@ -141,7 +141,7 @@ export function Navbar() {
               <li className="border-t border-jet mt-1 pt-1">
                 <button
                   type="button"
-                  onClick={() => { setDropdownOpen(false); signOut({ callbackUrl: "/" }); }}
+                  onClick={() => { setDropdownOpen(false); signOut().finally(() => { window.location.href = "/"; }); }}
                   className="flex items-center gap-3 px-4 py-2.5 text-red-400 text-sm hover:bg-jet transition-colors w-full text-left"
                 >
                   <LogOut className="w-4 h-4" /> Sign Out
@@ -210,7 +210,7 @@ export function Navbar() {
           </div>
 
           {/* User account */}
-          {status !== "loading" && (
+          {!isPending && (
             session?.user ? (
               <button
                 ref={mobileButtonRef}
@@ -268,7 +268,7 @@ export function Navbar() {
             <div className="w-8 h-8 flex items-center justify-center shrink-0">
               <ThemeToggle />
             </div>
-            {status === "loading" ? null : session?.user ? (
+            {isPending ? null : session?.user ? (
               <button
                 ref={desktopButtonRef}
                 type="button"

@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { withRetry } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { users, accounts } from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
 import { Lock, AlertTriangle } from "lucide-react";
 import { DeleteAccountButton } from "@/components/dashboard/delete-account-button";
 import { SettingsNameForm } from "@/components/dashboard/settings-name-form";
@@ -21,6 +21,14 @@ export default async function SettingsPage() {
   );
 
   if (!user) return null;
+
+  // Password lives in the Better Auth `account` table (providerId "credential").
+  const credentialAccount = await withRetry((db) =>
+    db.query.accounts.findFirst({
+      where: and(eq(accounts.userId, session.user.id), eq(accounts.providerId, "credential")),
+    })
+  );
+  const hasPassword = !!credentialAccount;
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500 max-w-3xl">
@@ -60,7 +68,7 @@ export default async function SettingsPage() {
           <h4 className="text-white-2 font-medium flex items-center gap-2 mb-4 pb-2 border-b border-jet">
             <Lock className="w-4 h-4" /> Security
           </h4>
-          <SettingsPasswordForm hasPassword={!!user.passwordHash} />
+          <SettingsPasswordForm hasPassword={hasPassword} />
         </div>
       </div>
 

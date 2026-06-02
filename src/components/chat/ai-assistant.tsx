@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import type { UIMessage } from "ai";
 import { Bot, X, Send, User, Sparkles, Loader2, ChevronDown } from "lucide-react";
 

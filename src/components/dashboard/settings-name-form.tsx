@@ -1,12 +1,11 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { updateProfile, type ProfileActionState } from "@/actions/user";
 import { UserCircle, Loader2 } from "lucide-react";
 
 export function SettingsNameForm({ initialName }: { initialName: string }) {
-  const { update: updateSession } = useSession();
   const [state, formAction, pending] = useActionState<ProfileActionState, FormData>(
     updateProfile,
     null
@@ -15,10 +14,10 @@ export function SettingsNameForm({ initialName }: { initialName: string }) {
 
   useEffect(() => {
     if (state?.success) {
-      updateSession();
+      authClient.getSession({ query: { disableCookieCache: true } });
       setSuccessCount((c) => c + 1);
     }
-  }, [state, updateSession]);
+  }, [state]);
 
   return (
     <div>
