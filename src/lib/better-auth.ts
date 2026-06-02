@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { dash } from "@better-auth/infra";
 import { neon } from "@neondatabase/serverless";
 import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
 import postgres from "postgres";
@@ -102,5 +103,5 @@ export const auth = betterAuth({
       generateId: () => crypto.randomUUID(), // uuid ids to fit the existing columns
     },
   },
-  plugins: [nextCookies()], // must be last
+  plugins: [dash(), nextCookies()], // nextCookies must be last
 });
