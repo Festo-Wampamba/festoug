@@ -90,7 +90,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: result.secure_url }, { status: 201 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
+    // Log full detail server-side; return a generic message so backend/provider
+    // internals are not disclosed to the client.
     console.error("Upload Error:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 500 });
   }
 }
