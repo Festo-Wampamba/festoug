@@ -17,6 +17,7 @@ export default auth((req: NextRequest & { auth: any }) => {
   const isLoggedIn = !!session?.user;
   const role = session?.user?.role;
   const accountStatus = session?.user?.accountStatus;
+  const emailVerified = session?.user?.isVerified;
 
   // ── Force banned users out of all protected routes ──────────────────────
   if (isLoggedIn && accountStatus === "BANNED") {
@@ -39,6 +40,37 @@ export default auth((req: NextRequest & { auth: any }) => {
       pathname.startsWith("/api/checkout")
     ) {
       return NextResponse.redirect(new URL("/banned", req.url));
+    }
+  }
+
+  // ── Require verified email (sign-in-then-gate) ──────────────────────────
+  // Unverified credential users may sign in but cannot use account features
+  // until they verify. OAuth sign-ins are auto-verified; admins are exempt.
+  // The verification page and all /api/auth routes (resend, verify, signout)
+  // stay reachable so the user can complete verification.
+  if (isLoggedIn && !emailVerified && role !== "ADMIN") {
+    const isAuthRoute = pathname.startsWith("/api/auth");
+    const isVerifyPage = pathname === "/auth/verify-email";
+
+    if (!isAuthRoute && !isVerifyPage) {
+      const method = req.method.toUpperCase();
+      const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+
+      // Block all account-writing API calls
+      if (pathname.startsWith("/api/") && isMutation) {
+        return NextResponse.json(
+          { error: "Please verify your email address to continue." },
+          { status: 403 }
+        );
+      }
+      // Redirect protected pages to the verification gate
+      if (
+        pathname.startsWith("/dashboard") ||
+        pathname.startsWith("/trial") ||
+        pathname.startsWith("/admin")
+      ) {
+        return NextResponse.redirect(new URL("/auth/verify-email", req.url));
+      }
     }
   }
 

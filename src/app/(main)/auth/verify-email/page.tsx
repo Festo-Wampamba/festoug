@@ -2,30 +2,35 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, MailCheck } from "lucide-react";
 
 function VerifyEmailContent() {
   const router = useRouter();
   const params = useSearchParams();
   const token = params.get("token");
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  // "gate" = user landed here without a token (redirected by the verification
+  // gate). "loading" = a token is present and being verified.
+  const [status, setStatus] = useState<"loading" | "success" | "error" | "gate">(
+    token ? "loading" : "gate"
+  );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [resend, setResend] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [resendMsg, setResendMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!token) return; // gate state — nothing to verify
     let timeoutId: ReturnType<typeof setTimeout>;
-
-    if (!token) {
-      setStatus("error");
-      setErrorMsg("No verification token found. Please use the link from your email.");
-      return;
-    }
 
     fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}`)
       .then(async (res) => {
         if (res.ok) {
           setStatus("success");
-          timeoutId = setTimeout(() => router.push("/dashboard"), 2000);
+          // Full reload so the refreshed JWT (emailVerified=true) is picked up.
+          timeoutId = setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 2000);
         } else {
           const data = await res.json();
           setStatus("error");
@@ -38,7 +43,26 @@ function VerifyEmailContent() {
       });
 
     return () => clearTimeout(timeoutId);
-  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, router]);
+
+  async function handleResend() {
+    setResend("sending");
+    setResendMsg(null);
+    try {
+      const res = await fetch("/api/auth/resend-verification", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setResend("sent");
+        setResendMsg("Verification email sent. Check your inbox (and spam folder).");
+      } else {
+        setResend("error");
+        setResendMsg(data.error || "Could not send the email. Please try again shortly.");
+      }
+    } catch {
+      setResend("error");
+      setResendMsg("An unexpected error occurred. Please try again.");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-cm-bg flex items-center justify-center p-4">
@@ -60,16 +84,82 @@ function VerifyEmailContent() {
             </>
           )}
 
+          {status === "gate" && (
+            <>
+              <MailCheck className="w-12 h-12 text-cm-ocean mx-auto mb-4" />
+              <h1 className="text-cm-text text-2xl font-semibold mb-2">Verify your email</h1>
+              <p className="text-cm-muted text-sm mb-6">
+                Your account is almost ready. We sent a verification link to your email —
+                click it to unlock your dashboard and all features.
+              </p>
+
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resend === "sending" || resend === "sent"}
+                className="w-full bg-cm-ocean text-cm-bg font-semibold text-sm py-2.5 px-6 rounded-xl hover:brightness-110 transition-all disabled:opacity-50"
+              >
+                {resend === "sending"
+                  ? "Sending…"
+                  : resend === "sent"
+                  ? "Email sent"
+                  : "Resend verification email"}
+              </button>
+
+              {resendMsg && (
+                <p
+                  className={`text-sm mt-4 ${
+                    resend === "error" ? "text-red-400" : "text-green-400"
+                  }`}
+                >
+                  {resendMsg}
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+                className="text-cm-muted text-sm mt-6 hover:text-cm-text transition-colors"
+              >
+                Sign out
+              </button>
+            </>
+          )}
+
           {status === "error" && (
             <>
               <XCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
               <h1 className="text-cm-text text-2xl font-semibold mb-2">Verification failed</h1>
               <p className="text-cm-muted text-sm mb-6">{errorMsg}</p>
+
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resend === "sending" || resend === "sent"}
+                className="w-full bg-cm-ocean text-cm-bg font-semibold text-sm py-2.5 px-6 rounded-xl hover:brightness-110 transition-all disabled:opacity-50"
+              >
+                {resend === "sending"
+                  ? "Sending…"
+                  : resend === "sent"
+                  ? "Email sent"
+                  : "Send a new verification link"}
+              </button>
+
+              {resendMsg && (
+                <p
+                  className={`text-sm mt-4 ${
+                    resend === "error" ? "text-red-400" : "text-green-400"
+                  }`}
+                >
+                  {resendMsg}
+                </p>
+              )}
+
               <Link
                 href="/dashboard"
-                className="inline-block bg-cm-ocean text-cm-bg font-semibold text-sm py-2.5 px-6 rounded-xl hover:brightness-110 transition-all"
+                className="block text-cm-muted text-sm mt-6 hover:text-cm-text transition-colors"
               >
-                Go to Dashboard
+                Back to dashboard
               </Link>
             </>
           )}

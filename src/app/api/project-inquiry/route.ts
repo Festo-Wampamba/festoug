@@ -2,30 +2,38 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { projectInquiries } from "@/lib/db/schema";
 import { sendProjectInquiryNotification } from "@/lib/email";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { projectInquirySchema } from "@/lib/validations";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { name, email, company, plan, timeline, vision } = body as {
-      name: string;
-      email: string;
-      company?: string;
-      plan: string;
-      timeline: string;
-      vision: string;
-    };
-
-    if (!name || !email || !plan || !timeline || !vision) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    // Public, unauthenticated endpoint — rate limit to prevent spam / DB flooding
+    // / admin email bombing.
+    const ip = getClientIp(req);
+    const limiter = rateLimit(`project-inquiry:${ip}`, { limit: 3, windowSeconds: 900 });
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: "Too many submissions. Please try again later." },
+        { status: 429 }
+      );
     }
 
+    const parsed = projectInquirySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0].message },
+        { status: 400 }
+      );
+    }
+    const { name, email, company, plan, timeline, vision } = parsed.data;
+
     const [inquiry] = await db.insert(projectInquiries).values({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      company: company?.trim() || null,
+      name,
+      email: email.toLowerCase(),
+      company: company || null,
       plan,
       timeline,
-      vision: vision.trim(),
+      vision,
       status: "NEW",
     }).returning();
 

@@ -3,14 +3,19 @@ services:
     image: postgres:16-alpine
     container_name: festoug-db
     restart: unless-stopped
+    # Bind to loopback only — never expose the dev DB on all host interfaces.
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
-      POSTGRES_USER: festoug
-      POSTGRES_PASSWORD: festoug_dev
-      POSTGRES_DB: festoug
+      POSTGRES_USER: ${POSTGRES_USER:-festoug}
+      # Source from env; fall back to a dev-only default for local bring-up.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-festoug_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-festoug}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    # Cap resources so a runaway query can't starve the host.
+    mem_limit: 512m
+    cpus: 1.0
 
 volumes:
   pgdata:
