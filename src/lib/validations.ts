@@ -165,3 +165,15 @@ export const avatarUploadSchema = z.object({
   sizeBytes: z.number().max(1_048_576, "File must be under 1MB"),
 });
 export type AvatarUploadInput = z.infer<typeof avatarUploadSchema>;
+
+// ─── Project Inquiry (public custom-project form) ────────────────────────────
+
+export const projectInquirySchema = z.object({
+  name: z.string().min(1, "Name is required").max(100).trim(),
+  email: z.string().email("Invalid email address").max(200),
+  company: z.string().max(200).trim().optional(),
+  plan: z.string().min(1, "Plan is required").max(100),
+  timeline: z.string().min(1, "Timeline is required").max(100),
+  vision: z.string().min(1, "Project details are required").max(5000).trim(),
+});
+export type ProjectInquiryInput = z.infer<typeof projectInquirySchema>;
