@@ -61,7 +61,7 @@ export async function sendVerificationEmail(email: string, token: string) {
         <h2 style="color: #D6E4F0; margin-bottom: 16px;">Verify your email</h2>
         <p style="color: #5D7A9A; font-size: 14px; line-height: 1.6;">
           Thanks for signing up! Click the button below to verify your email address.
-          This link expires in 24 hours.
+          This link expires in 5 minutes.
         </p>
         <a href="${verifyUrl}" style="display: inline-block; background: #5BA4CF; color: #0B1120; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px;">
           Verify Email
