@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { CheckCircle, XCircle, Loader2, MailCheck } from "lucide-react";
 
 function VerifyEmailContent() {
-  const router = useRouter();
+  const { update } = useSession();
   const params = useSearchParams();
   const token = params.get("token");
   // "gate" = user landed here without a token (redirected by the verification
@@ -27,10 +27,13 @@ function VerifyEmailContent() {
       .then(async (res) => {
         if (res.ok) {
           setStatus("success");
-          // Full reload so the refreshed JWT (emailVerified=true) is picked up.
+          // Force the JWT to refresh now so the proxy gate sees emailVerified=true
+          // immediately (otherwise it bounces back here until the 30s TTL lapses).
+          await update();
+          // Full reload so the refreshed session cookie is applied.
           timeoutId = setTimeout(() => {
             window.location.href = "/dashboard";
-          }, 2000);
+          }, 1500);
         } else {
           const data = await res.json();
           setStatus("error");
@@ -43,7 +46,7 @@ function VerifyEmailContent() {
       });
 
     return () => clearTimeout(timeoutId);
-  }, [token, router]);
+  }, [token, update]);
 
   async function handleResend() {
     setResend("sending");
