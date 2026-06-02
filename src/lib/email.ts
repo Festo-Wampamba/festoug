@@ -20,10 +20,8 @@ function escapeHtml(value: string | null | undefined): string {
     .replace(/'/g, "&#39;");
 }
 
-export async function sendPasswordResetEmail(email: string, token: string) {
+export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   const resend = getResend();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const resetUrl = `${appUrl}/auth/reset-password?token=${token}`;
 
   await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",
@@ -47,10 +45,8 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   });
 }
 
-export async function sendVerificationEmail(email: string, token: string) {
+export async function sendVerificationEmail(email: string, verifyUrl: string) {
   const resend = getResend();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const verifyUrl = `${appUrl}/auth/verify-email?token=${token}`;
 
   await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",

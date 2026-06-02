@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, signUp } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -46,16 +46,15 @@ export default function SignUpPage() {
 
     setIsLoading("credentials");
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+      const { error: signUpError } = await signUp.email({
+        name: parsed.data.name,
+        email: parsed.data.email,
+        password: parsed.data.password,
+        callbackURL: "/dashboard",
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "Registration failed. Please try again.");
+      if (signUpError) {
+        setError(signUpError.message || "Registration failed. Please try again.");
         return;
       }
 
@@ -69,7 +68,7 @@ export default function SignUpPage() {
 
   const handleOAuth = async (provider: "github" | "google") => {
     setIsLoading(provider);
-    await signIn(provider, { callbackUrl: "/dashboard" });
+    await signIn.social({ provider, callbackURL: "/dashboard" });
   };
 
   return (
