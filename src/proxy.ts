@@ -3,13 +3,13 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/lib/better-auth";
 
 /**
- * Auth gate (Better Auth). Replaces the old NextAuth proxy.ts.
+ * Auth gate (Better Auth) — Next 16 proxy convention.
  *
  * Email/password users cannot obtain a session until verified
  * (requireEmailVerification), so an unverified user simply has no session here.
  * OAuth users are pre-verified by the provider.
  */
-export async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const session = await auth.api.getSession({ headers: req.headers });
@@ -84,6 +84,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  runtime: "nodejs", // auth.api.getSession needs Node runtime
+  // Proxy always runs on the Node.js runtime (required for auth.api.getSession).
   matcher: ["/((?!_next/static|_next/image|favicon.ico|images|icons).*)"],
 };
