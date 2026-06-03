@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { neon } from "@neondatabase/serverless";
 import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
@@ -7,7 +8,7 @@ import postgres from "postgres";
 import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import bcrypt from "bcryptjs";
 import * as schema from "@/lib/db/schema";
-import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/email";
+import { sendVerificationEmail, sendPasswordResetEmail, sendPasswordResetOTP } from "@/lib/email";
 
 /**
  * Better Auth needs a concrete drizzle instance (not the lazy Proxy from
@@ -55,7 +56,10 @@ export const auth = betterAuth({
       verify: ({ hash, password }) => bcrypt.compare(password, hash),
     },
     sendResetPassword: async ({ user, url }) => {
-      await sendPasswordResetEmail(user.email, url);
+      // Embed email in the reset URL so the reset page can auto sign-in after reset
+      const resetUrl = new URL(url);
+      resetUrl.searchParams.set("email", user.email);
+      await sendPasswordResetEmail(user.email, resetUrl.toString());
     },
     resetPasswordTokenExpiresIn: 60 * 5, // 5 minutes
   },
@@ -101,11 +105,25 @@ export const auth = betterAuth({
     database: {
       generateId: () => crypto.randomUUID(), // uuid ids to fit the existing columns
     },
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: ".festoug.com",
+    },
   },
   trustedOrigins: [
     "https://festoug.com",
     "https://www.festoug.com",
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
   ],
-  plugins: [nextCookies()], // nextCookies must be last
+  plugins: [
+    emailOTP({
+      sendVerificationOTP: async ({ email, otp, type }) => {
+        if (type === "forget-password") {
+          await sendPasswordResetOTP(email, otp);
+        }
+      },
+      expiresIn: 60 * 5, // 5 minutes
+    }),
+    nextCookies(), // nextCookies must be last
+  ],
 });

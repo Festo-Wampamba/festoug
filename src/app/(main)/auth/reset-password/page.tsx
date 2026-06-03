@@ -3,12 +3,13 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { authClient, signIn } from "@/lib/auth-client";
 
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const emailParam = searchParams.get("email");
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,6 +53,18 @@ function ResetPasswordForm() {
         return;
       }
 
+      // Auto sign-in if we have the email embedded in the reset URL
+      if (emailParam) {
+        const { error: signInError } = await signIn.email({
+          email: emailParam,
+          password,
+          callbackURL: "/dashboard",
+        });
+        if (!signInError) {
+          router.push("/dashboard");
+          return;
+        }
+      }
       router.push("/auth/signin?reset=true");
     } catch {
       setError("An unexpected error occurred.");

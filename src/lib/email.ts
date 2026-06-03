@@ -20,6 +20,28 @@ function escapeHtml(value: string | null | undefined): string {
     .replace(/'/g, "&#39;");
 }
 
+export async function sendPasswordResetOTP(email: string, otp: string) {
+  const resend = getResend();
+
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || "FestoUG <onboarding@resend.dev>",
+    to: email,
+    subject: "Your FestoUG password reset code",
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;background:#080c14;color:#e2e8f0;">
+        <h2 style="color:#D6E4F0;margin-bottom:16px;">Password reset code</h2>
+        <p style="color:#5D7A9A;font-size:14px;line-height:1.6;">
+          Use the code below to reset your password. It expires in 5 minutes.
+        </p>
+        <div style="background:#0f172a;border:1px solid #1e3a5f;border-radius:12px;padding:28px;text-align:center;margin:24px 0;">
+          <span style="font-size:40px;font-weight:700;letter-spacing:14px;color:#5BA4CF;font-family:monospace;">${otp}</span>
+        </div>
+        <p style="color:#5D7A9A;font-size:12px;">If you didn't request this, you can safely ignore this email.</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   const resend = getResend();
 
