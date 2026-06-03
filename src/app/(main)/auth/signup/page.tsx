@@ -58,7 +58,7 @@ export default function SignUpPage() {
         return;
       }
 
-      router.push("/auth/signin?registered=true");
+      router.push(`/auth/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
     } catch {
       setError("An unexpected error occurred.");
     } finally {
