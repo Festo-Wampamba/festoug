@@ -106,7 +106,7 @@ export const auth = betterAuth({
       generateId: () => crypto.randomUUID(), // uuid ids to fit the existing columns
     },
     crossSubDomainCookies: {
-      enabled: true,
+      enabled: process.env.VERCEL_ENV === "production",
       domain: ".festoug.com",
     },
   },
