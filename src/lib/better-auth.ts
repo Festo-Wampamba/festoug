@@ -8,7 +8,7 @@ import postgres from "postgres";
 import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import bcrypt from "bcryptjs";
 import * as schema from "@/lib/db/schema";
-import { sendVerificationEmail, sendPasswordResetEmail, sendPasswordResetOTP } from "@/lib/email";
+import { sendVerificationEmail, sendPasswordResetEmail, sendPasswordResetOTP, sendVerificationOTPEmail } from "@/lib/email";
 
 /**
  * Better Auth needs a concrete drizzle instance (not the lazy Proxy from
@@ -64,7 +64,8 @@ export const auth = betterAuth({
     resetPasswordTokenExpiresIn: 60 * 5, // 5 minutes
   },
   emailVerification: {
-    sendOnSignUp: true,
+    // OTP plugin handles the signup verification email (single email with code + link).
+    sendOnSignUp: false,
     autoSignInAfterVerification: true,
     expiresIn: 60 * 5, // 5 minutes
     sendVerificationEmail: async ({ user, url }) => {
@@ -113,9 +114,12 @@ export const auth = betterAuth({
   ],
   plugins: [
     emailOTP({
+      sendVerificationOnSignUp: true, // email/password signups get a verification OTP
       sendVerificationOTP: async ({ email, otp, type }) => {
         if (type === "forget-password") {
           await sendPasswordResetOTP(email, otp);
+        } else if (type === "email-verification") {
+          await sendVerificationOTPEmail(email, otp);
         }
       },
       expiresIn: 60 * 5, // 5 minutes
