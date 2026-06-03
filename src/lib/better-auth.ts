@@ -102,6 +102,10 @@ export const auth = betterAuth({
       generateId: () => crypto.randomUUID(), // uuid ids to fit the existing columns
     },
   },
-  trustedOrigins: ["https://festoug.com", "https://www.festoug.com"],
+  trustedOrigins: [
+    "https://festoug.com",
+    "https://www.festoug.com",
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+  ],
   plugins: [nextCookies()], // nextCookies must be last
 });
