@@ -17,6 +17,16 @@ const nextConfig: NextConfig = {
   // (frame-ancestors, object-src, base-uri) so it does not break the inline
   // theme-bootstrap script or third-party analytics. Tighten script-src with a
   // nonce later if a stricter policy is required.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "festoug.com" }],
+        destination: "https://www.festoug.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
