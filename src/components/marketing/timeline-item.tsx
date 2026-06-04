@@ -30,16 +30,20 @@ export function TimelineItem({ institution, period, program, role, description }
   }, []);
 
   return (
-    <li ref={ref} className="reveal-item relative mb-6 ml-0 sm:ml-5">
-      <div className="hidden sm:block absolute top-[5px] left-[calc(-20px-11px)] w-[12px] h-[12px] bg-orange-yellow-crayola rounded-full z-10 shadow-[0_0_0_4px_theme(colors.jet)]" />
-
-      <h4 className="text-white-2 text-[13px] sm:text-[15px] font-semibold capitalize mb-[4px] sm:mb-[6px]">
+    <li
+      ref={ref}
+      className="reveal-item card-sheen group relative mb-4 overflow-hidden rounded-xl
+        bg-eerie-black-1 border border-jet hover:border-light-gray-70/30
+        p-4 sm:p-5 transition-[transform,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
+        hover:-translate-y-1 motion-reduce:hover:translate-y-0"
+    >
+      <h4 className="text-white-2 text-[14px] sm:text-[16px] font-bold capitalize mb-1 font-head leading-snug">
         {program || role}
       </h4>
-      <h5 className="text-light-gray text-[12px] sm:text-[14px] font-medium capitalize mb-[4px] sm:mb-[6px]">
+      <h5 className="text-accent-3 text-[12px] sm:text-[13px] font-medium capitalize mb-1">
         {institution}
       </h5>
-      <span className="text-orange-yellow-crayola text-[11px] sm:text-[13px] font-light block mb-[8px] sm:mb-[10px] tracking-wide">
+      <span className="text-accent-2 text-[11px] sm:text-[12px] font-medium block mb-2.5 tracking-wide">
         {period}
       </span>
       <div className="text-light-gray text-[13px] sm:text-[14px] font-light leading-[1.7] space-y-2">
