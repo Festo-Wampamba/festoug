@@ -164,11 +164,12 @@ export function Navbar() {
         onMouseLeave={() => setIsNavFocused(false)}
         onTouchStart={handleNavTouch}
       >
-        <div className="flex items-center gap-0 sm:gap-0.5 md:gap-1
-          px-2 py-1.5 sm:px-2.5 sm:py-2 md:px-3 md:py-2.5
+        <div className="flex items-center gap-0.5 sm:gap-1
+          px-2 py-1.5 sm:px-2.5 sm:py-2
+          overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
           bg-eerie-black-2/90 backdrop-blur-2xl
           border border-white/[0.07]
-          rounded-full
+          rounded-[26px]
           shadow-[0_8px_40px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)]">
 
           {/* Nav icon links */}
@@ -180,23 +181,22 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 title={link.label}
-                className={`relative flex items-center justify-center
-                  w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
-                  rounded-full
-                  transition-all duration-200 shrink-0
+                className={`relative flex flex-col items-center justify-center gap-0.5
+                  shrink-0 px-2.5 sm:px-3 py-1.5
+                  rounded-2xl
+                  transition-all duration-200
                   ${isActive
                     ? "bg-orange-yellow-crayola/15 text-orange-yellow-crayola"
                     : "text-light-gray-70 hover:text-white-2 hover:bg-white/5"
                   }`}
               >
                 <link.Icon
-                  className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] md:w-[18px] md:h-[18px]"
+                  className="w-[17px] h-[17px] sm:w-[18px] sm:h-[18px]"
                   strokeWidth={isActive ? 2.2 : 1.8}
                 />
-                {/* Active dot indicator */}
-                {isActive && (
-                  <span className="absolute bottom-[3px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-orange-yellow-crayola" />
-                )}
+                <span className="text-[10px] sm:text-[11px] font-medium leading-none">
+                  {link.label}
+                </span>
               </Link>
             );
           })}

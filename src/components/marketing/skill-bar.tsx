@@ -67,6 +67,9 @@ export function SkillBar({ title, value, index = 0 }: SkillBarProps) {
 
   const ringColor = tier ? TIER_RING_COLOR[tier] : undefined;
 
+  // Front ring colour by score: >=90 green, else amber/orange
+  const frontRing = value >= 90 ? "text-accent-2" : "text-accent-4";
+
   return (
     <li
       ref={wrapRef}
@@ -96,7 +99,7 @@ export function SkillBar({ title, value, index = 0 }: SkillBarProps) {
                   strokeLinecap="round"
                   strokeDasharray={CIRCUMFERENCE}
                   strokeDashoffset={visible ? targetOffset : CIRCUMFERENCE}
-                  className="ring-progress text-orange-yellow-crayola"
+                  className={`ring-progress ${frontRing}`}
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -153,7 +156,7 @@ export function SkillBar({ title, value, index = 0 }: SkillBarProps) {
                     strokeWidth="6" strokeLinecap="round"
                     strokeDasharray={CIRCUMFERENCE}
                     strokeDashoffset={visible ? targetOffset : CIRCUMFERENCE}
-                    className="ring-progress text-orange-yellow-crayola" />
+                    className={`ring-progress ${frontRing}`} />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-white-2 text-[18px] font-bold tabular-nums leading-none">

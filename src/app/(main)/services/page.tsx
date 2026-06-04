@@ -85,7 +85,7 @@ export default async function ServicesPage() {
 
       {/* Page Header */}
       <header className="mb-16 xl:max-w-[60%]">
-        <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-orange-yellow-crayola before:rounded-sm">
+        <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-gradient-to-r before:from-orange-yellow-crayola before:to-orange-400 before:rounded-sm">
           Services <span className="text-light-gray-70 font-light">&amp; Expertise</span>
         </h2>
         <p className="text-light-gray text-base md:text-lg leading-relaxed">
