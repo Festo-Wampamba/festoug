@@ -25,3 +25,22 @@ export function sanitizeHtml(dirty: string): string {
     allowedSchemes: ["http", "https", "mailto"],
   });
 }
+
+/**
+ * Strip all HTML tags from rich-text content, returning plain text.
+ * Used for short previews (e.g. store cards) where Tiptap HTML would
+ * otherwise render as literal tags.
+ */
+/**
+ * True only for http(s) URLs. Guards href rendering against
+ * javascript:/data: scheme XSS from user/admin-entered links.
+ */
+export function isHttpUrl(url: string | null | undefined): boolean {
+  return !!url && /^https?:\/\//i.test(url.trim());
+}
+
+export function stripHtml(dirty: string): string {
+  return sanitizeHtmlLib(dirty, { allowedTags: [], allowedAttributes: {} })
+    .replace(/\s+/g, " ")
+    .trim();
+}

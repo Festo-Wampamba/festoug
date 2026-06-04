@@ -3,6 +3,7 @@ import { products } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
+import { stripHtml } from "@/lib/sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -76,7 +77,7 @@ export default async function StorePage() {
                   {product.name}
                 </h3>
                 <p className="text-light-gray text-sm font-light line-clamp-2 mb-4">
-                  {product.description || "No description available."}
+                  {product.description ? stripHtml(product.description) || "No description available." : "No description available."}
                 </p>
 
                 <div className="flex items-center justify-between mt-auto">

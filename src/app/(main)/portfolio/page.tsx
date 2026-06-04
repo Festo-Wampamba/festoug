@@ -25,6 +25,7 @@ export default async function PortfolioPage() {
     slug: p.slug,
     category: p.category,
     image: p.image || "images/project-1.jpg",
+    liveUrl: p.liveUrl,
   }));
 
   return (

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { ReviewCard } from "@/components/reviews/review-card";
 import { ProductReviewForm } from "./product-review-form";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -139,15 +140,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </span>
               Product Overview
             </h3>
-            <div className="prose prose-invert prose-orange max-w-none text-light-gray font-light leading-relaxed">
-              {product.description ? (
-                product.description.split('\n').map((para, i) => (
-                  <p key={i} className={para.trim() ? "mb-4" : ""}>{para}</p>
-                ))
-              ) : (
-                <p>No description provided yet.</p>
-              )}
-            </div>
+            {product.description ? (
+              <div
+                className="prose prose-invert prose-orange max-w-none text-light-gray font-light leading-relaxed prose-a:text-orange-yellow-crayola prose-a:underline hover:prose-a:text-orange-yellow-crayola/80"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }}
+              />
+            ) : (
+              <p className="text-light-gray font-light">No description provided yet.</p>
+            )}
           </section>
 
           {/* Reviews Section */}

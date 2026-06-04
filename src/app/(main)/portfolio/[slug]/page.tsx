@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ExternalLink, Github, Star } from "lucide-react";
+import { isHttpUrl } from "@/lib/sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -80,9 +81,9 @@ export default async function ProjectDetailPage({
 
         {/* Action links */}
         <div className="flex items-center gap-3">
-          {project.liveUrl && (
+          {isHttpUrl(project.liveUrl) && (
             <a
-              href={project.liveUrl}
+              href={project.liveUrl!}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-orange-yellow-crayola text-smoky-black px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-orange-yellow-crayola/90 transition-colors"
@@ -90,9 +91,9 @@ export default async function ProjectDetailPage({
               <ExternalLink className="w-4 h-4" /> Live Demo
             </a>
           )}
-          {project.repoUrl && (
+          {isHttpUrl(project.repoUrl) && (
             <a
-              href={project.repoUrl}
+              href={project.repoUrl!}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-jet text-light-gray px-4 py-2.5 rounded-xl text-sm font-semibold hover:text-white-2 transition-colors border border-jet"
