@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, X } from "lucide-react";
+import { Eye, ExternalLink, X } from "lucide-react";
 
 function ProjectCard({ project }: { project: Project }) {
   return (
@@ -36,6 +36,7 @@ interface Project {
   category: string;
   image: string;
   slug?: string;
+  liveUrl?: string | null;
 }
 
 interface PortfolioGridProps {
@@ -119,6 +120,18 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
                 : (e) => openLightbox(project, e.currentTarget as HTMLLIElement)
             }
           >
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="absolute top-3 right-3 z-20 flex items-center gap-1 bg-smoky-black/80 backdrop-blur-sm border border-jet text-orange-yellow-crayola text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-orange-yellow-crayola hover:text-smoky-black transition-colors"
+                aria-label={`Open ${project.title} live demo`}
+              >
+                <ExternalLink className="w-3 h-3" /> Live
+              </a>
+            )}
             {project.slug ? (
               <Link href={`/portfolio/${project.slug}`} className="block">
                 <ProjectCard project={project} />

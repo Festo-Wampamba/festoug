@@ -41,6 +41,7 @@ export default async function AboutPage() {
     slug: p.slug,
     category: p.category,
     image: p.image || "images/project-1.jpg",
+    liveUrl: p.liveUrl,
   }));
 
   return (
