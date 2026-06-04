@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, ExternalLink, X } from "lucide-react";
+import { isHttpUrl } from "@/lib/sanitize";
 
 function ProjectCard({ project }: { project: Project }) {
   return (
@@ -120,9 +121,9 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
                 : (e) => openLightbox(project, e.currentTarget as HTMLLIElement)
             }
           >
-            {project.liveUrl && (
+            {isHttpUrl(project.liveUrl) && (
               <a
-                href={project.liveUrl}
+                href={project.liveUrl!}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
