@@ -23,7 +23,7 @@ export default async function StorePage() {
   return (
     <article className="animate-in fade-in duration-500 xl:pr-[60px]">
       <header className="mb-10 md:mb-16">
-        <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-[40px] before:h-[5px] before:bg-orange-yellow-crayola before:rounded-[3px]">
+        <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-[40px] before:h-[5px] before:bg-gradient-to-r before:from-orange-yellow-crayola before:to-orange-400 before:rounded-[3px]">
           Digital Store
         </h2>
         <p className="text-light-gray text-[15px] font-light leading-relaxed max-w-2xl">

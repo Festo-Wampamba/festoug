@@ -18,17 +18,19 @@ export default function ResumePage() {
         <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-gradient-to-r from-orange-yellow-crayola to-orange-400 rounded-[3px]" />
       </header>
 
-      {/* Education Timeline */}
+      {/* Education */}
       <div className="mb-10">
-        <div className="flex items-center gap-[15px] mb-[25px]">
-          <div className="relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 bg-gradient-to-br from-jet to-jet/0">
-            <div className="absolute inset-[1px] bg-eerie-black-1 rounded-lg -z-10" />
+        <div className="flex items-center gap-3 mb-6">
+          <div className="grid place-items-center w-10 h-10 rounded-xl bg-orange-yellow-crayola/12 text-orange-yellow-crayola ring-1 ring-orange-yellow-crayola/25">
             <AnimatedBookIcon className="w-[18px] h-[18px]" />
           </div>
-          <h3 className="text-white-2 text-2xl font-semibold capitalize">Education</h3>
+          <div>
+            <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Education</h3>
+            <div className="mt-1.5 h-1 w-10 rounded-full bg-gradient-to-r from-orange-yellow-crayola to-accent-2" />
+          </div>
         </div>
 
-        <ol className="ml-0 sm:ml-[15px] xl:ml-[45px] border-l-0 sm:border-l sm:border-jet pl-0 sm:pl-[25px] xl:pl-[30px]">
+        <ol className="list-none">
           <TimelineItem
             institution="Makerere University Business School - Nakawa, Uganda"
             program="Bachelor's Degree in Business Computing"
@@ -50,17 +52,19 @@ export default function ResumePage() {
         </ol>
       </div>
 
-      {/* Work Timeline */}
+      {/* Work History */}
       <div className="mb-10">
-        <div className="flex items-center gap-[15px] mb-[25px]">
-          <div className="relative w-[40px] h-[40px] rounded-lg flex justify-center items-center text-orange-yellow-crayola shadow-1 z-10 bg-gradient-to-br from-jet to-jet/0">
-            <div className="absolute inset-[1px] bg-eerie-black-1 rounded-lg -z-10" />
+        <div className="flex items-center gap-3 mb-6">
+          <div className="grid place-items-center w-10 h-10 rounded-xl bg-accent-2/12 text-accent-2 ring-1 ring-accent-2/25">
             <AnimatedBriefcaseIcon className="w-[18px] h-[18px]" />
           </div>
-          <h3 className="text-white-2 text-2xl font-semibold capitalize">Work History</h3>
+          <div>
+            <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Work History</h3>
+            <div className="mt-1.5 h-1 w-10 rounded-full bg-gradient-to-r from-accent-2 to-orange-yellow-crayola" />
+          </div>
         </div>
 
-        <ol className="ml-0 sm:ml-[15px] xl:ml-[45px] border-l-0 sm:border-l sm:border-jet pl-0 sm:pl-[25px] xl:pl-[30px]">
+        <ol className="list-none">
           <TimelineItem
             role="Software Developer"
             institution="Online"
@@ -78,9 +82,10 @@ export default function ResumePage() {
 
       {/* Skills */}
       <div className="mb-4">
-        <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">
-          My Skills
-        </h3>
+        <div className="mb-6">
+          <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">My Skills</h3>
+          <div className="mt-1.5 h-1 w-10 rounded-full bg-gradient-to-r from-orange-yellow-crayola to-accent-2" />
+        </div>
         <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Technical — from four areas of expertise */}
           <SkillBar title="Web Development"      value={90} index={0} />
