@@ -76,14 +76,12 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
 
   return (
     <div
-      className={`service-card service-card-delay-${index} card-sheen
+      className={`service-card service-card-delay-${index}
         group relative flex gap-4 rounded-2xl p-5 bg-eerie-black-1
         border border-jet overflow-hidden
         transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
         hover:-translate-y-1.5 motion-reduce:hover:translate-y-0
-        before:absolute before:left-0 before:top-0 before:h-full before:w-[3px]
-        before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
-        ${accent.leftBar} ${accent.borderHover} ${accent.glow}`}
+        ${accent.borderHover} ${accent.glow}`}
     >
       {/* Muted background number */}
       <span className={`absolute top-3 right-3 text-4xl sm:text-5xl font-black select-none leading-none tabular-nums font-head ${accent.numColor}`} aria-hidden>
@@ -117,12 +115,6 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
         <p className="text-light-gray text-sm font-light leading-relaxed">
           {description}
         </p>
-
-        {/* Bottom sweep bar — scales in on hover */}
-        <div className={`mt-4 h-px origin-left scale-x-0 group-hover:scale-x-100
-          transition-transform duration-500 ease-out
-          ${accent.barColor} opacity-50`}
-        />
       </div>
     </div>
   );

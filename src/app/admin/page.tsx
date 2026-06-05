@@ -71,7 +71,7 @@ export default async function AdminOverviewPage() {
           <Link
             key={stat.label}
             href={stat.href}
-            className={`card-sheen group relative overflow-hidden block bg-eerie-black-1 border border-jet rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-1
+            className={`group relative overflow-hidden block bg-eerie-black-1 border border-jet rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-1
               transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
               hover:-translate-y-1 motion-reduce:hover:translate-y-0 ${stat.accent.hover}`}
           >
