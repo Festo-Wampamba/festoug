@@ -77,7 +77,12 @@ export default async function proxy(req: NextRequest) {
   }
 
   // ── Already signed in → bounce away from auth pages ─────────────────────
-  if (isLoggedIn && pathname.startsWith("/auth")) {
+  // Exception: the password reset flow must stay reachable while logged in, so
+  // social sign-in users (who have no password) can set one via Forgot Password.
+  const isPasswordResetRoute =
+    pathname.startsWith("/auth/forgot-password") ||
+    pathname.startsWith("/auth/reset-password");
+  if (isLoggedIn && pathname.startsWith("/auth") && !isPasswordResetRoute) {
     const dest = role === "ADMIN" ? "/admin" : "/dashboard";
     return NextResponse.redirect(new URL(dest, req.url));
   }
