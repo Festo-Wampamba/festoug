@@ -54,7 +54,7 @@ export default async function DashboardLayout({
             <NotificationBell />
             <Link
               href="/dashboard/settings"
-              className="flex items-center gap-3.5 bg-eerie-black-1 border border-jet rounded-2xl pl-4 pr-5 py-3.5 hover:border-orange-yellow-crayola/40 hover:shadow-[0_0_15px_rgba(255,181,63,0.1)] transition-all group shrink-0 min-w-[280px]"
+              className="flex items-center gap-3.5 bg-eerie-black-1 border border-jet rounded-2xl pl-4 pr-5 py-3.5 hover:border-orange-yellow-crayola/40 hover:shadow-[0_0_15px_rgba(255,181,63,0.1)] transition-all group shrink-0 min-w-[340px] xl:min-w-[380px]"
               title="View & edit your profile"
             >
               {user.image ? (
