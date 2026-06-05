@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     description: `Imported from Lemon Squeezy (variant ${variantId})`,
     price,
     currency: "USD",
-    category: category as any || "OTHER",
+    category: (category as typeof products.$inferInsert["category"]) || "OTHER",
     variantId,
     isActive: true,
   }).returning();

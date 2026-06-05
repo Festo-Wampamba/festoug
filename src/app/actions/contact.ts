@@ -43,7 +43,7 @@ export async function sendEmail(formData: FormData) {
     }
 
     return { success: true };
-  } catch (error: any) {
-    return { error: error.message || "An unexpected error occurred." };
+  } catch (error) {
+    return { error: (error instanceof Error ? error.message : String(error)) || "An unexpected error occurred." };
   }
 }

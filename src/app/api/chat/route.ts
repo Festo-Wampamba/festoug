@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       console.warn("Rate limiter error, allowing request:", e);
     }
 
-    let body: any;
+    let body: { messages?: UIMessage[] };
     try {
       body = await req.json();
     } catch {
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const messages: UIMessage[] = body?.messages;
+    const messages: UIMessage[] = body?.messages ?? [];
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(
@@ -90,8 +90,8 @@ export async function POST(req: Request) {
     }
 
     // Fetch live data from the database
-    let allProducts: any[] = [];
-    let allServices: any[] = [];
+    let allProducts: Array<Pick<typeof products.$inferSelect, "name" | "description" | "price" | "currency" | "category" | "slug">> = [];
+    let allServices: Array<Pick<typeof services.$inferSelect, "title" | "description">> = [];
 
     try {
       [allProducts, allServices] = await Promise.all([
@@ -235,11 +235,11 @@ If the user needs human support: direct them to festotechug@gmail.com
     });
 
     return result.toUIMessageStreamResponse();
-  } catch (error: any) {
+  } catch (error) {
     console.error("AI Chat API Error:", error);
 
     let message = "Failed to process chat request. Please try again.";
-    const errMsg = error?.message || "";
+    const errMsg = error instanceof Error ? error.message : "";
 
     if (errMsg.includes("API key")) {
       message = "AI service configuration error. Please contact support.";

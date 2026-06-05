@@ -46,8 +46,8 @@ export async function GET(req: Request) {
         .where(eq(maintenanceTrials.id, trial.id));
 
       notified++;
-    } catch (err: any) {
-      errors.push(`Trial ${trial.id}: ${err.message}`);
+    } catch (err) {
+      errors.push(`Trial ${trial.id}: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 

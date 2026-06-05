@@ -19,8 +19,8 @@ export function DeleteAccountButton() {
       }
       await signOut();
       window.location.href = "/";
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
       setLoading(false);
     }
   }

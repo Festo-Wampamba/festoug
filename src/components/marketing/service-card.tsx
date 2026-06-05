@@ -97,6 +97,8 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
         group-hover:scale-110 group-hover:-rotate-6 motion-reduce:group-hover:scale-100 motion-reduce:group-hover:rotate-0`}
       >
         {Lucide ? (
+          // Lucide is a stable component reference resolved from a module-scope map
+          // eslint-disable-next-line react-hooks/static-components
           <Lucide className="w-[26px] h-[26px]" strokeWidth={1.9} aria-hidden />
         ) : (
           <Image src={icon} alt="" width={26} height={26} className="object-contain" aria-hidden />

@@ -15,7 +15,7 @@ export default function GetStartedPage() {
       {/* Page Header */}
       <header className="mb-10 md:mb-16 xl:max-w-[55%]">
         <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-orange-yellow-crayola before:rounded-sm">
-          Let's Build <span className="text-light-gray-70 font-light">Something Great</span>
+          Let&apos;s Build <span className="text-light-gray-70 font-light">Something Great</span>
         </h2>
         
         <p className="text-light-gray text-base md:text-lg max-w-2xl leading-relaxed">
@@ -56,7 +56,7 @@ export default function GetStartedPage() {
                 </div>
                 <div>
                   <h4 className="text-white-2 font-medium mb-1">Project Alignment</h4>
-                  <p className="text-light-gray-70 text-sm">We'll jump on a quick discovery call to ensure our goals and technical approaches align perfectly.</p>
+                  <p className="text-light-gray-70 text-sm">We&apos;ll jump on a quick discovery call to ensure our goals and technical approaches align perfectly.</p>
                 </div>
               </li>
               
@@ -66,14 +66,14 @@ export default function GetStartedPage() {
                 </div>
                 <div>
                   <h4 className="text-white-2 font-medium mb-1">Proposal & Deposit</h4>
-                  <p className="text-light-gray-70 text-sm">You'll receive a detailed proposal. Upon paying the secure deposit, development begins immediately.</p>
+                  <p className="text-light-gray-70 text-sm">You&apos;ll receive a detailed proposal. Upon paying the secure deposit, development begins immediately.</p>
                 </div>
               </li>
             </ul>
             
             <div className="mt-8 pt-6 border-t border-jet">
               <p className="text-light-gray text-sm italic">
-                "Festo delivers more than just code; he provides reliable architecture that scales."
+                &quot;Festo delivers more than just code; he provides reliable architecture that scales.&quot;
               </p>
             </div>
           </aside>

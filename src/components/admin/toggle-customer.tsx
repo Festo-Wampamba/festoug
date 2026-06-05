@@ -50,8 +50,8 @@ export function CustomerActions({ customerId, accountStatus, customerName }: Cus
       }
 
       router.refresh();
-    } catch (error: any) {
-      alert(`Failed: ${error.message}`);
+    } catch (error) {
+      alert(`Failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setLoading(null);
     }
@@ -68,8 +68,8 @@ export function CustomerActions({ customerId, accountStatus, customerName }: Cus
         throw new Error(data.error || "Failed");
       }
       router.refresh();
-    } catch (error: any) {
-      alert(`Failed: ${error.message}`);
+    } catch (error) {
+      alert(`Failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setLoading(null);
     }

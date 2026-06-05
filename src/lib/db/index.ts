@@ -4,10 +4,13 @@ import postgres from "postgres";
 import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
+// Canonical database type (schema-typed). Both drivers are coerced to this.
+type DbType = ReturnType<typeof drizzleNeon<typeof schema>>;
+
 // Prevent multiple instances in dev (Next.js hot-reload safe)
 declare global {
-  // eslint-disable-next-line no-var
-  var _db: ReturnType<typeof drizzleNeon> | ReturnType<typeof drizzlePg> | undefined;
+
+  var _db: DbType | undefined;
 }
 
 /**
@@ -33,20 +36,20 @@ function getDb() {
       .replace(/[?&]channel_binding=[^&]*/g, "")
       .replace(/\?$/, "");
     const sql = neon(httpUrl);
-    global._db = drizzleNeon(sql, { schema }) as any;
+    global._db = drizzleNeon(sql, { schema });
   } else {
-    // Local / Docker PostgreSQL via postgres.js
+    // Local / Docker PostgreSQL via postgres.js — coerce to the Neon-typed shape
     const sql = postgres(connectionString, { max: 10 });
-    global._db = drizzlePg(sql, { schema }) as any;
+    global._db = drizzlePg(sql, { schema }) as unknown as DbType;
   }
 
   return global._db!;
 }
 
 // Proxy that lazily initializes on first property access
-export const db = new Proxy({} as ReturnType<typeof drizzleNeon<typeof schema>>, {
+export const db = new Proxy({} as DbType, {
   get(_target, prop) {
-    return (getDb() as any)[prop];
+    return getDb()[prop as keyof DbType];
   },
 });
 
@@ -64,15 +67,19 @@ export async function withRetry<T>(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await operation(db);
-    } catch (error: any) {
+    } catch (error) {
       lastError = error;
 
       // Only retry on network/timeout errors (Neon cold starts)
-      const cause = error?.cause;
+      const e = error as {
+        cause?: { code?: string; message?: string; sourceError?: { cause?: { code?: string } } };
+        message?: string;
+      };
+      const cause = e.cause;
       const isRetryable =
         cause?.code === "ETIMEDOUT" ||
         cause?.sourceError?.cause?.code === "ETIMEDOUT" ||
-        error?.message?.includes("fetch failed") ||
+        e.message?.includes("fetch failed") ||
         cause?.message?.includes("fetch failed");
 
       if (!isRetryable || attempt === maxRetries - 1) throw error;

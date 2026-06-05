@@ -21,6 +21,20 @@ const links = [
   { label: "Contact",   href: "/contact",    Icon: Mail },
 ];
 
+type AvatarUser = { name?: string | null; image?: string | null };
+
+function UserAvatar({ user, size = "sm" }: { user: AvatarUser; size?: "sm" | "md" }) {
+  const dim = size === "sm" ? "w-7 h-7 text-xs" : "w-8 h-8 text-sm";
+  return user.image ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={user.image} alt={user.name || ""} className={`${dim} rounded-full border border-orange-yellow-crayola/50`} />
+  ) : (
+    <div className={`${dim} rounded-full bg-orange-yellow-crayola text-smoky-black flex items-center justify-center font-bold`}>
+      {user.name?.charAt(0) || "U"}
+    </div>
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
@@ -29,6 +43,13 @@ export function Navbar() {
   const desktopButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; right: number } | null>(null);
+
+  // Close the account dropdown on route change (adjust state during render, no effect)
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setDropdownOpen(false);
+  }
 
   // ── Scroll transparency ──────────────────────────────────────────────────────
   const [isScrolling, setIsScrolling] = useState(false);
@@ -89,20 +110,6 @@ export function Navbar() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [dropdownOpen]);
-
-  useEffect(() => { setDropdownOpen(false); }, [pathname]);
-
-  // ── Shared user avatar ───────────────────────────────────────────────────────
-  const UserAvatar = ({ size = "sm" }: { size?: "sm" | "md" }) => {
-    const dim = size === "sm" ? "w-7 h-7 text-xs" : "w-8 h-8 text-sm";
-    return session?.user?.image ? (
-      <img src={session.user.image} alt={session.user.name || ""} className={`${dim} rounded-full border border-orange-yellow-crayola/50`} />
-    ) : (
-      <div className={`${dim} rounded-full bg-orange-yellow-crayola text-smoky-black flex items-center justify-center font-bold`}>
-        {session?.user?.name?.charAt(0) || "U"}
-      </div>
-    );
-  };
 
   // ── Dropdown portal ──────────────────────────────────────────────────────────
   const dropdownMenu =
@@ -219,7 +226,7 @@ export function Navbar() {
                 className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full hover:bg-white/5 transition-colors shrink-0"
                 aria-label="Account menu"
               >
-                <UserAvatar size="sm" />
+                <UserAvatar user={session.user} size="sm" />
               </button>
             ) : (
               <Link
@@ -276,7 +283,7 @@ export function Navbar() {
                 className="flex items-center gap-2 py-[7px] px-3 rounded-xl hover:bg-white/[0.06] transition-colors"
                 title="Your account"
               >
-                <UserAvatar size="md" />
+                <UserAvatar user={session.user} size="md" />
                 <div className="flex flex-col items-start justify-center text-left">
                   <span className="text-white-2 text-[13px] font-medium leading-tight truncate max-w-[120px]">{session.user.name}</span>
                   <span className="text-light-gray text-[10px] uppercase tracking-wider mt-[2px] leading-none">{session.user.role}</span>

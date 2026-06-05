@@ -15,6 +15,8 @@ export function SettingsNameForm({ initialName }: { initialName: string }) {
   useEffect(() => {
     if (state?.success) {
       authClient.getSession({ query: { disableCookieCache: true } });
+      // Bump key to reset the input after a successful server-action submit
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSuccessCount((c) => c + 1);
     }
   }, [state]);
