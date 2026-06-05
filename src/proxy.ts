@@ -14,12 +14,18 @@ export default async function proxy(req: NextRequest) {
 
   const session = await auth.api.getSession({ headers: req.headers });
   const user = session?.user as
-    | { role?: "ADMIN" | "CUSTOMER"; accountStatus?: "ACTIVE" | "SUSPENDED" | "BANNED" }
+    | {
+        role?: "ADMIN" | "CUSTOMER";
+        accountStatus?: "ACTIVE" | "SUSPENDED" | "BANNED";
+        email?: string;
+        emailVerified?: boolean;
+      }
     | undefined;
 
   const isLoggedIn = !!user;
   const role = user?.role;
   const accountStatus = user?.accountStatus;
+  const emailVerified = !!user?.emailVerified;
 
   const method = req.method.toUpperCase();
   const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
@@ -50,6 +56,24 @@ export default async function proxy(req: NextRequest) {
       { error: "Your account is temporarily suspended. You can only view content." },
       { status: 403 }
     );
+  }
+
+  // ── Unverified users: confined to email verification until verified ──────
+  // OAuth users receive a live session even when unverified (we force
+  // emailVerified=false on signup), so the gate must live here rather than
+  // relying on the absence of a session like email/password users do.
+  if (isLoggedIn && !emailVerified) {
+    if (pathname.startsWith("/auth/verify-email")) return NextResponse.next();
+    if (
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/trial") ||
+      pathname.startsWith("/admin") ||
+      pathname.startsWith("/auth")
+    ) {
+      const verifyUrl = new URL("/auth/verify-email", req.url);
+      if (user?.email) verifyUrl.searchParams.set("email", user.email);
+      return NextResponse.redirect(verifyUrl);
+    }
   }
 
   // ── Already signed in → bounce away from auth pages ─────────────────────

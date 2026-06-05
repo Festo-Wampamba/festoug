@@ -2,7 +2,7 @@ import { withRetry } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
-import { ChevronLeft, Ban, CheckCircle2, ShieldAlert } from "lucide-react";
+import { ChevronLeft, Ban, CheckCircle2, ShieldAlert, MailWarning } from "lucide-react";
 import { CustomerActions } from "@/components/admin/toggle-customer";
 import { AdminNotifyButton } from "@/components/admin/admin-notify-button";
 
@@ -17,7 +17,7 @@ export default async function AdminCustomersPage() {
     orderBy: [desc(users.createdAt)],
   }));
 
-  function statusBadge(status: string) {
+  function statusBadge(status: string, emailVerified: boolean) {
     switch (status) {
       case "BANNED":
         return (
@@ -32,6 +32,13 @@ export default async function AdminCustomersPage() {
           </span>
         );
       default:
+        if (!emailVerified) {
+          return (
+            <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 w-fit">
+              <MailWarning className="w-3.5 h-3.5" /> Pending Verification
+            </span>
+          );
+        }
         return (
           <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 w-fit">
             <CheckCircle2 className="w-3.5 h-3.5" /> Active
@@ -54,6 +61,9 @@ export default async function AdminCustomersPage() {
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 text-xs text-light-gray-70">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-orange-400" /> Pending — Awaiting email verification
+        </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-green-400" /> Active — Full access
         </div>
@@ -111,7 +121,7 @@ export default async function AdminCustomersPage() {
                       {customer.orders?.length || 0}
                     </td>
                     <td className="px-6 py-4">
-                      {statusBadge(customer.accountStatus)}
+                      {statusBadge(customer.accountStatus, customer.emailVerified)}
                     </td>
                     <td className="px-6 py-4 text-light-gray-70 text-xs">
                       {new Date(customer.createdAt).toLocaleDateString("en-US", {

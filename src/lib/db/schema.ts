@@ -4,6 +4,7 @@ import {
   timestamp,
   boolean,
   integer,
+  bigint,
   pgEnum,
   uuid,
   numeric,
@@ -113,6 +114,15 @@ export const verifications = pgTable("verification", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Better Auth rate-limit storage. Memory storage does not survive Vercel's
+// serverless invocations, so brute-force limits are persisted here instead.
+export const rateLimits = pgTable("rateLimit", {
+  id: text("id").primaryKey(),
+  key: text("key"),
+  count: integer("count"),
+  lastRequest: bigint("last_request", { mode: "number" }),
 });
 
 // ─── Products (Digital Storefront) ───────────────────────────────────────────
