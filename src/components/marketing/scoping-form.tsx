@@ -47,8 +47,8 @@ export function ScopingForm() {
       }
 
       setIsSuccess(true);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+    } catch (err) {
+      setError((err instanceof Error ? err.message : String(err)) || "Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -62,7 +62,7 @@ export function ScopingForm() {
         </div>
         <h3 className="text-2xl md:text-3xl font-bold text-white-2 mb-4">Project Brief Received!</h3>
         <p className="text-light-gray-70 max-w-md mx-auto mb-8">
-          Thank you for reaching out. I've received your project details and will be reviewing them shortly. I typically respond within 24 hours.
+          Thank you for reaching out. I&apos;ve received your project details and will be reviewing them shortly. I typically respond within 24 hours.
         </p>
         <button
           type="button"

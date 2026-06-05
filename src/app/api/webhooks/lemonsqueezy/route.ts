@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "Order acknowledged (no product_slug — skipped)" }, { status: 200 });
       }
 
-      let product = await db.query.products.findFirst({
+      const product = await db.query.products.findFirst({
         where: eq(products.slug, productSlug)
       });
 
@@ -160,8 +160,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ message: "Webhook processed gracefully." }, { status: 200 });
-  } catch (error: any) {
-    console.error("Webhook processing error:", error.message);
+  } catch (error) {
+    console.error("Webhook processing error:", error instanceof Error ? error.message : String(error));
     return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 }

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { plan, billingCycle, websiteUrl } = body as {
       plan:         "BASIC" | "PRO";
-      billingCycle: "MONTHLY" | "ANNUAL";
+      billingCycle: "ANNUAL";
       websiteUrl:   string;
     };
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     if (!["BASIC", "PRO"].includes(plan)) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
-    if (!["MONTHLY", "ANNUAL"].includes(billingCycle)) {
+    if (billingCycle !== "ANNUAL") {
       return NextResponse.json({ error: "Invalid billing cycle" }, { status: 400 });
     }
 
@@ -82,8 +82,8 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ trialId: trial.id }, { status: 201 });
-  } catch (error: any) {
-    console.error("[POST /api/trial]", error.message);
+  } catch (error) {
+    console.error("[POST /api/trial]", error instanceof Error ? error.message : String(error));
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

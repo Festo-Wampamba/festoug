@@ -63,7 +63,7 @@ export async function GET(req: Request) {
 
     // 4. Redirect User to the hosted checkout
     return NextResponse.redirect(checkoutUrl);
-  } catch (error: any) {
+  } catch (error) {
     // Log full detail server-side; do not leak error internals to the client.
     console.error("Checkout creation failed:", error);
     return NextResponse.json(

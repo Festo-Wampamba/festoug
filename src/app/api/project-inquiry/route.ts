@@ -45,8 +45,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ id: inquiry.id }, { status: 201 });
-  } catch (error: any) {
-    console.error("[POST /api/project-inquiry]", error.message);
+  } catch (error) {
+    console.error("[POST /api/project-inquiry]", error instanceof Error ? error.message : String(error));
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

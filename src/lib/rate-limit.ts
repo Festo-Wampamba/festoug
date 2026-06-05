@@ -56,7 +56,7 @@ export function rateLimit(
 }
 
 /** Extract client IP from request headers */
-export function getClientIp(req: Request | any): string {
+export function getClientIp(req: Request & { ip?: string }): string {
   // If running in an environment where req.ip is populated (e.g. Next.js Edge/Middleware)
   if (req.ip) return req.ip;
   // Fallback to proxy headers. Prioritize x-real-ip as it's typically set by the immediate proxy (e.g. Nginx, Vercel).

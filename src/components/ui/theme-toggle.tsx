@@ -8,6 +8,8 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
+    // Sync React state from the DOM class set by the pre-hydration theme script
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDark(isDark);
   }, []);
 

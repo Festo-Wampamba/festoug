@@ -35,7 +35,7 @@ export default async function AdminBlogPage() {
       <div className="bg-eerie-black-1 border border-jet rounded-2xl shadow-1 overflow-hidden">
         {posts.length === 0 ? (
           <p className="text-light-gray-70 text-sm p-8 text-center">
-            No blog posts yet. Click "New Post" to start writing.
+            No blog posts yet. Click &quot;New Post&quot; to start writing.
           </p>
         ) : (
           <div className="divide-y divide-jet/50">

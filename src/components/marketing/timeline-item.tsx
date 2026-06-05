@@ -32,7 +32,7 @@ export function TimelineItem({ institution, period, program, role, description }
   return (
     <li
       ref={ref}
-      className="reveal-item card-sheen group relative mb-4 overflow-hidden rounded-xl
+      className="reveal-item group relative mb-4 overflow-hidden rounded-xl
         bg-eerie-black-1 border border-jet hover:border-light-gray-70/30
         p-4 sm:p-5 transition-[transform,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
         hover:-translate-y-1 motion-reduce:hover:translate-y-0"

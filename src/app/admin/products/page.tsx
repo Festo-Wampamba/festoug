@@ -35,7 +35,7 @@ export default async function AdminProductsPage() {
       <div className="bg-eerie-black-1 border border-jet rounded-2xl shadow-1 overflow-hidden">
         {allProducts.length === 0 ? (
           <p className="text-light-gray-70 text-sm p-8 text-center">
-            No products yet. Click "Add Product" to create your first one.
+            No products yet. Click &quot;Add Product&quot; to create your first one.
           </p>
         ) : (
           <div className="overflow-x-auto">

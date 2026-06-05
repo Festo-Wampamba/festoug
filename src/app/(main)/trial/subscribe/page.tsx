@@ -44,7 +44,7 @@ export default async function TrialSubscribePage({ searchParams }: Props) {
       <div className="animate-in fade-in duration-500 max-w-xl mx-auto text-center py-20">
         <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-4" />
         <h2 className="text-white-2 text-2xl font-semibold mb-3">Trial not found</h2>
-        <p className="text-light-gray text-sm mb-6">This link doesn't match your account.</p>
+        <p className="text-light-gray text-sm mb-6">This link doesn&apos;t match your account.</p>
         <Link href="/dashboard/subscription" className="text-orange-yellow-crayola hover:underline text-sm">Go to Dashboard →</Link>
       </div>
     );
@@ -78,11 +78,11 @@ export default async function TrialSubscribePage({ searchParams }: Props) {
   try {
     checkoutUrl = await getSubscriptionCheckoutUrl(
       trial.plan as "BASIC" | "PRO",
-      trial.billingCycle as "MONTHLY" | "ANNUAL",
+      "ANNUAL",
       session.user.id,
       trial.id
     );
-  } catch (err: any) {
+  } catch (err) {
     return (
       <div className="animate-in fade-in duration-500 max-w-xl mx-auto text-center py-20">
         <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-4" />
@@ -91,7 +91,7 @@ export default async function TrialSubscribePage({ searchParams }: Props) {
           We couldn&apos;t generate your checkout link. This is usually a configuration issue on our end.
         </p>
         <p className="text-light-gray-70 text-xs mb-6 font-mono bg-jet/40 px-3 py-2 rounded-lg">
-          {err?.message ?? "Unknown error"}
+          {err instanceof Error ? err.message : "Unknown error"}
         </p>
         <p className="text-light-gray text-sm mb-6">
           Please contact us directly and we&apos;ll get you set up manually.

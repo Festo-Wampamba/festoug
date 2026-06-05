@@ -50,9 +50,9 @@ export async function PATCH(
           reason: banReason,
           bannedBy: session.user.id,
         });
-      } catch (e: any) {
+      } catch (e) {
         // Ignore unique-constraint violation (email already in banned list)
-        if (!e.message?.includes("unique")) throw e;
+        if (!(e instanceof Error && e.message.includes("unique"))) throw e;
       }
       // Fire-and-forget — don't block the response
       sendAccountBannedEmail(targetUser.email, targetUser.name, banReason).catch(

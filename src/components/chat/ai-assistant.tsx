@@ -82,6 +82,8 @@ function useIsLargeScreen() {
   const [isLarge, setIsLarge] = useState(false);
   useEffect(() => {
     const mql = window.matchMedia("(min-width: 1280px)");
+    // Initial read from the matchMedia external system on mount
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLarge(mql.matches);
     const handler = (e: MediaQueryListEvent) => setIsLarge(e.matches);
     mql.addEventListener("change", handler);
@@ -122,6 +124,8 @@ export function AiAssistant() {
   const [welcomed, setWelcomed] = useState(false);
   useEffect(() => {
     if (welcomed || !session?.user?.name) return;
+    // One-shot personalization when the auth session resolves (external data)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setWelcomed(true);
     const firstName = session.user.name.split(" ")[0];
     setMessages([{
@@ -355,7 +359,7 @@ export function AiAssistant() {
           className={`fixed z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,181,63,0.3)] transition-shadow duration-300 active:scale-95 touch-none ${
             isOpen ? "bg-jet text-white-2" : "bg-orange-yellow-crayola text-smoky-black"
           } ${!btnPos ? "bottom-20 right-4" : "chat-btn-dragged"}`}
-          /* eslint-disable-next-line react/forbid-component-props */
+           
           style={btnPos ? ({ "--bx": `${btnPos.x}px`, "--by": `${btnPos.y}px` } as React.CSSProperties) : undefined}
           aria-label="Toggle AI Chat"
         >
