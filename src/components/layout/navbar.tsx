@@ -279,7 +279,7 @@ export function Navbar() {
                 <UserAvatar size="md" />
                 <div className="flex flex-col items-start justify-center text-left">
                   <span className="text-white-2 text-[13px] font-medium leading-tight truncate max-w-[120px]">{session.user.name}</span>
-                  <span className="text-orange-yellow-crayola text-[10px] uppercase tracking-wider mt-[2px] leading-none">{session.user.role}</span>
+                  <span className="text-light-gray text-[10px] uppercase tracking-wider mt-[2px] leading-none">{session.user.role}</span>
                 </div>
               </button>
             ) : (
