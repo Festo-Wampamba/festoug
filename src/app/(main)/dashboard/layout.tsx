@@ -54,21 +54,21 @@ export default async function DashboardLayout({
             <NotificationBell />
             <Link
               href="/dashboard/settings"
-              className="flex items-center gap-3 bg-eerie-black-1 border border-jet rounded-2xl px-4 py-3 hover:border-orange-yellow-crayola/40 hover:shadow-[0_0_15px_rgba(255,181,63,0.1)] transition-all group shrink-0"
+              className="flex items-center gap-3.5 bg-eerie-black-1 border border-jet rounded-2xl pl-4 pr-5 py-3.5 hover:border-orange-yellow-crayola/40 hover:shadow-[0_0_15px_rgba(255,181,63,0.1)] transition-all group shrink-0"
               title="View & edit your profile"
             >
               {user.image ? (
-                <img src={user.image} alt={user.name || "User"} className="w-11 h-11 rounded-full border-2 border-orange-yellow-crayola/30 group-hover:border-orange-yellow-crayola/60 transition-colors" />
+                <img src={user.image} alt={user.name || "User"} className="w-11 h-11 rounded-full border-2 border-orange-yellow-crayola/30 group-hover:border-orange-yellow-crayola/60 transition-colors shrink-0" />
               ) : (
-                <div className="w-11 h-11 rounded-full bg-orange-yellow-crayola/10 text-orange-yellow-crayola border-2 border-orange-yellow-crayola/30 group-hover:border-orange-yellow-crayola/60 transition-colors flex items-center justify-center font-bold text-lg">
+                <div className="w-11 h-11 rounded-full bg-orange-yellow-crayola/10 text-orange-yellow-crayola border-2 border-orange-yellow-crayola/30 group-hover:border-orange-yellow-crayola/60 transition-colors flex items-center justify-center font-bold text-lg shrink-0">
                   {user.name?.charAt(0) || "U"}
                 </div>
               )}
-              <div className="flex flex-col leading-tight">
-                <span className="text-white-2 font-medium text-sm">{user.name}</span>
-                <span className="text-orange-yellow-crayola text-xs">{user.role} · Edit Profile</span>
+              <div className="flex flex-col gap-0.5 leading-snug min-w-0">
+                <span className="text-white-2 font-medium text-sm truncate">{user.name}</span>
+                <span className="text-orange-yellow-crayola text-xs whitespace-nowrap">{user.role} · Edit Profile</span>
               </div>
-              <UserCircle className="w-4 h-4 text-light-gray-70 group-hover:text-orange-yellow-crayola transition-colors ml-1" />
+              <UserCircle className="w-4 h-4 text-light-gray-70 group-hover:text-orange-yellow-crayola transition-colors ml-2 shrink-0" />
             </Link>
           </div>
         </div>
