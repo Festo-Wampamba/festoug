@@ -72,14 +72,14 @@ export default function ContactPage() {
               name="fullname"
               placeholder="Full name"
               required
-              className="bg-transparent border border-jet text-white-2 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-orange-yellow-crayola transition-colors"
+              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
             />
             <input
               type="email"
               name="email"
               placeholder="Email address"
               required
-              className="bg-transparent border border-jet text-white-2 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-orange-yellow-crayola transition-colors"
+              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
             />
           </div>
 
@@ -88,7 +88,7 @@ export default function ContactPage() {
             placeholder="Your Message"
             required
             rows={5}
-            className="bg-transparent border border-jet text-white-2 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-orange-yellow-crayola transition-colors resize-y min-h-[120px]"
+            className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors resize-y min-h-[120px]"
           ></textarea>
 
           <button
