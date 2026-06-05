@@ -11,7 +11,7 @@ function OnboardingForm() {
   const defaultPlan = (searchParams.get("plan") || "BASIC").toUpperCase();
 
   const [plan, setPlan]                = useState<"BASIC" | "PRO">(defaultPlan === "PRO" ? "PRO" : "BASIC");
-  const [billingCycle, setBillingCycle] = useState<"MONTHLY" | "ANNUAL">("MONTHLY");
+  const billingCycle                   = "ANNUAL" as const;
   const [websiteUrl, setWebsiteUrl]    = useState("");
   const [loading, setLoading]          = useState(false);
   const [error, setError]              = useState<string | null>(null);
@@ -77,28 +77,7 @@ function OnboardingForm() {
                 }`}
               >
                 <div className="font-semibold text-sm mb-1">{p === "BASIC" ? "Basic" : "Pro"}</div>
-                <div className="text-xs opacity-70">{p === "BASIC" ? "$29/mo or $290/yr" : "$99/mo or $990/yr"}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-white-2 mb-3">Billing preference after trial</label>
-          <div className="grid grid-cols-2 gap-3">
-            {(["MONTHLY", "ANNUAL"] as const).map((cycle) => (
-              <button
-                key={cycle}
-                type="button"
-                onClick={() => setBillingCycle(cycle)}
-                className={`p-4 rounded-xl border text-left transition-all ${
-                  billingCycle === cycle
-                    ? "border-green-500 bg-green-500/10 text-white-2"
-                    : "border-jet bg-eerie-black-1 text-light-gray-70 hover:border-light-gray-70"
-                }`}
-              >
-                <div className="font-semibold text-sm mb-1">{cycle === "MONTHLY" ? "Monthly" : "Annual"}</div>
-                <div className="text-xs opacity-70">{cycle === "ANNUAL" ? "Save 17%" : "Flexible"}</div>
+                <div className="text-xs opacity-70">{p === "BASIC" ? "$290/yr" : "$990/yr"}</div>
               </button>
             ))}
           </div>

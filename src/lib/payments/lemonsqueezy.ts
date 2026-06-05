@@ -85,16 +85,14 @@ export function verifyWebhookSignature(payload: string, signature: string): bool
 // ─── Subscription Variant Map ─────────────────────────────────────────────────
 
 type MaintenancePlan = "BASIC" | "PRO";
-type BillingCycle = "MONTHLY" | "ANNUAL";
+type BillingCycle = "ANNUAL";
 
 export function getSubscriptionVariantId(
   plan: MaintenancePlan,
   billingCycle: BillingCycle
 ): string {
   const map: Record<`${MaintenancePlan}_${BillingCycle}`, string> = {
-    BASIC_MONTHLY: process.env.LS_VARIANT_BASIC_MONTHLY!,
     BASIC_ANNUAL:  process.env.LS_VARIANT_BASIC_ANNUAL!,
-    PRO_MONTHLY:   process.env.LS_VARIANT_PRO_MONTHLY!,
     PRO_ANNUAL:    process.env.LS_VARIANT_PRO_ANNUAL!,
   };
 
