@@ -6,6 +6,7 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
 import postgres from "postgres";
 import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
+import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import * as schema from "@/lib/db/schema";
 import { sendVerificationEmail, sendPasswordResetEmail, sendPasswordResetOTP, sendVerificationOTPEmail } from "@/lib/email";
@@ -44,6 +45,7 @@ export const auth = betterAuth({
       session: schema.sessions,
       account: schema.accounts,
       verification: schema.verifications,
+      rateLimit: schema.rateLimits,
     },
   }),
   emailAndPassword: {
@@ -105,6 +107,57 @@ export const auth = betterAuth({
   advanced: {
     database: {
       generateId: () => crypto.randomUUID(), // uuid ids to fit the existing columns
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        // Every new user starts unverified — including OAuth signups, which we
+        // deliberately distrust so first-time users must pass OTP verification.
+        before: async (user) => ({ data: { ...user, emailVerified: false } }),
+      },
+    },
+    account: {
+      create: {
+        // OAuth signups don't trigger the emailOTP plugin's signup email, so we
+        // send the verification OTP ourselves for social accounts.
+        after: async (account) => {
+          if (account.providerId === "credential") return;
+          try {
+            const rows = await db
+              .select({ email: schema.users.email })
+              .from(schema.users)
+              .where(eq(schema.users.id, account.userId))
+              .limit(1);
+            const email = rows[0]?.email;
+            if (email) {
+              await auth.api.sendVerificationOTP({
+                body: { email, type: "email-verification" },
+              });
+            }
+          } catch (err) {
+            console.error("[auth] failed to send OAuth verification OTP", err);
+          }
+        },
+      },
+    },
+  },
+  rateLimit: {
+    // Persist counters in Postgres — in-memory limits reset on every serverless
+    // invocation, so they provide no real brute-force protection on Vercel.
+    enabled: true,
+    storage: "database",
+    modelName: "rateLimit",
+    window: 60,
+    max: 100,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 60, max: 5 },
+      "/forget-password": { window: 60, max: 3 },
+      "/request-password-reset": { window: 60, max: 3 },
+      "/reset-password": { window: 60, max: 5 },
+      "/email-otp/send-verification-otp": { window: 60, max: 3 },
+      "/email-otp/verify-email": { window: 60, max: 10 },
     },
   },
   trustedOrigins: [
