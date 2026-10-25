@@ -23,7 +23,7 @@ function formatPushedAt(iso: string) {
 
 export function GithubRepos({ repos }: { repos: GitHubRepo[] }) {
   return (
-    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-5">
       {repos.map((repo, index) => (
         <li
           key={repo.id}
@@ -37,7 +37,7 @@ export function GithubRepos({ repos }: { repos: GitHubRepo[] }) {
             className="group flex h-full flex-col rounded-2xl border border-border bg-card p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm motion-reduce:hover:translate-y-0"
           >
             <div className="mb-2 flex items-start justify-between gap-2">
-              <h4 className="break-all font-head text-[15px] font-bold leading-snug text-card-foreground transition-colors group-hover:text-primary">
+              <h4 className="break-all font-head text-base font-bold leading-snug text-card-foreground transition-colors group-hover:text-primary">
                 {repo.name}
               </h4>
               <ExternalLinkIcon
@@ -50,7 +50,7 @@ export function GithubRepos({ repos }: { repos: GitHubRepo[] }) {
               {repo.description || "No description provided."}
             </p>
 
-            <div className="flex items-center gap-4 font-mono text-[12px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-muted-foreground">
               {repo.language && (
                 <span className="inline-flex items-center gap-1.5">
                   <span

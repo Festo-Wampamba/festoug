@@ -44,7 +44,7 @@ export default async function TestimonialsPage() {
         <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-primary rounded-[3px]" />
       </header>
 
-      <p className="text-light-gray text-[15px] font-light leading-relaxed mb-8">
+      <p className="text-light-gray text-base font-light leading-relaxed mb-8">
         Here&apos;s what clients and collaborators have to say about working with me.
       </p>
 

@@ -108,7 +108,7 @@ export default async function ProjectDetailPage({
       {project.description && (
         <div className="bg-eerie-black-1 border border-jet rounded-2xl p-6 md:p-8">
           <h2 className="text-white-2 text-lg font-semibold mb-4">About This Project</h2>
-          <div className="text-light-gray text-[15px] leading-relaxed whitespace-pre-line">
+          <div className="text-light-gray text-base leading-relaxed whitespace-pre-line">
             {project.description}
           </div>
         </div>

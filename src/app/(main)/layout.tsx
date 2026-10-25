@@ -6,11 +6,11 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <ToastProvider>
-      <div className="portfolio-shell px-4 sm:px-6 lg:px-8">
+      <div className="portfolio-shell">
         <Navbar />
-        <div className="grid grid-cols-1 items-start gap-6 py-6 sm:py-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[280px_minmax(0,1fr)] xl:gap-10">
+        <div className="grid grid-cols-1 items-start gap-6 py-6 sm:py-8 xl:grid-cols-[17rem_minmax(0,1fr)] xl:gap-8 2xl:grid-cols-[18rem_minmax(0,1fr)]">
           <Sidebar />
-          <main id="main-content" tabIndex={-1} className="relative min-w-0 rounded-2xl border border-border bg-card p-5 outline-none sm:p-8 lg:p-10">
+          <main id="main-content" tabIndex={-1} className="portfolio-content relative min-w-0 rounded-2xl border border-border bg-card p-5 outline-none sm:p-8 2xl:p-10">
             {children}
           </main>
         </div>

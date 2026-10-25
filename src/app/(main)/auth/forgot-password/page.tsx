@@ -175,7 +175,7 @@ export default function ForgotPasswordPage() {
                       required
                       minLength={8}
                       autoComplete="new-password"
-                      className="w-full bg-cm-bg border border-cm-border text-cm-text text-[15px] px-4 py-3 pr-12 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50"
+                      className="w-full bg-cm-bg border border-cm-border text-cm-text text-base px-4 py-3 pr-12 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50"
                     />
                     <button
                       type="button"
@@ -197,14 +197,14 @@ export default function ForgotPasswordPage() {
                     required
                     minLength={8}
                     autoComplete="new-password"
-                    className="w-full bg-cm-bg border border-cm-border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50"
+                    className="w-full bg-cm-bg border border-cm-border text-cm-text text-base px-4 py-3 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isLoading !== false}
-                  className="w-full bg-cm-ocean text-cm-bg font-semibold text-[15px] py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 mt-2"
+                  className="w-full bg-cm-ocean text-cm-bg font-semibold text-base py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 mt-2"
                 >
                   {isLoading === "otp-reset" ? "Resetting..." : "Reset password"}
                 </button>
@@ -246,7 +246,7 @@ export default function ForgotPasswordPage() {
                     placeholder="you@example.com"
                     required
                     autoComplete="email"
-                    className="w-full bg-cm-bg border border-cm-border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50"
+                    className="w-full bg-cm-bg border border-cm-border text-cm-text text-base px-4 py-3 rounded-xl outline-none focus:border-cm-ocean focus:ring-1 focus:ring-cm-ocean transition-colors placeholder:text-cm-muted/50"
                   />
                 </div>
 

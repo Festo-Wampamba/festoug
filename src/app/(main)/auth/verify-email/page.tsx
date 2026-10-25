@@ -123,7 +123,7 @@ function VerifyEmailInner() {
             <button
               type="submit"
               disabled={isLoading !== false}
-              className="w-full bg-cm-ocean text-cm-bg font-semibold text-[15px] py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 mt-2"
+              className="w-full bg-cm-ocean text-cm-bg font-semibold text-base py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 mt-2"
             >
               {isLoading === "verify" ? "Verifying..." : "Verify email"}
             </button>

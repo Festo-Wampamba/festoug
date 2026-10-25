@@ -81,12 +81,12 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
               {page > 1 ? (
                 <Link
                   href={`/blog?page=${page - 1}`}
-                  className="flex items-center gap-1 text-orange-yellow-crayola bg-transparent border border-jet px-4 py-2 rounded-lg hover:bg-jet transition-colors text-[13px] font-medium"
+                  className="flex items-center gap-1 text-orange-yellow-crayola bg-transparent border border-jet px-4 py-2 rounded-lg hover:bg-jet transition-colors text-sm font-medium"
                 >
                   <ChevronLeft className="w-4 h-4" /> Prev
                 </Link>
               ) : (
-                <span className="flex items-center gap-1 text-light-gray-70 border border-jet px-4 py-2 rounded-lg opacity-50 cursor-not-allowed text-[13px] font-medium">
+                <span className="flex items-center gap-1 text-light-gray-70 border border-jet px-4 py-2 rounded-lg opacity-50 cursor-not-allowed text-sm font-medium">
                   <ChevronLeft className="w-4 h-4" /> Prev
                 </span>
               )}
@@ -96,7 +96,7 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
               <li key={num} className="hidden sm:block">
                 <Link
                   href={`/blog?page=${num}`}
-                  className={`flex items-center justify-center w-9 h-9 border border-jet rounded-lg transition-colors text-[13px] font-medium ${
+                  className={`flex items-center justify-center w-9 h-9 border border-jet rounded-lg transition-colors text-sm font-medium ${
                     page === num
                       ? "text-orange-yellow-crayola bg-border-gradient-onyx border-orange-yellow-crayola/30 shadow-1"
                       : "text-light-gray hover:bg-jet"
@@ -111,12 +111,12 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
               {page < totalPages ? (
                 <Link
                   href={`/blog?page=${page + 1}`}
-                  className="flex items-center gap-1 text-orange-yellow-crayola bg-transparent border border-jet px-4 py-2 rounded-lg hover:bg-jet transition-colors text-[13px] font-medium"
+                  className="flex items-center gap-1 text-orange-yellow-crayola bg-transparent border border-jet px-4 py-2 rounded-lg hover:bg-jet transition-colors text-sm font-medium"
                 >
                   Next <ChevronRight className="w-4 h-4" />
                 </Link>
               ) : (
-                <span className="flex items-center gap-1 text-light-gray-70 border border-jet px-4 py-2 rounded-lg opacity-50 cursor-not-allowed text-[13px] font-medium">
+                <span className="flex items-center gap-1 text-light-gray-70 border border-jet px-4 py-2 rounded-lg opacity-50 cursor-not-allowed text-sm font-medium">
                   Next <ChevronRight className="w-4 h-4" />
                 </span>
               )}

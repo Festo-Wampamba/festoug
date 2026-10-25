@@ -120,14 +120,14 @@ export default function SignUpPage() {
             <div>
               <label htmlFor="name" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Full Name</label>
               <input id="name" type="text" name="name" placeholder="John Doe" required autoComplete="name"
-                className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.name ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
+                className={`w-full bg-cm-bg border text-cm-text text-base px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.name ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
               {fieldErrors.name && <p role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.name}</p>}
             </div>
 
             <div>
               <label htmlFor="email" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Email</label>
               <input id="email" type="email" name="email" placeholder="you@example.com" required autoComplete="email"
-                className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
+                className={`w-full bg-cm-bg border text-cm-text text-base px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
               {fieldErrors.email && <p role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.email}</p>}
             </div>
 
@@ -135,7 +135,7 @@ export default function SignUpPage() {
               <label htmlFor="password" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Password</label>
               <div className="relative">
                 <input id="password" type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 characters, letters + numbers" required minLength={8} autoComplete="new-password"
-                  className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 pr-12 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
+                  className={`w-full bg-cm-bg border text-cm-text text-base px-4 py-3 pr-12 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
                 <button type="button" onClick={() => setShowPassword((s) => !s)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-cm-muted hover:text-cm-text transition-colors">
@@ -148,12 +148,12 @@ export default function SignUpPage() {
             <div>
               <label htmlFor="confirm" className="block text-cm-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Confirm Password</label>
               <input id="confirm" type={showPassword ? "text" : "password"} name="confirm" placeholder="Re-enter password" required minLength={8} autoComplete="new-password"
-                className={`w-full bg-cm-bg border text-cm-text text-[15px] px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.confirm ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
+                className={`w-full bg-cm-bg border text-cm-text text-base px-4 py-3 rounded-xl outline-none focus:ring-1 transition-colors placeholder:text-cm-muted/50 ${fieldErrors.confirm ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-cm-border focus:border-cm-ocean focus:ring-cm-ocean"}`} />
               {fieldErrors.confirm && <p role="alert" className="text-red-400 text-xs mt-1">{fieldErrors.confirm}</p>}
             </div>
 
             <button type="submit" disabled={!!isLoading}
-              className="w-full bg-cm-ocean text-cm-bg font-semibold text-[15px] py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 mt-2">
+              className="w-full bg-cm-ocean text-cm-bg font-semibold text-base py-3 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 mt-2">
               {isLoading === "credentials" ? "Creating account..." : "Create account"}
             </button>
           </form>

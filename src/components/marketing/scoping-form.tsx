@@ -12,7 +12,7 @@ import {
 export function ScopingForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [selectedPlan, setSelectedPlan] = useState<string>("Premium Plan (~$2,499)");
+  const [selectedPlan, setSelectedPlan] = useState<string>("Premium Plan ($550)");
   const [selectedTimeline, setSelectedTimeline] = useState<string>("As soon as possible (Urgent)");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -20,9 +20,9 @@ export function ScopingForm() {
 
   useEffect(() => {
     const tier = searchParams.get("tier");
-    if (tier === "lite") setSelectedPlan("Lite Plan (~$999)");
-    else if (tier === "premium") setSelectedPlan("Premium Plan (~$2,499)");
-    else if (tier === "pro") setSelectedPlan("Pro Plan (~$4,999)");
+    if (tier === "lite") setSelectedPlan("Lite Plan ($299)");
+    else if (tier === "premium") setSelectedPlan("Premium Plan ($550)");
+    else if (tier === "pro") setSelectedPlan("Pro Plan ($699)");
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -66,13 +66,13 @@ export function ScopingForm() {
           <CheckCircledIcon className="w-10 h-10 text-primary" />
         </div>
         <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Project Brief Received!</h3>
-        <p className="text-muted-foreground max-w-md mx-auto mb-8">
+        <p className="text-muted-foreground text-base leading-relaxed max-w-md mx-auto mb-8">
           Thank you for reaching out. I&apos;ve received your project details and will be reviewing them shortly. I typically respond within 24 hours.
         </p>
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="inline-flex min-h-11 items-center gap-2 bg-secondary text-secondary-foreground px-6 py-3 rounded-xl font-medium hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-[0.98] transition-colors"
+          className="inline-flex min-h-[52px] items-center gap-2 bg-secondary text-secondary-foreground px-6 py-3 rounded-xl font-medium hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-[0.98] transition-colors"
         >
           Return Home <ArrowRightIcon className="w-4 h-4" />
         </button>
@@ -81,7 +81,7 @@ export function ScopingForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-card text-foreground border border-border rounded-3xl p-6 md:p-10 shadow-lg">
+    <form onSubmit={handleSubmit} className="bg-card text-foreground border-0 border-border rounded-2xl p-0 sm:border sm:p-7 2xl:p-9">
       
       {/* Contact Information */}
       <div className="mb-10">
@@ -90,36 +90,36 @@ export function ScopingForm() {
           Contact Details
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
+            <label htmlFor="name" className="block text-base font-medium text-foreground mb-2">Full Name *</label>
             <input
               id="name"
               name="name"
               type="text"
               required
-              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
+              className="w-full min-h-[52px] bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
               placeholder="Your name"
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">Work Email *</label>
+            <label htmlFor="email" className="block text-base font-medium text-foreground mb-2">Work Email *</label>
             <input
               id="email"
               name="email"
               type="email"
               required
-              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
+              className="w-full min-h-[52px] bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
               placeholder="you@company.com"
             />
           </div>
-          <div className="md:col-span-2">
-            <label htmlFor="company" className="block text-sm font-medium text-foreground mb-2">Company / Organization</label>
+          <div className="col-span-full">
+            <label htmlFor="company" className="block text-base font-medium text-foreground mb-2">Company / Organization</label>
             <input
               id="company"
               name="company"
               type="text"
-              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
+              className="w-full min-h-[52px] bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
               placeholder="Company or organization"
             />
           </div>
@@ -133,32 +133,32 @@ export function ScopingForm() {
           Project Scope
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <div>
-            <label htmlFor="plan" className="block text-sm font-medium text-foreground mb-2">Interested Plan</label>
+            <label htmlFor="plan" className="block text-base font-medium text-foreground mb-2">Interested Plan</label>
             <select
               id="plan"
               aria-label="Interested Plan"
               value={selectedPlan}
               onChange={(e) => setSelectedPlan(e.target.value)}
-              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
+              className="w-full min-h-[52px] bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
             >
-              <option value="Lite Plan (~$999)">Lite Plan (~$999)</option>
-              <option value="Premium Plan (~$2,499)">Premium Plan (~$2,499)</option>
-              <option value="Pro Plan (~$4,999)">Pro Plan (~$4,999)</option>
-              <option value="Custom Enterprise">Custom Enterprise Requirements</option>
+              <option value="Lite Plan ($299)">Lite — $299</option>
+              <option value="Premium Plan ($550)">Premium — $550</option>
+              <option value="Pro Plan ($699)">Pro — $699</option>
+              <option value="Custom Enterprise">Custom project</option>
             </select>
           </div>
           <div>
-            <label htmlFor="timeline" className="block text-sm font-medium text-foreground mb-2">Expected Timeline</label>
+            <label htmlFor="timeline" className="block text-base font-medium text-foreground mb-2">Expected Timeline</label>
             <select
               id="timeline"
               aria-label="Expected Timeline"
               value={selectedTimeline}
               onChange={(e) => setSelectedTimeline(e.target.value)}
-              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
+              className="w-full min-h-[52px] bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
             >
-              <option value="As soon as possible (Urgent)">As soon as possible (Urgent)</option>
+              <option value="As soon as possible (Urgent)">As soon as possible</option>
               <option value="1 to 3 months">1 to 3 months</option>
               <option value="3 to 6 months">3 to 6 months</option>
               <option value="Flexible timeline">Flexible timeline</option>
@@ -175,20 +175,20 @@ export function ScopingForm() {
         </h3>
         
         <div>
-          <label htmlFor="vision" className="block text-sm font-medium text-foreground mb-2">Please describe your project constraints and goals *</label>
+          <label htmlFor="vision" className="block text-base font-medium text-foreground mb-2">Please describe your project constraints and goals *</label>
           <textarea
             id="vision"
             name="vision"
             required
             rows={5}
-            className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground resize-y"
+            className="w-full min-h-[160px] bg-background border border-border text-foreground rounded-xl px-4 py-3 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground resize-y"
             placeholder="Tell us what you are building, who it is for, and any technical requirements..."
           />
         </div>
       </div>
 
       {error && (
-        <div role="alert" className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+        <div role="alert" className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-base">
           {error}
         </div>
       )}
@@ -196,7 +196,7 @@ export function ScopingForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full min-h-11 flex items-center justify-center gap-3 bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-[0.99] transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
+        className="w-full min-h-[52px] flex items-center justify-center gap-3 bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-[0.99] transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
       >
         {isSubmitting ? (
           <>Processing Details...</>
@@ -207,7 +207,7 @@ export function ScopingForm() {
         )}
       </button>
 
-      <p className="text-muted-foreground text-xs text-center mt-6 flex items-center justify-center gap-2">
+      <p className="text-muted-foreground text-base text-center mt-6 flex items-center justify-center gap-2">
         <LockClosedIcon className="w-4 h-4 text-primary" aria-hidden="true" />
         Your information is secure and will never be shared.
       </p>

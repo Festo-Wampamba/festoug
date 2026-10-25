@@ -61,13 +61,13 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
         {/* Divider */}
         <div className="mb-2.5 h-px w-full bg-border" />
 
-        <p className="text-base font-normal leading-relaxed text-muted-foreground sm:text-sm">
+        <p className="text-base font-normal leading-relaxed text-muted-foreground">
           {description}
         </p>
 
         <Link
           href="/services"
-          className="mt-3 inline-flex min-h-11 items-center gap-1 rounded-sm text-[13px] font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
+          className="mt-3 inline-flex min-h-11 items-center gap-1 rounded-sm text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
           aria-label={`Learn more about ${title}`}
         >
           Learn more

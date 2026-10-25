@@ -22,7 +22,7 @@ export default async function AboutPage() {
     <div className="space-y-12 sm:space-y-16">
       <section aria-labelledby="portfolio-intro" className="border-b border-border pb-10 sm:pb-12">
         <p className="page-eyebrow mb-5">Independent software engineer · Kampala</p>
-        <h2 id="portfolio-intro" className="max-w-[16ch] text-[2rem] font-semibold leading-[1.12] tracking-[-.045em] text-foreground sm:text-[2.65rem] xl:text-5xl">Software built around your business.</h2>
+        <h2 id="portfolio-intro" className="max-w-[20ch] text-[2rem] font-semibold leading-[1.12] tracking-[-.045em] text-foreground sm:text-4xl 2xl:text-5xl">Software built around your business.</h2>
         <p className="mt-6 max-w-[56ch] text-base leading-relaxed text-muted-foreground">I’m Festo. I build web applications, backend systems, and the infrastructure that keeps them running. Clear thinking, practical solutions, and care in the details.</p>
         <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-5">
           <Link href="/get-started" className="inline-flex min-h-12 items-center justify-center gap-5 rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90 active:scale-[.98] motion-reduce:active:scale-100">Discuss a project<ArrowTopRightIcon className="size-[18px]" aria-hidden /></Link>

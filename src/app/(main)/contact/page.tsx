@@ -97,7 +97,7 @@ export default function ContactPage() {
               aria-label="Full name"
               autoComplete="name"
               required
-              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
+              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-base font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
             /></div>
             <div className="grid gap-2"><label htmlFor="contact-email" className="text-sm font-medium text-foreground">Email address</label><input
               id="contact-email"
@@ -107,7 +107,7 @@ export default function ContactPage() {
               aria-label="Email address"
               autoComplete="email"
               required
-              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
+              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-base font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
             /></div>
           </div>
 
@@ -118,7 +118,7 @@ export default function ContactPage() {
             aria-label="Your message"
             required
             rows={5}
-            className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors resize-y min-h-[120px]"
+            className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-base font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors resize-y min-h-[120px]"
           ></textarea></div>
 
           <button

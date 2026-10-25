@@ -84,7 +84,7 @@ export default async function ServicesPage() {
     <div className="animate-in fade-in duration-500">
 
       {/* Page Header */}
-      <header className="mb-16 xl:max-w-[60%]">
+      <header className="mb-16 max-w-[65ch]">
         <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-primary before:rounded-sm">
           Services <span className="text-light-gray-70 font-light">&amp; Expertise</span>
         </h2>
@@ -98,7 +98,7 @@ export default async function ServicesPage() {
         <h3 className="text-xl font-semibold text-white-2 mb-6 flex items-center gap-3">
           <span className="text-orange-yellow-crayola">01.</span> What I Offer
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))] gap-4">
           {SERVICE_CHIPS.map(({ icon, label }) => (
             <div
               key={label}
@@ -122,7 +122,7 @@ export default async function ServicesPage() {
           <p className="text-light-gray text-sm">Tell me what you need and I will give you a tailored quote.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,19rem),1fr))] gap-8">
           {PROJECT_TYPES.map((type) => (
             <div
               key={type.name}

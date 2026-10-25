@@ -40,7 +40,7 @@ export function TestimonialCard({ name, avatar, role, rating, testimonial, isAct
         {/* Name + Role + Stars */}
         <div className="mt-4 mb-2.5 pr-8">
           <h4 className="text-sm font-semibold capitalize text-card-foreground">{name}</h4>
-          {role && <p className="mt-0.5 text-[11px] text-primary">{role}</p>}
+          {role && <p className="mt-0.5 text-xs text-primary">{role}</p>}
           {/* Star rating */}
           <div className="flex items-center gap-0.5 mt-1.5" aria-label={`Rated ${rating} out of 5`}>
             {Array.from({ length: 5 }).map((_, i) => (
@@ -62,7 +62,7 @@ export function TestimonialCard({ name, avatar, role, rating, testimonial, isAct
         </div>
 
         {/* Testimonial Text */}
-        <p className="flex-1 text-base font-normal leading-relaxed text-muted-foreground sm:text-sm">
+        <p className="flex-1 text-base font-normal leading-relaxed text-muted-foreground">
           {testimonial}
         </p>
       </div>

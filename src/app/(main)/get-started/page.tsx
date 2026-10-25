@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ScopingForm } from '@/components/marketing/scoping-form';
-import { Target, Clock, ShieldCheck } from 'lucide-react';
+import { CheckCircledIcon, ClockIcon, TargetIcon } from '@radix-ui/react-icons';
 
 export const metadata: Metadata = {
   title: 'Project Scoping | FestoUG',
@@ -13,66 +13,66 @@ export default function GetStartedPage() {
     <div className="animate-in fade-in duration-500">
       
       {/* Page Header */}
-      <header className="mb-10 md:mb-16 xl:max-w-[55%]">
-        <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-orange-yellow-crayola before:rounded-sm">
-          Let&apos;s Build <span className="text-light-gray-70 font-light">Something Great</span>
+      <header className="mb-10 md:mb-16 max-w-[65ch]">
+        <h2 className="text-foreground text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-primary before:rounded-sm">
+          Let&apos;s Build <span className="text-muted-foreground font-light">Something Great</span>
         </h2>
         
-        <p className="text-light-gray text-base md:text-lg max-w-2xl leading-relaxed">
+        <p className="text-muted-foreground text-base max-w-2xl leading-relaxed">
           Please provide some details about your upcoming project or engineering needs. 
           This helps me understand your vision and prepare an accurate proposal and timeline.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-12">
+      <div className="grid grid-cols-1 gap-10">
         {/* Form Column */}
-        <div className="xl:col-span-8 order-2 xl:order-1">
-          <Suspense fallback={<div className="text-light-gray-70 py-8">Loading form...</div>}>
+        <div className="w-full">
+          <Suspense fallback={<div className="text-muted-foreground py-8 text-base">Loading form...</div>}>
             <ScopingForm />
           </Suspense>
         </div>
 
         {/* Sidebar Info Column */}
-        <div className="xl:col-span-4 order-1 xl:order-2 flex flex-col gap-6">
-          <aside className="bg-eerie-black-1 border border-jet rounded-3xl p-6 md:p-8 sticky top-8">
-            <h3 className="text-xl font-semibold text-white-2 mb-6 pb-4 border-b border-jet">
+        <div className="w-full">
+          <aside className="bg-card text-card-foreground border border-border rounded-3xl p-6 md:p-8">
+            <h3 className="text-xl font-semibold text-foreground mb-6 pb-4 border-b border-border">
               What Happens Next?
             </h3>
             
             <ul className="space-y-6">
               <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-yellow-crayola/10 text-orange-yellow-crayola flex justify-center items-center shrink-0">
-                  <Clock className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex justify-center items-center shrink-0">
+                  <ClockIcon className="w-5 h-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="text-white-2 font-medium mb-1">24-Hour Review</h4>
-                  <p className="text-light-gray-70 text-sm">I will review your requirements and get back to you within one business day.</p>
+                  <h4 className="text-foreground font-medium mb-1">24-Hour Review</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">I will review your requirements and get back to you within one business day.</p>
                 </div>
               </li>
               
               <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-yellow-crayola/10 text-orange-yellow-crayola flex justify-center items-center shrink-0">
-                  <Target className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex justify-center items-center shrink-0">
+                  <TargetIcon className="w-5 h-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="text-white-2 font-medium mb-1">Project Alignment</h4>
-                  <p className="text-light-gray-70 text-sm">We&apos;ll jump on a quick discovery call to ensure our goals and technical approaches align perfectly.</p>
+                  <h4 className="text-foreground font-medium mb-1">Project Alignment</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">We&apos;ll jump on a quick discovery call to ensure our goals and technical approaches align perfectly.</p>
                 </div>
               </li>
               
               <li className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-yellow-crayola/10 text-orange-yellow-crayola flex justify-center items-center shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex justify-center items-center shrink-0">
+                  <CheckCircledIcon className="w-5 h-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="text-white-2 font-medium mb-1">Proposal & Deposit</h4>
-                  <p className="text-light-gray-70 text-sm">You&apos;ll receive a detailed proposal. Upon paying the secure deposit, development begins immediately.</p>
+                  <h4 className="text-foreground font-medium mb-1">Proposal & Deposit</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">You&apos;ll receive a detailed proposal. Upon paying the secure deposit, development begins immediately.</p>
                 </div>
               </li>
             </ul>
             
-            <div className="mt-8 pt-6 border-t border-jet">
-              <p className="text-light-gray text-sm italic">
+            <div className="mt-8 pt-6 border-t border-border">
+              <p className="text-muted-foreground text-base leading-relaxed italic">
                 &quot;Festo delivers more than just code; he provides reliable architecture that scales.&quot;
               </p>
             </div>

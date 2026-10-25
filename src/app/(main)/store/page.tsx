@@ -27,7 +27,7 @@ export default async function StorePage() {
         <h2 className="text-white-2 text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-[40px] before:h-[5px] before:bg-primary before:rounded-[3px]">
           Digital Store
         </h2>
-        <p className="text-light-gray text-[15px] font-light leading-relaxed max-w-2xl">
+        <p className="text-light-gray text-base font-light leading-relaxed max-w-2xl">
           Premium scripts, Next.js templates, and productivity tools designed to help you ship faster. 
           Buy once, use forever.
         </p>

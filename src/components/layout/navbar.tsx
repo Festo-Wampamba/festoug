@@ -71,10 +71,10 @@ export function Navbar() {
   return (
     <header ref={headerRef} className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="flex min-h-[88px] items-center justify-between gap-4 py-4">
-        <Link href="/" aria-label="Festo Wampamba home" className="shrink-0 text-lg font-semibold tracking-tight text-foreground">
+        <Link href="/" aria-label="Festo Wampamba home" className="min-w-0 text-lg font-semibold tracking-tight text-foreground">
           Festo Wampamba<span className="mt-0.5 block text-xs font-normal tracking-normal text-muted-foreground">Software engineer</span>
         </Link>
-        <nav aria-label="Main navigation" className="hidden xl:block">
+        <nav aria-label="Main navigation" className="hidden 2xl:block">
           <ul className="flex items-center gap-1">
             {links.map(({ label, href }) => (
               <li key={href}><Link href={href} aria-current={isActive(href) ? "page" : undefined} className={`inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium transition-colors duration-200 ${isActive(href) ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"}`}>{label}</Link></li>
@@ -97,12 +97,12 @@ export function Navbar() {
               )}
             </div>
           ) : <><Link href="/auth/signin" aria-label="Sign in" className="hidden min-h-11 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary sm:inline-flex"><EnterIcon aria-hidden />Sign in</Link><Link href="/auth/signup" className="hidden min-h-11 items-center rounded-xl px-3 text-sm font-medium text-primary underline-offset-4 hover:underline md:inline-flex">Sign up</Link></>}
-          <button ref={menuButtonRef} type="button" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => { setAccountOpen(false); setMenuOpen(open => !open); }} className="flex size-11 items-center justify-center rounded-xl border border-border text-foreground hover:bg-secondary xl:hidden">{menuOpen ? <Cross2Icon className="size-5" aria-hidden /> : <HamburgerMenuIcon className="size-5" aria-hidden />}</button>
+          <button ref={menuButtonRef} type="button" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => { setAccountOpen(false); setMenuOpen(open => !open); }} className="flex size-11 items-center justify-center rounded-xl border border-border text-foreground hover:bg-secondary 2xl:hidden">{menuOpen ? <Cross2Icon className="size-5" aria-hidden /> : <HamburgerMenuIcon className="size-5" aria-hidden />}</button>
         </div>
       </div>
       {menuOpen && (
-        <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-border pb-5 pt-3 xl:hidden">
-          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-border pb-5 pt-3 2xl:hidden">
+          <ul className="grid grid-cols-1 gap-2 min-[375px]:grid-cols-2 sm:grid-cols-3">
             {links.map(({ label, href, Icon }) => <li key={href}><Link href={href} onClick={() => setMenuOpen(false)} aria-current={isActive(href) ? "page" : undefined} className={`flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium transition-colors ${isActive(href) ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}><Icon className="size-[18px]" aria-hidden />{label}</Link></li>)}
             {!session?.user && !isPending && <><li><Link href="/auth/signin" onClick={() => setMenuOpen(false)} className="flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium text-primary hover:bg-secondary"><EnterIcon className="size-[18px]" aria-hidden />Sign in</Link></li><li><Link href="/auth/signup" onClick={() => setMenuOpen(false)} className="flex min-h-12 items-center rounded-xl px-4 text-sm font-medium text-primary hover:bg-secondary">Create account</Link></li></>}
           </ul>

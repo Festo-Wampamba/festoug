@@ -73,7 +73,7 @@ const TIERS = [
 
 export function MaintenanceCards() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,19rem),1fr))] gap-8">
       {TIERS.map((tier) => (
         <div
           key={tier.name}

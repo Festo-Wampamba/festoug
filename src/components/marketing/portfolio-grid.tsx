@@ -23,10 +23,10 @@ function ProjectCard({ project }: { project: Project }) {
           className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
         />
       </figure>
-      <h3 className="text-white-2 text-[15px] font-medium capitalize mb-[5px] group-hover:text-orange-yellow-crayola transition-colors">
+      <h3 className="text-white-2 text-base font-medium capitalize mb-[5px] group-hover:text-orange-yellow-crayola transition-colors">
         {project.title}
       </h3>
-      <p className="text-light-gray font-light text-[14px]">{project.category}</p>
+      <p className="text-light-gray font-light text-sm">{project.category}</p>
     </>
   );
 }
@@ -97,7 +97,7 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
               <button
                 type="button"
                 onClick={() => setSelectedCategory(category)}
-                className={`text-[15px] font-medium transition-colors duration-300 ${
+                className={`text-base font-medium transition-colors duration-300 ${
                   selectedCategory === category
                     ? "text-orange-yellow-crayola"
                     : "text-light-gray hover:text-light-gray-70"
@@ -128,7 +128,7 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="absolute top-3 right-3 z-20 flex items-center gap-1 bg-smoky-black/80 backdrop-blur-sm border border-jet text-orange-yellow-crayola text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-orange-yellow-crayola hover:text-smoky-black transition-colors"
+                className="absolute top-3 right-3 z-20 flex items-center gap-1 bg-smoky-black/80 backdrop-blur-sm border border-jet text-orange-yellow-crayola text-sm font-semibold px-2.5 py-1 rounded-full hover:bg-orange-yellow-crayola hover:text-smoky-black transition-colors"
                 aria-label={`Open ${project.title} live demo`}
               >
                 <ExternalLink className="w-3 h-3" /> Live

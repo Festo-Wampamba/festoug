@@ -38,9 +38,18 @@ or status colors retain their original purpose.
 ## Typography and geometry
 
 - Geist for headings, body, navigation and controls. Geist Mono for code.
+- Body copy starts at 17px on phones, uses 16px from 640px through
+  laptop and desktop widths, and increases to 21px at 2400px. Page headings
+  on medium screens use a restrained 34–40px scale. Viewport width
+  approximates extra-wide displays; physical monitor inches cannot be detected.
+  Use rem units so labels, controls and
+  headings follow the reading scale. Supporting metadata may be smaller.
 - Body copy uses comfortable line spacing and a readable line length.
 - Use weight, spacing and hierarchy before increasing heading size.
-- Keep primary page content within a 1360px shell.
+- Let the page grow within a 2000px shell, with fluid outer gutters.
+- Stack the profile above content below 1280px, and use a menu below 1536px.
+- Choose card columns from the space inside the content panel, not just the
+  screen width. Form fields must have room for their complete selected value.
 - Public content uses a profile column and a wider work column on desktop;
   stack them on small screens. Use two project columns where space permits.
 - Use quiet borders and restrained 8–16px corner radii. Avoid decorative glows,
