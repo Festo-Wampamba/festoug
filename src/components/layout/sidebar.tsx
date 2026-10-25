@@ -33,8 +33,8 @@ export function Sidebar() {
       <div className="flex items-center gap-[15px] md:gap-5 lg:flex-col lg:gap-4 lg:text-center">
         <figure className="shrink-0 w-[70px] h-[70px] sm:w-[84px] sm:h-[84px] md:w-[110px] md:h-[110px] lg:w-[150px] lg:h-[150px] lg:mx-auto">
           <Image
-            src="/images/festo-profile.png"
-            alt="Festo"
+            src="/images/festo-profile-burgundy.png"
+            alt="Festo Wampamba wearing a burgundy suit"
             width={150}
             height={150}
             className="rounded-full animate-in fade-in duration-1000 w-full h-full object-cover"
