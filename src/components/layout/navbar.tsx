@@ -3,307 +3,111 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
-import { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useRef, useState } from "react";
 import {
-  LayoutDashboard, LogOut, Settings, Shield,
-  Home, FileText, Layers, BookOpen, Wrench, ShoppingBag, Mail, LogIn,
-} from "lucide-react";
+  BackpackIcon, ChatBubbleIcon, Cross2Icon, DashboardIcon, EnterIcon,
+  ExitIcon, FileTextIcon, GearIcon, HamburgerMenuIcon, HomeIcon,
+  LayersIcon, LockClosedIcon, ReaderIcon,
+} from "@radix-ui/react-icons";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const links = [
-  { label: "About",     href: "/",          Icon: Home },
-  { label: "Resume",    href: "/resume",     Icon: FileText },
-  { label: "Portfolio", href: "/portfolio",  Icon: Layers },
-  { label: "Blog",      href: "/blog",       Icon: BookOpen },
-  { label: "Services",  href: "/services",   Icon: Wrench },
-  { label: "Store",     href: "/store",      Icon: ShoppingBag },
-  { label: "Contact",   href: "/contact",    Icon: Mail },
+  { label: "About", href: "/", Icon: HomeIcon },
+  { label: "Resume", href: "/resume", Icon: FileTextIcon },
+  { label: "Portfolio", href: "/portfolio", Icon: LayersIcon },
+  { label: "Blog", href: "/blog", Icon: ReaderIcon },
+  { label: "Services", href: "/services", Icon: GearIcon },
+  { label: "Store", href: "/store", Icon: BackpackIcon },
+  { label: "Contact", href: "/contact", Icon: ChatBubbleIcon },
 ];
 
 type AvatarUser = { name?: string | null; image?: string | null };
-
-function UserAvatar({ user, size = "sm" }: { user: AvatarUser; size?: "sm" | "md" }) {
-  const dim = size === "sm" ? "w-7 h-7 text-xs" : "w-8 h-8 text-sm";
+function UserAvatar({ user }: { user: AvatarUser }) {
   return user.image ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={user.image} alt={user.name || ""} className={`${dim} rounded-full border border-orange-yellow-crayola/50`} />
-  ) : (
-    <div className={`${dim} rounded-full bg-orange-yellow-crayola text-smoky-black flex items-center justify-center font-bold`}>
-      {user.name?.charAt(0) || "U"}
-    </div>
-  );
+    <img src={user.image} alt="" className="size-7 rounded-full object-cover" />
+  ) : <span className="flex size-7 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">{user.name?.charAt(0) || "U"}</span>;
 }
 
 export function Navbar() {
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const mobileButtonRef = useRef<HTMLButtonElement>(null);
-  const desktopButtonRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [dropdownPos, setDropdownPos] = useState<{ top: number; right: number } | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [previousPath, setPreviousPath] = useState(pathname);
+  const headerRef = useRef<HTMLElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
+  const accountButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Close the account dropdown on route change (adjust state during render, no effect)
-  const [prevPathname, setPrevPathname] = useState(pathname);
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
-    setDropdownOpen(false);
+  if (pathname !== previousPath) {
+    setPreviousPath(pathname);
+    setMenuOpen(false);
+    setAccountOpen(false);
   }
 
-  // ── Scroll transparency ──────────────────────────────────────────────────────
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [isAtBottom, setIsAtBottom] = useState(false);
-  const [isNavFocused, setIsNavFocused] = useState(false);
-  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
-    const handleScroll = () => {
-      const atBottom =
-        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
-      setIsAtBottom(atBottom);
-      setIsScrolling(true);
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
-      scrollTimerRef.current = setTimeout(() => setIsScrolling(false), 1400);
+    if (!accountOpen && !menuOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (!headerRef.current?.contains(target)) setMenuOpen(false);
+      if (!accountRef.current?.contains(target)) setAccountOpen(false);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (accountOpen) { setAccountOpen(false); accountButtonRef.current?.focus(); }
+      else { setMenuOpen(false); menuButtonRef.current?.focus(); }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
     };
-  }, []);
+  }, [accountOpen, menuOpen]);
 
-  // Reveal on touch/click for 3 seconds then fade back if still scrolling
-  const handleNavTouch = () => {
-    setIsNavFocused(true);
-    if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
-    focusTimerRef.current = setTimeout(() => setIsNavFocused(false), 3000);
-  };
-
-  const navOpaque = !isScrolling || isAtBottom || isNavFocused;
-
-  // ── Dropdown positioning ─────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!dropdownOpen) return;
-    const isXl = window.innerWidth >= 1280;
-    const btn = isXl ? desktopButtonRef.current : mobileButtonRef.current;
-    if (!btn) return;
-    const rect = btn.getBoundingClientRect();
-    if (isXl) {
-      setDropdownPos({ top: rect.bottom + 8, right: Math.max(8, window.innerWidth - rect.right) });
-    } else {
-      setDropdownPos({ top: rect.top - 216, right: Math.max(8, window.innerWidth - rect.right) });
-    }
-  }, [dropdownOpen]);
-
-  useEffect(() => {
-    if (!dropdownOpen) return;
-    const handler = (e: MouseEvent) => {
-      const t = e.target as Node;
-      if (
-        dropdownRef.current && !dropdownRef.current.contains(t) &&
-        mobileButtonRef.current && !mobileButtonRef.current.contains(t) &&
-        desktopButtonRef.current && !desktopButtonRef.current.contains(t)
-      ) setDropdownOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [dropdownOpen]);
-
-  // ── Dropdown portal ──────────────────────────────────────────────────────────
-  const dropdownMenu =
-    dropdownOpen && dropdownPos && typeof window !== "undefined"
-      ? createPortal(
-          <div
-            ref={dropdownRef}
-            className="fixed w-52 bg-eerie-black-2 border border-jet rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[100]"
-            style={{ top: dropdownPos.top, right: dropdownPos.right }}
-          >
-            <div className="px-4 py-3 border-b border-jet">
-              <p className="text-white-2 text-sm font-semibold truncate">{session?.user?.name}</p>
-              <p className="text-light-gray-70 text-xs truncate">{session?.user?.email}</p>
-            </div>
-            <ul className="py-2">
-              {session?.user?.role === "ADMIN" ? (
-                <li>
-                  <Link href="/admin" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
-                    <Shield className="w-4 h-4 text-orange-yellow-crayola" /> Admin Panel
-                  </Link>
-                </li>
-              ) : (
-                <>
-                  <li>
-                    <Link href="/dashboard" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
-                      <LayoutDashboard className="w-4 h-4 text-orange-yellow-crayola" /> Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/dashboard/settings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-light-gray text-sm hover:bg-jet hover:text-white-2 transition-colors">
-                      <Settings className="w-4 h-4 text-orange-yellow-crayola" /> Profile Settings
-                    </Link>
-                  </li>
-                </>
-              )}
-              <li className="border-t border-jet mt-1 pt-1">
-                <button
-                  type="button"
-                  onClick={() => { setDropdownOpen(false); signOut().finally(() => { window.location.href = "/"; }); }}
-                  className="flex items-center gap-3 px-4 py-2.5 text-red-400 text-sm hover:bg-jet transition-colors w-full text-left"
-                >
-                  <LogOut className="w-4 h-4" /> Sign Out
-                </button>
-              </li>
-            </ul>
-          </div>,
-          document.body
-        )
-      : null;
+  const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(href));
 
   return (
-    <>
-      {/* ── Mobile + Tablet (< xl): Floating Pill ─────────────────────────────── */}
-      <nav
-        className={`lg:hidden fixed bottom-5 left-1/2 z-50 nav-pill transition-[opacity] duration-700 ease-in-out max-w-[calc(100vw-2rem)] ${
-          navOpaque ? "opacity-100" : "opacity-[0.18] hover:opacity-100"
-        }`}
-        onMouseEnter={() => setIsNavFocused(true)}
-        onMouseLeave={() => setIsNavFocused(false)}
-        onTouchStart={handleNavTouch}
-      >
-        <div className="flex items-center gap-0.5 sm:gap-1
-          px-2 py-1.5 sm:px-2.5 sm:py-2
-          overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
-          bg-eerie-black-2/90 backdrop-blur-2xl
-          border border-jet
-          rounded-[26px]
-          shadow-[0_8px_32px_rgba(0,0,0,0.14)]
-          dark:shadow-[0_8px_40px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.06)]">
-
-          {/* Nav icon links */}
-          {links.map((link) => {
-            const isActive =
-              pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                title={link.label}
-                className={`relative flex flex-col items-center justify-center gap-0.5
-                  shrink-0 px-2.5 sm:px-3 py-1.5
-                  rounded-2xl
-                  transition-all duration-200
-                  ${isActive
-                    ? "bg-orange-yellow-crayola/15 text-orange-yellow-crayola"
-                    : "text-light-gray-70 hover:text-white-2 hover:bg-onyx dark:hover:bg-white/5"
-                  }`}
-              >
-                <link.Icon
-                  className="w-[17px] h-[17px] sm:w-[18px] sm:h-[18px]"
-                  strokeWidth={isActive ? 2.2 : 1.8}
-                />
-                <span className="text-[10px] sm:text-[11px] font-medium leading-none">
-                  {link.label}
-                </span>
-              </Link>
-            );
-          })}
-
-          {/* Divider */}
-          <div className="w-px h-4 sm:h-5 bg-jet mx-0.5 sm:mx-1 shrink-0" />
-
-          {/* Theme toggle — constrained to pill item size */}
-          <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 overflow-hidden">
-            <ThemeToggle />
-          </div>
-
-          {/* User account */}
-          {!isPending && (
-            session?.user ? (
-              <button
-                ref={mobileButtonRef}
-                type="button"
-                onClick={() => setDropdownOpen((o) => !o)}
-                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full hover:bg-onyx dark:hover:bg-white/5 transition-colors shrink-0"
-                aria-label="Account menu"
-              >
-                <UserAvatar user={session.user} size="sm" />
+    <header ref={headerRef} className="sticky top-0 z-40 border-b border-border bg-background">
+      <div className="flex min-h-[88px] items-center justify-between gap-4 py-4">
+        <Link href="/" aria-label="Festo Wampamba home" className="shrink-0 text-lg font-semibold tracking-tight text-foreground">
+          Festo Wampamba<span className="mt-0.5 block text-xs font-normal tracking-normal text-muted-foreground">Software engineer</span>
+        </Link>
+        <nav aria-label="Main navigation" className="hidden xl:block">
+          <ul className="flex items-center gap-1">
+            {links.map(({ label, href }) => (
+              <li key={href}><Link href={href} aria-current={isActive(href) ? "page" : undefined} className={`inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium transition-colors duration-200 ${isActive(href) ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"}`}>{label}</Link></li>
+            ))}
+          </ul>
+        </nav>
+        <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle />
+          {isPending ? <div aria-label="Loading account" className="hidden h-11 w-20 animate-pulse rounded-xl bg-muted sm:block" /> : session?.user ? (
+            <div ref={accountRef} className="relative">
+              <button ref={accountButtonRef} type="button" aria-label="Account menu" aria-expanded={accountOpen} aria-controls="account-panel" onClick={() => { setMenuOpen(false); setAccountOpen(open => !open); }} className="flex min-h-11 items-center gap-2 rounded-xl border border-border px-2.5 text-sm text-foreground transition-colors hover:bg-secondary">
+                <UserAvatar user={session.user} /><span className="hidden max-w-24 truncate md:inline">{session.user.name?.split(" ")[0] || "Account"}</span>
               </button>
-            ) : (
-              <Link
-                href="/auth/signin"
-                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full text-light-gray-70 hover:text-white-2 hover:bg-onyx dark:hover:bg-white/5 transition-colors shrink-0"
-                title="Sign in"
-                aria-label="Sign in"
-              >
-                <LogIn className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px]" strokeWidth={1.8} />
-              </Link>
-            )
-          )}
-        </div>
-      </nav>
-
-      {/* ── Desktop (xl+): Glassmorphism top-right nav ───────────────────────── */}
-      <nav className="hidden lg:block absolute top-0 right-0 z-50 max-w-full
-        bg-eerie-black-2/85 dark:bg-white/[0.04] backdrop-blur-2xl
-        border border-jet dark:border-white/[0.08]
-        rounded-tr-[20px] rounded-bl-[24px]
-        shadow-[0_4px_20px_rgba(0,0,0,0.10)]
-        dark:shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.07)]">
-        <ul className="flex flex-nowrap items-center px-4 py-1.5 gap-0.5">
-          {links.map((link) => {
-            const isActive =
-              pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-            return (
-              <li key={link.href} className="shrink-0">
-                <Link
-                  href={link.href}
-                  title={link.label}
-                  className={`flex items-center gap-1.5 text-[13px] font-medium px-3 py-2 rounded-xl transition-all duration-200 ${
-                    isActive
-                      ? "text-orange-yellow-crayola bg-orange-yellow-crayola/10"
-                      : "text-light-gray hover:text-white-2 hover:bg-onyx dark:hover:bg-white/[0.06]"
-                  }`}
-                >
-                  <link.Icon
-                    className="w-[14px] h-[14px] shrink-0"
-                    strokeWidth={isActive ? 2.2 : 1.8}
-                  />
-                  {/* Labels need xl width; below that the pill overflows its column onto the sidebar */}
-                  <span className="hidden xl:inline">{link.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-          <li className="flex items-center pl-2 ml-1 border-l border-jet dark:border-white/[0.08] shrink-0 gap-1">
-            <div className="w-8 h-8 flex items-center justify-center shrink-0">
-              <ThemeToggle />
-            </div>
-            {isPending ? null : session?.user ? (
-              <button
-                ref={desktopButtonRef}
-                type="button"
-                onClick={() => setDropdownOpen((o) => !o)}
-                className="flex items-center gap-2 py-[7px] px-3 rounded-xl hover:bg-onyx dark:hover:bg-white/[0.06] transition-colors"
-                title="Your account"
-              >
-                <UserAvatar user={session.user} size="md" />
-                <div className="flex flex-col items-start justify-center text-left">
-                  <span className="text-white-2 text-[13px] font-medium leading-tight truncate max-w-[120px]">{session.user.name}</span>
-                  <span className="text-light-gray text-[10px] uppercase tracking-wider mt-[2px] leading-none">{session.user.role}</span>
+              {accountOpen && (
+                <div id="account-panel" className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-border bg-popover p-2 text-popover-foreground shadow-lg">
+                  <div className="mb-1 border-b border-border px-3 py-3"><p className="truncate text-sm font-semibold">{session.user.name}</p><p className="truncate text-xs text-muted-foreground">{session.user.email}</p></div>
+                  {session.user.role === "ADMIN" ? <Link href="/admin" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm hover:bg-secondary"><LockClosedIcon aria-hidden />Admin panel</Link> : <><Link href="/dashboard" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm hover:bg-secondary"><DashboardIcon aria-hidden />Dashboard</Link><Link href="/dashboard/settings" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm hover:bg-secondary"><GearIcon aria-hidden />Profile settings</Link></>}
+                  <button type="button" onClick={() => { setAccountOpen(false); signOut().finally(() => { window.location.href = "/"; }); }} className="mt-1 flex min-h-11 w-full items-center gap-3 rounded-lg border-t border-border px-3 text-left text-sm text-destructive hover:bg-destructive/10"><ExitIcon aria-hidden />Sign out</button>
                 </div>
-              </button>
-            ) : (
-              <div className="flex items-center gap-1 py-[5px]">
-                <Link href="/auth/signin" className="whitespace-nowrap text-[13px] font-medium px-3 py-1.5 rounded-lg text-light-gray hover:text-white-2 transition-colors">Sign In</Link>
-                <Link href="/auth/signup" className="whitespace-nowrap text-[13px] font-semibold px-4 py-2 rounded-lg bg-orange-yellow-crayola text-smoky-black hover:bg-orange-yellow-crayola/90 transition-colors">Sign Up</Link>
-              </div>
-            )}
-          </li>
-        </ul>
-      </nav>
-
-      {dropdownMenu}
-    </>
+              )}
+            </div>
+          ) : <><Link href="/auth/signin" aria-label="Sign in" className="hidden min-h-11 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary sm:inline-flex"><EnterIcon aria-hidden />Sign in</Link><Link href="/auth/signup" className="hidden min-h-11 items-center rounded-xl px-3 text-sm font-medium text-primary underline-offset-4 hover:underline md:inline-flex">Sign up</Link></>}
+          <button ref={menuButtonRef} type="button" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => { setAccountOpen(false); setMenuOpen(open => !open); }} className="flex size-11 items-center justify-center rounded-xl border border-border text-foreground hover:bg-secondary xl:hidden">{menuOpen ? <Cross2Icon className="size-5" aria-hidden /> : <HamburgerMenuIcon className="size-5" aria-hidden />}</button>
+        </div>
+      </div>
+      {menuOpen && (
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="border-t border-border pb-5 pt-3 xl:hidden">
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {links.map(({ label, href, Icon }) => <li key={href}><Link href={href} onClick={() => setMenuOpen(false)} aria-current={isActive(href) ? "page" : undefined} className={`flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium transition-colors ${isActive(href) ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}><Icon className="size-[18px]" aria-hidden />{label}</Link></li>)}
+            {!session?.user && !isPending && <><li><Link href="/auth/signin" onClick={() => setMenuOpen(false)} className="flex min-h-12 items-center gap-3 rounded-xl px-4 text-sm font-medium text-primary hover:bg-secondary"><EnterIcon className="size-[18px]" aria-hidden />Sign in</Link></li><li><Link href="/auth/signup" onClick={() => setMenuOpen(false)} className="flex min-h-12 items-center rounded-xl px-4 text-sm font-medium text-primary hover:bg-secondary">Create account</Link></li></>}
+          </ul>
+        </nav>
+      )}
+    </header>
   );
 }

@@ -1,27 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 
 export function ThemeToggle() {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    // Sync React state from the DOM class set by the pre-hydration theme script
+    // The bootstrap script resolves the saved preference before hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDark(isDark);
+    setDark(document.documentElement.classList.contains("dark"));
   }, []);
 
   const toggle = () => {
     const next = !dark;
     setDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("theme", next ? "dark" : "light");
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem("theme", next ? "dark" : "light"); } catch { /* Theme still works if storage is unavailable. */ }
   };
 
   return (
@@ -29,9 +24,9 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
       type="button"
-      className="w-full h-full flex items-center justify-center rounded-full hover:bg-white/5 transition-colors text-light-gray-70 hover:text-white-2"
+      className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors duration-200 hover:bg-secondary hover:text-foreground active:bg-secondary"
     >
-      {dark ? <Sun className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px]" strokeWidth={1.8} /> : <Moon className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px]" strokeWidth={1.8} />}
+      {dark ? <SunIcon className="size-[18px]" aria-hidden /> : <MoonIcon className="size-[18px]" aria-hidden />}
     </button>
   );
 }

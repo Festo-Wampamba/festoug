@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Send, ArrowRight, CheckCircle2 } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CheckCircledIcon,
+  LockClosedIcon,
+  PaperPlaneIcon,
+} from "@radix-ui/react-icons";
 
 export function ScopingForm() {
   const searchParams = useSearchParams();
@@ -56,66 +61,66 @@ export function ScopingForm() {
 
   if (isSuccess) {
     return (
-      <div className="bg-eerie-black-1 border border-jet rounded-3xl p-8 md:p-12 text-center shadow-[0_8px_30px_rgba(0,0,0,0.12)] animate-in fade-in zoom-in-95 duration-500">
-        <div className="w-20 h-20 bg-orange-yellow-crayola/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 className="w-10 h-10 text-orange-yellow-crayola" />
+      <div className="bg-card text-foreground border border-border rounded-3xl p-8 md:p-12 text-center shadow-lg animate-in fade-in zoom-in-95 duration-500">
+        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircledIcon className="w-10 h-10 text-primary" />
         </div>
-        <h3 className="text-2xl md:text-3xl font-bold text-white-2 mb-4">Project Brief Received!</h3>
-        <p className="text-light-gray-70 max-w-md mx-auto mb-8">
+        <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Project Brief Received!</h3>
+        <p className="text-muted-foreground max-w-md mx-auto mb-8">
           Thank you for reaching out. I&apos;ve received your project details and will be reviewing them shortly. I typically respond within 24 hours.
         </p>
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="inline-flex items-center gap-2 bg-jet text-orange-yellow-crayola px-6 py-3 rounded-xl font-medium hover:bg-jet/80 transition-colors"
+          className="inline-flex min-h-11 items-center gap-2 bg-secondary text-secondary-foreground px-6 py-3 rounded-xl font-medium hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-[0.98] transition-colors"
         >
-          Return Home <ArrowRight className="w-4 h-4" />
+          Return Home <ArrowRightIcon className="w-4 h-4" />
         </button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-eerie-black-1 border border-jet rounded-3xl p-6 md:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+    <form onSubmit={handleSubmit} className="bg-card text-foreground border border-border rounded-3xl p-6 md:p-10 shadow-lg">
       
       {/* Contact Information */}
       <div className="mb-10">
-        <h3 className="text-xl font-semibold text-white-2 mb-6 pb-2 border-b border-jet flex items-center gap-3">
-          <span className="text-orange-yellow-crayola text-sm font-bold bg-orange-yellow-crayola/10 w-8 h-8 rounded-full flex items-center justify-center">1</span>
+        <h3 className="text-xl font-semibold text-foreground mb-6 pb-2 border-b border-border flex items-center gap-3">
+          <span className="text-primary text-sm font-bold bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center">1</span>
           Contact Details
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-light-gray mb-2">Full Name *</label>
+            <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
             <input
               id="name"
               name="name"
               type="text"
               required
-              className="w-full bg-eerie-black-2 border border-jet text-white-2 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all placeholder:text-light-gray-70"
-              placeholder="John Doe"
+              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
+              placeholder="Your name"
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-light-gray mb-2">Work Email *</label>
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">Work Email *</label>
             <input
               id="email"
               name="email"
               type="email"
               required
-              className="w-full bg-eerie-black-2 border border-jet text-white-2 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all placeholder:text-light-gray-70"
-              placeholder="john@company.com"
+              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
+              placeholder="you@company.com"
             />
           </div>
           <div className="md:col-span-2">
-            <label htmlFor="company" className="block text-sm font-medium text-light-gray mb-2">Company / Organization</label>
+            <label htmlFor="company" className="block text-sm font-medium text-foreground mb-2">Company / Organization</label>
             <input
               id="company"
               name="company"
               type="text"
-              className="w-full bg-eerie-black-2 border border-jet text-white-2 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all placeholder:text-light-gray-70"
-              placeholder="Acme Corp"
+              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground"
+              placeholder="Company or organization"
             />
           </div>
         </div>
@@ -123,20 +128,20 @@ export function ScopingForm() {
 
       {/* Project Scope */}
       <div className="mb-10">
-        <h3 className="text-xl font-semibold text-white-2 mb-6 pb-2 border-b border-jet flex items-center gap-3">
-          <span className="text-orange-yellow-crayola text-sm font-bold bg-orange-yellow-crayola/10 w-8 h-8 rounded-full flex items-center justify-center">2</span>
+        <h3 className="text-xl font-semibold text-foreground mb-6 pb-2 border-b border-border flex items-center gap-3">
+          <span className="text-primary text-sm font-bold bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center">2</span>
           Project Scope
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="plan" className="block text-sm font-medium text-light-gray mb-2">Interested Plan</label>
+            <label htmlFor="plan" className="block text-sm font-medium text-foreground mb-2">Interested Plan</label>
             <select
               id="plan"
               aria-label="Interested Plan"
               value={selectedPlan}
               onChange={(e) => setSelectedPlan(e.target.value)}
-              className="w-full bg-eerie-black-2 border border-jet text-white-2 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all appearance-none cursor-pointer"
+              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
             >
               <option value="Lite Plan (~$999)">Lite Plan (~$999)</option>
               <option value="Premium Plan (~$2,499)">Premium Plan (~$2,499)</option>
@@ -145,13 +150,13 @@ export function ScopingForm() {
             </select>
           </div>
           <div>
-            <label htmlFor="timeline" className="block text-sm font-medium text-light-gray mb-2">Expected Timeline</label>
+            <label htmlFor="timeline" className="block text-sm font-medium text-foreground mb-2">Expected Timeline</label>
             <select
               id="timeline"
               aria-label="Expected Timeline"
               value={selectedTimeline}
               onChange={(e) => setSelectedTimeline(e.target.value)}
-              className="w-full bg-eerie-black-2 border border-jet text-white-2 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all appearance-none cursor-pointer"
+              className="w-full min-h-11 bg-background border border-border text-foreground rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
             >
               <option value="As soon as possible (Urgent)">As soon as possible (Urgent)</option>
               <option value="1 to 3 months">1 to 3 months</option>
@@ -164,26 +169,26 @@ export function ScopingForm() {
 
       {/* Project Details */}
       <div className="mb-10">
-        <h3 className="text-xl font-semibold text-white-2 mb-6 pb-2 border-b border-jet flex items-center gap-3">
-          <span className="text-orange-yellow-crayola text-sm font-bold bg-orange-yellow-crayola/10 w-8 h-8 rounded-full flex items-center justify-center">3</span>
+        <h3 className="text-xl font-semibold text-foreground mb-6 pb-2 border-b border-border flex items-center gap-3">
+          <span className="text-primary text-sm font-bold bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center">3</span>
           The Vision
         </h3>
         
         <div>
-          <label htmlFor="vision" className="block text-sm font-medium text-light-gray mb-2">Please describe your project constraints and goals *</label>
+          <label htmlFor="vision" className="block text-sm font-medium text-foreground mb-2">Please describe your project constraints and goals *</label>
           <textarea
             id="vision"
             name="vision"
             required
             rows={5}
-            className="w-full bg-eerie-black-2 border border-jet text-white-2 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-yellow-crayola/50 focus:ring-1 focus:ring-orange-yellow-crayola/50 transition-all placeholder:text-light-gray-70 resize-y"
-            placeholder="Tell me about what you are building, who your target audience is, and any specific technical requirements..."
+            className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-muted-foreground resize-y"
+            placeholder="Tell us what you are building, who it is for, and any technical requirements..."
           />
         </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div role="alert" className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm">
           {error}
         </div>
       )}
@@ -191,21 +196,19 @@ export function ScopingForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full flex items-center justify-center gap-3 bg-orange-yellow-crayola text-smoky-black font-semibold py-4 rounded-xl hover:bg-orange-yellow-crayola/90 hover:shadow-[0_0_20px_rgba(255,181,63,0.3)] transition-all disabled:opacity-70 disabled:cursor-not-allowed text-lg"
+        className="w-full min-h-11 flex items-center justify-center gap-3 bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-[0.99] transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-lg"
       >
         {isSubmitting ? (
           <>Processing Details...</>
         ) : (
           <>
-            Submit Project Brief <Send className="w-5 h-5" />
+            Submit Project Brief <PaperPlaneIcon className="w-5 h-5" />
           </>
         )}
       </button>
 
-      <p className="text-light-gray-70 text-xs text-center mt-6 flex items-center justify-center gap-2">
-        <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
+      <p className="text-muted-foreground text-xs text-center mt-6 flex items-center justify-center gap-2">
+        <LockClosedIcon className="w-4 h-4 text-primary" aria-hidden="true" />
         Your information is secure and will never be shared.
       </p>
 

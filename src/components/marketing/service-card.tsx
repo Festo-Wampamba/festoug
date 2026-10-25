@@ -1,6 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Code2, Server, Network, HardDrive, ArrowRight, type LucideIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CodeIcon,
+  DesktopIcon,
+  LayersIcon,
+  StackIcon,
+} from "@radix-ui/react-icons";
 
 interface ServiceCardProps {
   title: string;
@@ -9,121 +15,63 @@ interface ServiceCardProps {
   index?: number;
 }
 
-// Flowstep violetDark accent rotation: purple → green → violet → amber
-const ACCENTS = [
-  {
-    iconText:    "text-orange-yellow-crayola",
-    iconBg:      "bg-orange-yellow-crayola/12",
-    iconRing:    "ring-orange-yellow-crayola/30",
-    numColor:    "text-orange-yellow-crayola/20",
-    barColor:    "bg-orange-yellow-crayola",
-    borderHover: "hover:border-orange-yellow-crayola/40",
-    glow:        "hover:shadow-[0_10px_40px_-8px_rgba(127,34,254,0.35)]",
-    leftBar:     "before:bg-orange-yellow-crayola",
-    divider:     "bg-orange-yellow-crayola",
-  },
-  {
-    iconText:    "text-accent-2",
-    iconBg:      "bg-accent-2/12",
-    iconRing:    "ring-accent-2/30",
-    numColor:    "text-accent-2/20",
-    barColor:    "bg-accent-2",
-    borderHover: "hover:border-accent-2/40",
-    glow:        "hover:shadow-[0_10px_40px_-8px_rgba(16,185,129,0.32)]",
-    leftBar:     "before:bg-accent-2",
-    divider:     "bg-accent-2",
-  },
-  {
-    iconText:    "text-accent-3",
-    iconBg:      "bg-accent-3/12",
-    iconRing:    "ring-accent-3/30",
-    numColor:    "text-accent-3/20",
-    barColor:    "bg-accent-3",
-    borderHover: "hover:border-accent-3/40",
-    glow:        "hover:shadow-[0_10px_40px_-8px_rgba(168,85,247,0.32)]",
-    leftBar:     "before:bg-accent-3",
-    divider:     "bg-accent-3",
-  },
-  {
-    iconText:    "text-accent-4",
-    iconBg:      "bg-accent-4/12",
-    iconRing:    "ring-accent-4/30",
-    numColor:    "text-accent-4/20",
-    barColor:    "bg-accent-4",
-    borderHover: "hover:border-accent-4/40",
-    glow:        "hover:shadow-[0_10px_40px_-8px_rgba(245,158,11,0.32)]",
-    leftBar:     "before:bg-accent-4",
-    divider:     "bg-accent-4",
-  },
-];
+type ServiceIcon = typeof CodeIcon;
 
-// Map seeded icon image paths → Flowstep Lucide icons (fallback keeps the image)
-const ICON_MAP: Record<string, LucideIcon> = {
-  "icon-dev":    Code2,
-  "icon-dm":     Server,
-  "icon-design": Network,
-  "icon-db":     HardDrive,
+// Map seeded icon image paths to a small, consistent Radix icon set.
+// The image fallback remains for any future icon path not in this map.
+const ICON_MAP: Record<string, ServiceIcon> = {
+  "icon-dev": CodeIcon,
+  "icon-dm": DesktopIcon,
+  "icon-design": LayersIcon,
+  "icon-db": StackIcon,
 };
 
-function resolveLucide(icon: string): LucideIcon | null {
+function resolveIcon(icon: string): ServiceIcon | null {
   const key = Object.keys(ICON_MAP).find((k) => icon.includes(k));
   return key ? ICON_MAP[key] : null;
 }
 
 export function ServiceCard({ title, icon, description, index = 0 }: ServiceCardProps) {
-  const accent = ACCENTS[index % ACCENTS.length];
-  const num    = String(index + 1).padStart(2, "0");
-  const Lucide = resolveLucide(icon);
+  const ServiceIcon = resolveIcon(icon);
 
   return (
     <div
       className={`service-card service-card-delay-${index}
-        group relative flex gap-4 rounded-2xl p-5 bg-eerie-black-1
-        border border-jet overflow-hidden
-        transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
-        hover:-translate-y-1.5 motion-reduce:hover:translate-y-0
-        ${accent.borderHover} ${accent.glow}`}
+        group relative flex items-start gap-4 rounded-2xl border border-border bg-card p-5
+        transition-[transform,box-shadow,border-color] duration-300 ease-out
+        hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm motion-reduce:hover:translate-y-0`}
     >
-      {/* Muted background number */}
-      <span className={`absolute top-3 right-3 text-4xl sm:text-5xl font-black select-none leading-none tabular-nums font-head ${accent.numColor}`} aria-hidden>
-        {num}
-      </span>
-
-      {/* Icon badge — springy pop on hover */}
-      <div className={`shrink-0 w-12 h-12 rounded-xl ${accent.iconBg} ${accent.iconText} ring-1 ${accent.iconRing}
-        flex items-center justify-center icon-pop
-        transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
-        group-hover:scale-110 group-hover:-rotate-6 motion-reduce:group-hover:scale-100 motion-reduce:group-hover:rotate-0`}
+      <div
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground ring-1 ring-border transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground"
       >
-        {Lucide ? (
-          // Lucide is a stable component reference resolved from a module-scope map
+        {ServiceIcon ? (
+          // ServiceIcon is a stable component reference resolved from a module-scope map
           // eslint-disable-next-line react-hooks/static-components
-          <Lucide className="w-[26px] h-[26px]" strokeWidth={1.9} aria-hidden />
+          <ServiceIcon className="h-5 w-5" aria-hidden />
         ) : (
-          <Image src={icon} alt="" width={26} height={26} className="object-contain" aria-hidden />
+          <Image src={icon} alt="" width={24} height={24} className="object-contain" aria-hidden />
         )}
       </div>
 
-      {/* Content — pr-16 gives clearance from the absolute number */}
-      <div className="flex-1 min-w-0 pt-0.5 pr-16">
-        <h4 className="text-white-2 text-sm font-bold uppercase tracking-wider mb-2 leading-snug font-head">
+      <div className="min-w-0 flex-1 pt-0.5">
+        <h4 className="mb-2 text-sm font-bold uppercase tracking-wider leading-snug text-card-foreground font-head">
           {title}
         </h4>
 
         {/* Divider */}
-        <div className={`h-px w-full ${accent.divider} opacity-20 mb-2.5`} />
+        <div className="mb-2.5 h-px w-full bg-border" />
 
-        <p className="text-light-gray text-sm font-light leading-relaxed">
+        <p className="text-base font-normal leading-relaxed text-muted-foreground sm:text-sm">
           {description}
         </p>
 
         <Link
           href="/services"
-          className={`mt-3 inline-flex items-center gap-1 text-[13px] font-medium ${accent.iconText} hover:underline underline-offset-4 rounded-sm`}
+          className="mt-3 inline-flex min-h-11 items-center gap-1 rounded-sm text-[13px] font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
           aria-label={`Learn more about ${title}`}
         >
           Learn more
-          <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:group-hover:translate-x-0" aria-hidden />
+          <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:group-hover:translate-x-0" aria-hidden />
         </Link>
       </div>
     </div>

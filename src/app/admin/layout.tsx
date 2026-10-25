@@ -19,7 +19,7 @@ export default async function AdminLayout({
 
   return (
     <ToastProvider>
-      <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 xl:py-12 animate-in fade-in duration-500 min-h-screen">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 xl:py-12 animate-in fade-in duration-500 min-h-dvh">
         {/* Admin Banner */}
         <header className="mb-6 sm:mb-8 flex items-center gap-2 sm:gap-3">
           <div className="bg-orange-yellow-crayola/10 border border-orange-yellow-crayola/20 p-2 sm:p-2.5 rounded-xl shrink-0">

@@ -9,7 +9,7 @@ import { isHttpUrl } from "@/lib/sanitize";
 function ProjectCard({ project }: { project: Project }) {
   return (
     <>
-      <figure className="relative rounded-[16px] overflow-hidden mb-[15px] bg-onyx group-hover:shadow-[0_0_0_1px_rgba(127,34,254,0.35)] transition-all">
+      <figure className="relative rounded-[16px] overflow-hidden mb-[15px] bg-onyx group-hover:ring-1 group-hover:ring-primary/30 transition-all">
         <div className="absolute inset-0 bg-transparent group-hover:bg-[rgba(0,0,0,0.5)] z-10 transition-colors duration-300 flex justify-center items-center">
           <div className="w-[45px] h-[45px] rounded-[12px] bg-jet text-orange-yellow-crayola flex justify-center items-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300">
             <Eye className="w-5 h-5" />
@@ -110,7 +110,7 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
         </ul>
       )}
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[30px] mb-8">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         {filteredProjects.map((project, index) => (
           <li
             key={project.id}

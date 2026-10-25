@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { PauseIcon, PlayIcon } from "@radix-ui/react-icons";
 import { TestimonialCard } from "./testimonial-card";
 
 interface Testimonial {
@@ -13,6 +14,15 @@ interface Testimonial {
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const total = testimonials.length;
+  const [autoplay, setAutoplay] = useState(true);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => { if (media.matches) setAutoplay(false); };
+    onChange();
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
   const [current,   setCurrent]   = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");
   const [isMobile,  setIsMobile]  = useState(false);
@@ -39,8 +49,8 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
 
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(goNext, 5000);
-  }, [goNext]);
+    if (autoplay && total > 1) timerRef.current = setInterval(goNext, 5000);
+  }, [goNext, autoplay, total]);
 
   useEffect(() => {
     startTimer();
@@ -132,20 +142,18 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
 
       {/* Dots */}
       {total > 1 && (
-        <div className="flex justify-center gap-2 mt-5" role="tablist" aria-label="Carousel navigation">
+        <div className="mt-5 flex flex-wrap justify-center gap-1" role="group" aria-label="Carousel navigation">
           {Array.from({ length: total }).map((_, i) => (
             <button
               key={i}
               type="button"
-              role="tab"
-              aria-selected={i === current}
+              aria-pressed={i === current}
               aria-label={`Go to slide ${i + 1}`}
               onClick={() => { setDirection(i > current ? "next" : "prev"); setCurrent(i); pause(); }}
-              className={`h-2 rounded-full transition-all duration-300 focus-visible:outline-2 focus-visible:outline-orange-yellow-crayola focus-visible:outline-offset-2 ${
-                i === current ? "w-5 bg-orange-yellow-crayola" : "w-2 bg-jet hover:bg-light-gray-70"
-              }`}
-            />
+              className="flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-secondary"
+            ><span aria-hidden className={`h-2 rounded-full transition-colors ${i === current ? "w-5 bg-primary" : "w-2 bg-border"}`} /></button>
           ))}
+          <button type="button" aria-label={autoplay ? "Pause testimonials" : "Play testimonials"} onClick={() => setAutoplay(value => !value)} className="flex size-11 items-center justify-center rounded-lg text-primary transition-colors hover:bg-secondary">{autoplay ? <PauseIcon aria-hidden /> : <PlayIcon aria-hidden />}</button>
         </div>
       )}
     </div>

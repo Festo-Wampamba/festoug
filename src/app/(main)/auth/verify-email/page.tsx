@@ -64,7 +64,7 @@ function VerifyEmailInner() {
   }
 
   return (
-    <div className="min-h-screen bg-cm-bg flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-cm-bg flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-cm-surface border border-cm-border p-8 rounded-2xl shadow-2xl">
           <Link

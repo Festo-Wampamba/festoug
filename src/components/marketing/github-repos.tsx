@@ -1,4 +1,4 @@
-import { Star, ExternalLink } from "lucide-react";
+import { ExternalLinkIcon, StarFilledIcon } from "@radix-ui/react-icons";
 import type { GitHubRepo } from "@/lib/github";
 
 // GitHub's conventional language colors — categorical data, not UI accents
@@ -34,27 +34,27 @@ export function GithubRepos({ repos }: { repos: GitHubRepo[] }) {
             href={repo.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col h-full bg-eerie-black-1 border border-jet rounded-[16px] p-5 transition-[border-color,box-shadow] duration-300 hover:border-orange-yellow-crayola/40 hover:shadow-[0_10px_40px_-8px_rgba(127,34,254,0.25)]"
+            className="group flex h-full flex-col rounded-2xl border border-border bg-card p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm motion-reduce:hover:translate-y-0"
           >
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h4 className="text-white-2 text-[15px] font-bold font-head leading-snug break-all group-hover:text-orange-yellow-crayola transition-colors">
+            <div className="mb-2 flex items-start justify-between gap-2">
+              <h4 className="break-all font-head text-[15px] font-bold leading-snug text-card-foreground transition-colors group-hover:text-primary">
                 {repo.name}
               </h4>
-              <ExternalLink
-                className="w-4 h-4 shrink-0 text-light-gray-70 opacity-0 group-hover:opacity-100 transition-opacity"
+              <ExternalLinkIcon
+                className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-[color,opacity] group-hover:text-primary group-hover:opacity-100"
                 aria-hidden
               />
             </div>
 
-            <p className="text-light-gray text-sm font-light leading-relaxed line-clamp-2 mb-4 flex-1">
+            <p className="mb-4 line-clamp-2 flex-1 text-sm font-light leading-relaxed text-muted-foreground">
               {repo.description || "No description provided."}
             </p>
 
-            <div className="flex items-center gap-4 text-[12px] font-mono text-light-gray-70">
+            <div className="flex items-center gap-4 font-mono text-[12px] text-muted-foreground">
               {repo.language && (
                 <span className="inline-flex items-center gap-1.5">
                   <span
-                    className="w-2.5 h-2.5 rounded-full border border-white/10"
+                    className="h-2.5 w-2.5 rounded-full border border-border"
                     style={{ backgroundColor: LANGUAGE_COLORS[repo.language] || "#8b8b8b" }}
                     aria-hidden
                   />
@@ -63,7 +63,7 @@ export function GithubRepos({ repos }: { repos: GitHubRepo[] }) {
               )}
               {repo.stargazers_count > 0 && (
                 <span className="inline-flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5" aria-hidden />
+                  <StarFilledIcon className="h-3.5 w-3.5 text-primary" aria-hidden />
                   {repo.stargazers_count}
                 </span>
               )}

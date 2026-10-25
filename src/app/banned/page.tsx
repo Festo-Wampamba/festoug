@@ -5,7 +5,7 @@ export const metadata = { title: "Account Banned" };
 
 export default function BannedPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-smoky-black p-6">
+    <main className="min-h-dvh flex items-center justify-center bg-smoky-black p-6">
       <div className="max-w-md w-full text-center space-y-6">
         <div className="mx-auto w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center">
           <Ban className="w-10 h-10 text-red-400" />

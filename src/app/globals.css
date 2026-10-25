@@ -7,8 +7,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -53,7 +51,7 @@
   --color-eerie-black-2: var(--theme-eerie-black-2);
   --color-smoky-black: var(--theme-smoky-black);
   --color-orange-yellow-crayola: var(--theme-accent);
-  /* violetDark multi-accent system */
+  /* Compatibility aliases: one brand accent across existing components. */
   --color-accent-2: var(--theme-accent-2);
   --color-accent-3: var(--theme-accent-3);
   --color-accent-4: var(--theme-accent-4);
@@ -73,108 +71,101 @@
   --color-cm-text: var(--theme-cm-text);
   --color-cm-muted: var(--theme-cm-muted);
 
-  /* Font Family Mappings */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-body: var(--font-ibm-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  /* violetDark display fonts */
-  --font-head: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  /* One sans family and one mono family keep the visual system coherent. */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-head: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
+/* Emerald / mint / cream. Semantic pairs are the source of truth. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  color-scheme: light;
+  --background: #FFF8E7;
+  --foreground: #182D25;
+  --card: #FFFCF4;
+  --card-foreground: #182D25;
+  --popover: #FFFCF4;
+  --popover-foreground: #182D25;
+  --primary: #065F46;
+  --primary-foreground: #FFFDF7;
+  --secondary: #E3F2E8;
+  --secondary-foreground: #164D38;
+  --muted: #F0EFE3;
+  --muted-foreground: #4D6057;
+  --accent: #E3F2E8;
+  --accent-foreground: #164D38;
+  --destructive: #A32D32;
+  --border: #D6DFD2;
+  --input: #819184;
+  --ring: #065F46;
+  --radius: 0.75rem;
+  --brand-mint: #A7F3D0;
+  --chart-1: #065F46;
+  --chart-2: #267454;
+  --chart-3: #51846A;
+  --chart-4: #81966B;
+  --chart-5: #A7B77E;
+  --theme-jet: var(--border);
+  --theme-onyx: var(--muted);
+  --theme-eerie-black-1: #F5F3E8;
+  --theme-eerie-black-2: var(--card);
+  --theme-smoky-black: var(--background);
+  --theme-accent: var(--primary);
+  --theme-accent-2: var(--primary);
+  --theme-accent-3: var(--primary);
+  --theme-accent-4: var(--primary);
+  --theme-vegas-gold: var(--primary);
+  --theme-light-gray: var(--muted-foreground);
+  --theme-light-gray-70: #596C60;
+  --theme-bittersweet: var(--destructive);
+  --theme-white-1: var(--foreground);
+  --theme-white-2: var(--foreground);
+  --theme-cm-bg: var(--background);
+  --theme-cm-surface: var(--card);
+  --theme-cm-border: var(--border);
+  --theme-cm-ocean: var(--primary);
+  --theme-cm-dusk: var(--primary);
+  --theme-cm-text: var(--foreground);
+  --theme-cm-muted: var(--muted-foreground);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0.00 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-/* ─── Light Theme Portfolio Colors ─── */
-:root {
-  --theme-jet: hsl(265 20% 88%);
-  --theme-onyx: hsl(265 22% 92%);
-  --theme-eerie-black-1: hsl(265 40% 97%);
-  --theme-eerie-black-2: hsl(0 0% 100%);
-  --theme-smoky-black: hsl(265 35% 97%);
-  --theme-accent: rgb(124 33 247);
-  --theme-accent-2: rgb(5 150 105);
-  --theme-accent-3: rgb(147 51 234);
-  --theme-accent-4: rgb(217 119 6);
-  --theme-vegas-gold: hsl(45 54% 42%);
-  --theme-light-gray: hsl(220 9% 40%);
-  --theme-light-gray-70: hsla(220 9% 40% / 0.7);
-  --theme-bittersweet: hsl(15 100% 45%);
-  --theme-white-1: hsl(220 13% 20%);
-  --theme-white-2: hsl(220 13% 13%);
-  --theme-cm-bg: hsl(220 14% 96%);
-  --theme-cm-surface: hsl(0 0% 100%);
-  --theme-cm-border: hsl(220 13% 86%);
-  --theme-cm-ocean: hsl(200 60% 40%);
-  --theme-cm-dusk: hsl(25 70% 50%);
-  --theme-cm-text: hsl(220 13% 20%);
-  --theme-cm-muted: hsl(220 9% 55%);
+  color-scheme: dark;
+  --background: #10221B;
+  --foreground: #F6F3E8;
+  --card: #172D24;
+  --card-foreground: #F6F3E8;
+  --popover: #1B3529;
+  --popover-foreground: #F6F3E8;
+  --primary: #A7F3D0;
+  --primary-foreground: #10261D;
+  --secondary: #234332;
+  --secondary-foreground: #C7EED9;
+  --muted: #20392D;
+  --muted-foreground: #B7C8BA;
+  --accent: #234332;
+  --accent-foreground: #C7EED9;
+  --destructive: #F5B1B1;
+  --border: #395144;
+  --input: #6D8977;
+  --ring: #A7F3D0;
+  --theme-eerie-black-1: #1D372B;
+  --theme-light-gray-70: #ADBFAD;
+  --chart-1: #A7F3D0;
+  --chart-2: #81CFAC;
+  --chart-3: #65AC8C;
+  --chart-4: #ACBE86;
+  --chart-5: #D0DDB2;
 }
 
 /* ─── Testimonial carousel slide animations ─── */
@@ -236,38 +227,14 @@
 .service-card-delay-2  { animation-delay: 240ms; }
 .service-card-delay-3  { animation-delay: 360ms; }
 
-/* ─── Dark Theme Portfolio Colors ─── */
-.dark {
-  --theme-jet: #27272a;
-  --theme-onyx: #1f1f23;
-  --theme-eerie-black-1: #18181b;
-  --theme-eerie-black-2: #161618;
-  --theme-smoky-black: #09090b;
-  --theme-accent: rgb(127 34 254);
-  --theme-accent-2: rgb(16 185 129);
-  --theme-accent-3: rgb(168 85 247);
-  --theme-accent-4: rgb(245 158 11);
-  --theme-vegas-gold: hsl(45 54% 58%);
-  --theme-light-gray: hsl(0 0% 84%);
-  --theme-light-gray-70: hsla(0 0% 84% / 0.7);
-  --theme-bittersweet: hsl(15 100% 50%);
-  --theme-white-1: hsl(0 0% 100%);
-  --theme-white-2: hsl(0 0% 98%);
-  --theme-cm-bg: #0B1120;
-  --theme-cm-surface: #111C35;
-  --theme-cm-border: #1A2845;
-  --theme-cm-ocean: #5BA4CF;
-  --theme-cm-dusk: #E8A87C;
-  --theme-cm-text: #D6E4F0;
-  --theme-cm-muted: #5D7A9A;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-smoky-black text-light-gray;
+    @apply bg-background text-foreground font-body;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
   }
   /* Scrollbar Customization */
   ::-webkit-scrollbar {
@@ -289,12 +256,6 @@
   .dark ::-webkit-scrollbar-thumb:hover {
     @apply bg-white/15;
   }
-}
-
-/* Light mode subtle shadows for depth */
-html:not(.dark) aside,
-html:not(.dark) main {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
 }
 
 /* Marquee — JS-driven via requestAnimationFrame (bypasses EMUI CSS animation bugs) */
@@ -321,7 +282,7 @@ html:not(.dark) main {
   z-index: 9999;
   padding: 0.75rem 1.5rem;
   background: var(--theme-accent);
-  color: #1a1a1a;
+  color: var(--primary-foreground);
   font-weight: 600;
   font-size: 0.875rem;
   border-radius: 0 0 0.75rem 0;
@@ -330,7 +291,7 @@ html:not(.dark) main {
 }
 .skip-nav:focus {
   top: 0;
-  outline: 2px solid #1a1a1a;
+  outline: 2px solid var(--foreground);
   outline-offset: 2px;
 }
 
@@ -357,16 +318,6 @@ html:not(.dark) main {
   top: var(--by);
 }
 
-/* Mobile tap feedback — scale on active for all buttons/links (Req 13) */
-@media (hover: none) {
-  button:active,
-  a:active,
-  [role="button"]:active {
-    transform: scale(0.95);
-    transition: transform 100ms;
-  }
-}
-
 /* Touch targets: pill nav items use Tailwind sizing; only expand the theme toggle button
    and admin nav links where extra tap area is needed without breaking pill layout */
 @media (max-width: 1279px) {
@@ -376,22 +327,6 @@ html:not(.dark) main {
     min-height: 44px;
   }
 }
-/* ════════════════════════════════════════════════════════════════════
-   violetDark redesign — Flowstep signature effects
-   ════════════════════════════════════════════════════════════════════ */
-
-/* Icon badge — accent glow on parent hover */
-.icon-pop {
-  transition: filter 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.group:hover .icon-pop {
-  filter: drop-shadow(0 0 9px currentColor);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .group:hover .icon-pop { filter: none; }
-}
-
 /* ─── Global reduced-motion fallback ───
    Every animation/transition collapses to its end state instantly, so
    entrance reveals (animate-in, service-card, reveal-item) never hide content. */
@@ -405,4 +340,24 @@ html:not(.dark) main {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Calm, shared geometry; cream is the canvas, mint is a supporting surface. */
+@layer base {
+  button, a, input, select, textarea { touch-action: manipulation; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
+  input:not([type="checkbox"]):not([type="radio"]), textarea, select { border-color: var(--input); }
+  ::selection { background: var(--primary); color: var(--primary-foreground); }
+  :target { scroll-margin-top: 6rem; }
+}
+.portfolio-shell { max-width: 1360px; margin-inline: auto; }
+.page-eyebrow { color: var(--primary); font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.section-heading { color: var(--foreground); font-size: clamp(1.25rem, 2.4vw, 1.5rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.3; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal-item, .service-card { opacity: 1; transform: none; animation: none; }
+}
+
+/* Prevent iOS field auto-zoom and keep mobile form text legible. */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select { font-size: 16px; }
 }

@@ -40,7 +40,7 @@ export default function ContactPage() {
         <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
           Contact
         </h2>
-        <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-gradient-to-r from-orange-yellow-crayola to-orange-400 rounded-[3px]" />
+        <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-primary rounded-[3px]" />
       </header>
 
       {/* Google Map */}
@@ -78,10 +78,10 @@ export default function ContactPage() {
         <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">Talk to Me</h3>
 
         {statusMessage && (
-          <div className={`p-4 mb-6 rounded-lg text-sm font-medium ${
-            statusMessage.type === "success" 
-              ? "bg-green-500/10 text-green-500 border border-green-500/20" 
-              : "bg-red-500/10 text-red-500 border border-red-500/20"
+          <div role={statusMessage.type === "error" ? "alert" : "status"} className={`p-4 mb-6 rounded-lg text-sm font-medium ${
+            statusMessage.type === "success"
+              ? "bg-secondary text-secondary-foreground border border-border"
+              : "bg-destructive/10 text-destructive border border-destructive/25"
           }`}>
             {statusMessage.text}
           </div>
@@ -89,7 +89,8 @@ export default function ContactPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <input
+            <div className="grid gap-2"><label htmlFor="contact-name" className="text-sm font-medium text-foreground">Full name</label><input
+              id="contact-name"
               type="text"
               name="fullname"
               placeholder="Full name"
@@ -97,8 +98,9 @@ export default function ContactPage() {
               autoComplete="name"
               required
               className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
-            />
-            <input
+            /></div>
+            <div className="grid gap-2"><label htmlFor="contact-email" className="text-sm font-medium text-foreground">Email address</label><input
+              id="contact-email"
               type="email"
               name="email"
               placeholder="Email address"
@@ -106,24 +108,24 @@ export default function ContactPage() {
               autoComplete="email"
               required
               className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
-            />
+            /></div>
           </div>
 
-          <textarea
+          <div className="grid gap-2"><label htmlFor="contact-message" className="text-sm font-medium text-foreground">Your message</label><textarea
+            id="contact-message"
             name="message"
             placeholder="Your Message"
             aria-label="Your message"
             required
             rows={5}
             className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-[15px] font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors resize-y min-h-[120px]"
-          ></textarea>
+          ></textarea></div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group relative self-end bg-gradient-to-br from-jet to-jet/0 border border-jet text-orange-yellow-crayola text-[15px] font-medium px-6 py-4 rounded-[14px] shadow-1 transition-all duration-300 hover:text-white-2 hover:bg-jet flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex min-h-12 self-start items-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <div className="absolute inset-[1px] bg-eerie-black-1 rounded-[14px] -z-10 group-hover:bg-jet transition-colors" />
             <Send className="w-4 h-4" />
             {isSubmitting ? "Sending..." : "Send Message"}
           </button>

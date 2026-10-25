@@ -1,34 +1,97 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-17T00:00:00Z",
+  "generatedAt": "2026-10-25T00:00:00+03:00",
   "title": "Design System: FestoUG",
   "extensions": {
     "colorMeta": {
-      "smoky-black": { "role": "neutral", "displayName": "Smoky Black", "canonical": "#09090B", "tonalRamp": ["#09090B", "#161618", "#18181B", "#1F1F23", "#27272A", "#52525B", "#A1A1AA", "#D6D6D6"] },
-      "eerie-black-1": { "role": "neutral", "displayName": "Eerie Black", "canonical": "#18181B", "tonalRamp": ["#09090B", "#161618", "#18181B", "#1F1F23", "#27272A", "#52525B", "#A1A1AA", "#D6D6D6"] },
-      "jet": { "role": "neutral", "displayName": "Jet Edge", "canonical": "#27272A", "tonalRamp": ["#09090B", "#161618", "#18181B", "#1F1F23", "#27272A", "#52525B", "#A1A1AA", "#D6D6D6"] },
-      "violet-signal": { "role": "primary", "displayName": "Violet Signal", "canonical": "rgb(127 34 254)", "tonalRamp": ["#2A0A55", "#3D0F80", "#5316AB", "#6A1CD6", "#7F22FE", "#9B4FFE", "#B77FFE", "#D9BFFF"] },
-      "emerald-steady": { "role": "secondary", "displayName": "Emerald Steady", "canonical": "#10B981", "tonalRamp": ["#022C22", "#064E3B", "#065F46", "#047857", "#059669", "#10B981", "#34D399", "#A7F3D0"] },
-      "amber-ember": { "role": "tertiary", "displayName": "Amber Ember", "canonical": "#F59E0B", "tonalRamp": ["#451A03", "#78350F", "#92400E", "#B45309", "#D97706", "#F59E0B", "#FBBF24", "#FDE68A"] },
-      "light-gray": { "role": "neutral", "displayName": "Studio Gray", "canonical": "hsl(0 0% 84%)", "tonalRamp": ["#27272A", "#3F3F46", "#52525B", "#71717A", "#A1A1AA", "#D6D6D6", "#E4E4E7", "#FAFAFA"] }
+      "cream": {
+        "role": "neutral",
+        "displayName": "Cream canvas",
+        "canonical": "#FFF8E7",
+        "tonalRamp": [
+          "#FFF8E7",
+          "#FFFCF4",
+          "#F0EFE3",
+          "#D6DFD2"
+        ]
+      },
+      "emerald": {
+        "role": "primary",
+        "displayName": "Emerald",
+        "canonical": "#065F46",
+        "tonalRamp": [
+          "#10221B",
+          "#172D24",
+          "#164D38",
+          "#065F46",
+          "#267454"
+        ]
+      },
+      "mint": {
+        "role": "secondary",
+        "displayName": "Mint support",
+        "canonical": "#A7F3D0",
+        "tonalRamp": [
+          "#234332",
+          "#E3F2E8",
+          "#A7F3D0",
+          "#C7EED9"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Green-neutral ink",
+        "canonical": "#182D25",
+        "tonalRamp": [
+          "#182D25",
+          "#4D6057",
+          "#596C60",
+          "#B7C8BA",
+          "#F6F3E8"
+        ]
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Page titles and hero statements only — Space Grotesk 600." },
-      "headline": { "displayName": "Headline", "purpose": "Section headings — Archivo 700." },
-      "body": { "displayName": "Body", "purpose": "All prose — IBM Plex Sans 400, max 70ch." },
-      "label": { "displayName": "Label", "purpose": "Metadata, dates, category tags — IBM Plex Mono 500 tracked." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Geist, with deliberate weight, readable measure and clear hierarchy."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Geist, with deliberate weight, readable measure and clear hierarchy."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Geist, with deliberate weight, readable measure and clear hierarchy."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Geist Mono for code and data; Geist for interface labels."
+      }
     },
     "shadows": [
-      { "name": "accent-glow", "value": "drop-shadow(0 0 9px currentColor)", "purpose": "Hover tool-light on interactive icons; the only luminous depth." },
-      { "name": "light-ambient", "value": "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)", "purpose": "Whisper-soft surface lift in light theme only." }
+      {
+        "name": "quiet-elevation",
+        "value": "0 4px 16px rgb(6 95 70 / 0.06)"
+      }
     ],
     "motion": [
-      { "name": "ease-settle", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The house easing — exponential settle for every reveal and state change. No bounce." },
-      { "name": "duration-state", "value": "150ms-300ms", "purpose": "Hover/focus/press state changes." },
-      { "name": "duration-reveal", "value": "400ms-650ms", "purpose": "Entrances and staggered reveals (100-120ms stagger)." }
+      {
+        "name": "state-change",
+        "value": "150ms-300ms",
+        "purpose": "Short hover, focus and press feedback; no decorative glow or perpetual animation."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Reveal content immediately and stop automatic movement."
+      }
     ],
     "breakpoints": [
-      { "name": "xl-sidebar", "value": "1280px" }
+      {
+        "name": "xl-sidebar",
+        "value": "1280px"
+      }
     ]
   },
   "components": [
@@ -36,81 +99,50 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The single violet action per view.",
+      "description": "Emerald, mint and cream with clear hierarchy and visible keyboard focus.",
       "html": "<button class=\"ds-btn-primary\">Get Started</button>",
-      "css": ".ds-btn-primary { background: #7F22FE; color: #fff; padding: 8px 16px; border: 1px solid transparent; border-radius: 10px; font-family: 'Inter', ui-sans-serif, sans-serif; font-size: 0.875rem; font-weight: 500; transition: background 0.2s cubic-bezier(0.22,1,0.36,1), box-shadow 0.2s; cursor: pointer; } .ds-btn-primary:hover { background: #6A1CD6; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(127,34,254,0.5); }"
+      "css": ".ds-btn-primary { background:#065F46; color:#FFFDF7; min-height:44px; padding:12px 20px; border:1px solid transparent; border-radius:12px; font:500 14px Geist,system-ui,sans-serif; cursor:pointer; } .ds-btn-primary:hover { background:#044E39; } :focus-visible { outline:2px solid #065F46; outline-offset:2px; }"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Quiet secondary action with a machined jet edge.",
+      "description": "Emerald, mint and cream with clear hierarchy and visible keyboard focus.",
       "html": "<button class=\"ds-btn-outline\">View Portfolio</button>",
-      "css": ".ds-btn-outline { background: transparent; color: #D6D6D6; padding: 8px 16px; border: 1px solid #27272A; border-radius: 10px; font-family: 'Inter', ui-sans-serif, sans-serif; font-size: 0.875rem; font-weight: 500; transition: background 0.2s cubic-bezier(0.22,1,0.36,1), border-color 0.2s; cursor: pointer; } .ds-btn-outline:hover { background: #1F1F23; color: #fff; } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(127,34,254,0.5); }"
+      "css": ".ds-btn-outline { background:#FFFCF4; color:#182D25; min-height:44px; padding:12px 20px; border:1px solid #819184; border-radius:12px; font:500 14px Geist,system-ui,sans-serif; cursor:pointer; } .ds-btn-outline:hover { background:#E3F2E8; } :focus-visible { outline:2px solid #065F46; outline-offset:2px; }"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Eerie-black surface with 1px jet edge; border warms on hover.",
+      "description": "Emerald, mint and cream with clear hierarchy and visible keyboard focus.",
       "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Full-Stack Web Dev</h3><p class=\"ds-card-body\">Production apps with Next.js, Postgres, and clean deployment pipelines.</p></div>",
-      "css": ".ds-card { background: #18181B; border: 1px solid #27272A; border-radius: 14px; padding: 20px; transition: border-color 0.3s ease; } .ds-card:hover { border-color: rgba(127,34,254,0.35); } .ds-card-title { color: #fff; font-family: 'Archivo', ui-sans-serif, sans-serif; font-weight: 700; font-size: 1.125rem; margin: 0 0 8px; } .ds-card-body { color: #D6D6D6; font-family: 'IBM Plex Sans', ui-sans-serif, sans-serif; font-size: 0.9375rem; line-height: 1.65; margin: 0; }"
+      "css": ".ds-card { background:#FFFCF4; color:#182D25; border:1px solid #D6DFD2; border-radius:16px; padding:24px; } .ds-card-title { margin:0 0 8px; font:600 18px Geist,system-ui,sans-serif; } .ds-card-body { margin:0; color:#4D6057; font:400 16px/1.65 Geist,system-ui,sans-serif; } :focus-visible { outline:2px solid #065F46; outline-offset:2px; }"
     },
     {
       "name": "Category Chip",
       "kind": "chip",
       "refersTo": "chip",
-      "description": "Mono-label pill; selection is a violet edge, never a violet fill.",
+      "description": "Emerald, mint and cream with clear hierarchy and visible keyboard focus.",
       "html": "<span class=\"ds-chip\">Web development</span> <span class=\"ds-chip ds-chip--selected\">Applications</span>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; background: #1F1F23; color: #D6D6D6; border: 1px solid #27272A; border-radius: 99px; padding: 4px 12px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.75rem; letter-spacing: 0.08em; transition: border-color 0.2s, color 0.2s; cursor: pointer; } .ds-chip:hover { border-color: #52525B; } .ds-chip--selected { border-color: #7F22FE; color: #A855F7; }"
+      "css": ".ds-chip { display:inline-flex; background:#E3F2E8; color:#164D38; border:1px solid #D6DFD2; border-radius:6px; padding:8px 12px; font:500 12px Geist,system-ui,sans-serif; } .ds-chip--selected { border-color:#065F46; } :focus-visible { outline:2px solid #065F46; outline-offset:2px; }"
     },
     {
       "name": "Input Field",
       "kind": "input",
       "refersTo": "chip",
-      "description": "Onyx fill, violet focus ring, no glow blur.",
+      "description": "Emerald, mint and cream with clear hierarchy and visible keyboard focus.",
       "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Your name\" aria-label=\"Your name\" />",
-      "css": ".ds-input { background: #1F1F23; color: #fff; border: 1px solid #27272A; border-radius: 10px; padding: 10px 14px; font-family: 'IBM Plex Sans', ui-sans-serif, sans-serif; font-size: 0.9375rem; width: 260px; transition: border-color 0.2s, box-shadow 0.2s; } .ds-input::placeholder { color: #A1A1AA; } .ds-input:focus-visible { outline: none; border-color: #7F22FE; box-shadow: 0 0 0 3px rgba(127,34,254,0.35); }"
+      "css": ".ds-input { background:#FFFCF4; color:#182D25; border:1px solid #819184; border-radius:12px; min-height:44px; padding:12px 16px; font:400 16px Geist,system-ui,sans-serif; max-width:100%; } .ds-input::placeholder { color:#596C60; } :focus-visible { outline:2px solid #065F46; outline-offset:2px; }"
     },
     {
       "name": "Nav Item",
       "kind": "nav",
       "refersTo": "chip",
-      "description": "Pill nav item; active state is the violet tool-light.",
+      "description": "Emerald, mint and cream with clear hierarchy and visible keyboard focus.",
       "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-item--active\" href=\"#\">About</a><a class=\"ds-nav-item\" href=\"#\">Portfolio</a><a class=\"ds-nav-item\" href=\"#\">Contact</a></nav>",
-      "css": ".ds-nav { display: inline-flex; gap: 4px; background: #18181B; border: 1px solid #27272A; border-radius: 99px; padding: 4px; } .ds-nav-item { color: #D6D6D6; text-decoration: none; font-family: 'Inter', ui-sans-serif, sans-serif; font-size: 0.875rem; font-weight: 500; padding: 6px 14px; border-radius: 99px; transition: background 0.2s cubic-bezier(0.22,1,0.36,1), color 0.2s; } .ds-nav-item:hover { background: #1F1F23; color: #fff; } .ds-nav-item--active { color: #A855F7; background: rgba(127,34,254,0.12); } .ds-nav-item:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(127,34,254,0.5); }"
+      "css": ".ds-nav { display:flex; flex-wrap:wrap; gap:4px; } .ds-nav-item { color:#4D6057; text-decoration:none; min-height:44px; padding:12px; border-radius:8px; font:500 14px Geist,system-ui,sans-serif; } .ds-nav-item:hover,.ds-nav-item--active { color:#164D38; background:#E3F2E8; } :focus-visible { outline:2px solid #065F46; outline-offset:2px; }"
     }
   ],
-  "narrative": {
-    "northStar": "The Engineer's Studio",
-    "overview": "A calm, dark workshop where everything is deliberately placed and precisely machined. The canvas is near-black charcoal, surfaces step up in tone like benches under task lighting, and violet is the single energized tool-light in the room — the color of the thing currently being worked on. The system sells reliability through restraint: the site itself is the work sample.",
-    "keyCharacteristics": [
-      "Dark-first tonal canvas with a light theme that mirrors it faithfully",
-      "One violet signal accent; emerald/amber only as categorical support",
-      "Geometric display type (Space Grotesk / Archivo) over quiet IBM Plex body",
-      "Machined, quiet components: crisp 1px borders, restrained radii, instant precise feedback",
-      "Engineered motion: exponential ease-out, no bounce, reduced-motion always honored"
-    ],
-    "rules": [
-      { "name": "The Tool-Light Rule", "body": "Violet appears on at most ~10% of any screen. If two unrelated elements glow violet at once, one of them is wrong.", "section": "colors" },
-      { "name": "The No-Foreign-Blue Rule", "body": "No surface — auth, store, dashboard, admin — introduces colors outside this palette. Blue is banned outright.", "section": "colors" },
-      { "name": "The Two-Voice Rule", "body": "Display/headline speak in Space Grotesk/Archivo; everything else stays IBM Plex. Never a third voice per page.", "section": "typography" },
-      { "name": "The Flat-At-Rest Rule", "body": "Surfaces are flat at rest. Glow and lift are responses to state (hover, focus), never decoration.", "section": "elevation" }
-    ],
-    "dos": [
-      "Do draw every surface edge with a 1px Jet (#27272A) border on dark; tonal steps carry depth.",
-      "Do ease all motion with cubic-bezier(0.22, 1, 0.36, 1), 150–650ms; ship a prefers-reduced-motion alternative for every animation.",
-      "Do keep body text ≥4.5:1 contrast in both themes.",
-      "Do reserve violet for the single active/interactive signal per view.",
-      "Do write copy in first person — \"I build…\", never \"Festo brings…\"."
-    ],
-    "donts": [
-      "Don't introduce foreign blues or any off-palette color on auth, store, or admin surfaces.",
-      "Don't ship the unmodified-template look: stock shadcn tokens, system-font stacks, generic same-sized icon-card grids.",
-      "Don't use gradient text, hero-metric blocks, side-stripe borders, or uppercase tracked eyebrows above every section.",
-      "Don't use self-rated percentage bars or rings for skills; show verifiable substance instead.",
-      "Don't let third-party embeds break the dark canvas — every embed gets a themed loading state.",
-      "Don't bounce, elastic-overshoot, or animate layout properties; transform/opacity only."
-    ]
-  }
+  "narrative": "Cream-first business portfolio with emerald actions, restrained mint support, Geist typography and a coordinated forest dark theme. See DESIGN.md and src/app/globals.css for the authoritative roles."
 }

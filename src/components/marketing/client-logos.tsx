@@ -8,14 +8,27 @@ export function ClientLogos() {
   const posRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const isPausedRef = useRef(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean | null>(null);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const SPEED = 0.6;
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener?.("change", updatePreference);
+    return () => mediaQuery.removeEventListener?.("change", updatePreference);
+  }, []);
+
+  useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion !== false) {
+      track.style.transform = "";
+      return;
+    }
 
     function step() {
       if (!isPausedRef.current) {
@@ -29,6 +42,10 @@ export function ClientLogos() {
 
     rafRef.current = requestAnimationFrame(step);
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
+  }, [prefersReducedMotion]);
+
+  useEffect(() => () => {
+    if (resumeTimer.current) clearTimeout(resumeTimer.current);
   }, []);
 
   const logos: { src: string; alt: string; width: number }[] = [
@@ -78,14 +95,24 @@ export function ClientLogos() {
   };
 
   return (
-    <div className="overflow-hidden relative" aria-label="Client logos" role="region">
-      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-eerie-black-2 to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-eerie-black-2 to-transparent z-10 pointer-events-none" />
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card/50 py-5" aria-label="Client logos" role="region">
+      {prefersReducedMotion !== true && (
+        <>
+          <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-12 bg-gradient-to-r from-card to-transparent" />
+          <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-12 bg-gradient-to-l from-card to-transparent" />
+        </>
+      )}
 
-      <div ref={trackRef} className="flex flex-nowrap marquee-track" aria-hidden="true">
-        {logos.map((logo, i) => logoItem(logo, "a", i))}
-        {logos.map((logo, i) => logoItem(logo, "b", i))}
-      </div>
+      {prefersReducedMotion === true ? (
+        <div className="flex flex-wrap items-center justify-center" aria-hidden="true">
+          {logos.map((logo, i) => logoItem(logo, "static", i))}
+        </div>
+      ) : (
+        <div ref={trackRef} className="marquee-track flex min-w-max flex-nowrap items-center" aria-hidden="true">
+          {logos.map((logo, i) => logoItem(logo, "a", i))}
+          {logos.map((logo, i) => logoItem(logo, "b", i))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,127 +1,45 @@
+import { ArrowRightIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { ServiceCard } from "@/components/marketing/service-card";
 import { TestimonialCarousel } from "@/components/marketing/testimonial-carousel";
 import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
 import { ClientLogos } from "@/components/marketing/client-logos";
-import Image from "next/image";
 import Link from "next/link";
 import { withRetry } from "@/lib/db";
 import { services, testimonials as testimonialsTable, projects as projectsTable } from "@/lib/db/schema";
-import { eq, asc, and, desc } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
-  // Fetch services and testimonials from the database with retry
-  const [servicesData, testimonials, featuredProjects] = await Promise.all([
-    withRetry((db) =>
-      db.query.services.findMany({
-        where: eq(services.isActive, true),
-        orderBy: [asc(services.sortOrder)],
-      })
-    ),
-    withRetry((db) =>
-      db.query.testimonials.findMany({
-        where: eq(testimonialsTable.isActive, true),
-        orderBy: [asc(testimonialsTable.sortOrder)],
-      })
-    ),
-    withRetry((db) =>
-      db
-        .select()
-        .from(projectsTable)
-        .where(and(eq(projectsTable.isActive, true), eq(projectsTable.isFeatured, true)))
-        .orderBy(asc(projectsTable.sortOrder))
-        .limit(6)
-    ),
+  const [servicesData, testimonials, selectedProjects] = await Promise.all([
+    withRetry(db => db.query.services.findMany({ where: eq(services.isActive, true), orderBy: [asc(services.sortOrder)] })),
+    withRetry(db => db.query.testimonials.findMany({ where: eq(testimonialsTable.isActive, true), orderBy: [asc(testimonialsTable.sortOrder)] })),
+    withRetry(db => db.select().from(projectsTable).where(eq(projectsTable.isActive, true)).orderBy(desc(projectsTable.isFeatured), asc(projectsTable.sortOrder)).limit(4)),
   ]);
-
-  const projects = featuredProjects.map((p) => ({
-    id: p.id,
-    title: p.title,
-    slug: p.slug,
-    category: p.category,
-    image: p.image || "images/project-1.jpg",
-    liveUrl: p.liveUrl,
-  }));
+  const projects = selectedProjects.map(p => ({ id: p.id, title: p.title, slug: p.slug, category: p.category, image: p.image || "images/project-1.jpg", liveUrl: p.liveUrl }));
 
   return (
-    <div className="animate-in fade-in duration-500">
-      <header className="mb-8 relative pb-[15px]">
-        <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
-          About Me
-        </h2>
-        <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-gradient-to-r from-orange-yellow-crayola to-orange-400 rounded-[3px]" />
-      </header>
-
-      <section className="text-light-gray text-[15px] font-light leading-[1.6] space-y-4 mb-10">
-        <p>
-          I am a self-motivated and resourceful software developer with a proven
-          ability to devise reliable solutions for complex software issues. With
-          extensive experience in software development, I bring a deep
-          understanding of technology along with a commitment to applying
-          innovative software practices to enhance operational efficiency.
-        </p>
-        <p>
-          My expertise encompasses a broad range of programming languages and
-          development tools, enabling the delivery of exceptional results in
-          diverse software projects. I have experience working with a variety of
-          programming languages and frameworks, including JavaScript, React,
-          Node.js, and Python.
-        </p>
+    <div className="space-y-12 sm:space-y-16">
+      <section aria-labelledby="portfolio-intro" className="border-b border-border pb-10 sm:pb-12">
+        <p className="page-eyebrow mb-5">Independent software engineer · Kampala</p>
+        <h2 id="portfolio-intro" className="max-w-[16ch] text-[2rem] font-semibold leading-[1.12] tracking-[-.045em] text-foreground sm:text-[2.65rem] xl:text-5xl">Software built around your business.</h2>
+        <p className="mt-6 max-w-[56ch] text-base leading-relaxed text-muted-foreground">I’m Festo. I build web applications, backend systems, and the infrastructure that keeps them running. Clear thinking, practical solutions, and care in the details.</p>
+        <div className="mt-8 flex flex-wrap items-center gap-3 sm:gap-5">
+          <Link href="/get-started" className="inline-flex min-h-12 items-center justify-center gap-5 rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90 active:scale-[.98] motion-reduce:active:scale-100">Discuss a project<ArrowTopRightIcon className="size-[18px]" aria-hidden /></Link>
+          <Link href="/portfolio" className="inline-flex min-h-12 items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-primary underline-offset-4 hover:underline">Explore my work<ArrowRightIcon className="size-[18px]" aria-hidden /></Link>
+        </div>
+        <ul aria-label="Areas of expertise" className="mt-8 flex flex-wrap gap-2">{["Web applications", "Backend systems", "Infrastructure"].map(item => <li key={item} className="rounded-md bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground">{item}</li>)}</ul>
       </section>
 
-      {/* Services */}
-      <section className="mb-10">
-        <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">
-          What I&apos;m Doing
-        </h3>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {servicesData.map((service, index) => (
-            <li key={index}>
-              <ServiceCard
-                title={service.title}
-                icon={service.icon}
-                description={service.description}
-                index={index}
-              />
-            </li>
-          ))}
-        </ul>
-      </section>
+      {projects.length > 0 && <section aria-labelledby="selected-work-heading"><div className="mb-6 flex flex-wrap items-baseline justify-between gap-3"><h3 id="selected-work-heading" className="section-heading">Selected work</h3><Link href="/portfolio" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline">All projects<ArrowRightIcon aria-hidden /></Link></div><PortfolioGrid projects={projects} hideCategoryFilter /></section>}
 
-      {/* Featured Projects */}
-      {projects.length > 0 && (
-        <section className="mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-white-2 text-2xl font-semibold capitalize">
-              Featured Work
-            </h3>
-            <Link
-              href="/portfolio"
-              className="text-orange-yellow-crayola text-sm font-medium hover:underline"
-            >
-              View All
-            </Link>
-          </div>
-          <PortfolioGrid projects={projects} hideCategoryFilter />
-        </section>
-      )}
+      {servicesData.length > 0 && <section aria-labelledby="services-heading"><div className="mb-6"><h3 id="services-heading" className="section-heading">How I can help</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">From the application your customers use to the systems behind it.</p></div><ul className="grid grid-cols-1 gap-4 md:grid-cols-2">{servicesData.map((service, index) => <li key={service.id}><ServiceCard title={service.title} icon={service.icon} description={service.description} index={index} /></li>)}</ul></section>}
 
-      {/* Testimonials */}
-      <section className="mb-10">
-        <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">
-          Testimonials
-        </h3>
-        <TestimonialCarousel testimonials={testimonials} />
-      </section>
+      {testimonials.length > 0 && <section aria-labelledby="testimonials-heading"><h3 id="testimonials-heading" className="section-heading mb-4">Working together</h3><TestimonialCarousel testimonials={testimonials} /></section>}
 
-      {/* Clients */}
-      <section className="mb-4">
-        <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">
-          Clients
-        </h3>
-        <ClientLogos />
-      </section>
+      <section aria-labelledby="clients-heading"><h3 id="clients-heading" className="section-heading mb-6">Clients & collaborators</h3><ClientLogos /></section>
+
+      <section className="rounded-xl bg-secondary p-6 text-secondary-foreground sm:p-8"><h3 className="text-xl font-semibold tracking-tight">Have a project in mind?</h3><p className="mt-2 max-w-[50ch] text-sm leading-relaxed">Tell me what you need to build, improve, or get working.</p><Link href="/contact" className="mt-4 inline-flex min-h-11 items-center gap-3 text-sm font-semibold underline underline-offset-4">Let’s talk<ArrowTopRightIcon aria-hidden /></Link></section>
     </div>
   );
 }

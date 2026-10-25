@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Star, Quote } from "lucide-react";
+import { QuoteIcon, StarFilledIcon, StarIcon } from "@radix-ui/react-icons";
 
 interface TestimonialCardProps {
   name: string;
@@ -14,10 +14,10 @@ export function TestimonialCard({ name, avatar, role, rating, testimonial, isAct
   return (
     <div className="flex-1 min-w-0 pt-6">
       <div
-        className={`relative bg-eerie-black-1 rounded-[14px] p-5 pt-4 shadow-lg flex flex-col min-h-[180px] h-full border transition-all duration-700 ease-in-out ${
+        className={`relative flex h-full min-h-[180px] flex-col rounded-2xl border bg-card p-5 pt-4 shadow-sm transition-[transform,box-shadow,border-color,background-color] duration-300 ease-out ${
           isActive
-            ? "border-orange-yellow-crayola/50 shadow-[0_0_28px_rgba(127,34,254,0.18)] -translate-y-1"
-            : "border-jet"
+            ? "-translate-y-0.5 border-primary/60 bg-secondary/50 shadow-md motion-reduce:translate-y-0"
+            : "border-border"
         }`}
       >
         {/* Avatar overlapping top-left */}
@@ -27,38 +27,42 @@ export function TestimonialCard({ name, avatar, role, rating, testimonial, isAct
             alt={name}
             width={48}
             height={48}
-            className="rounded-[10px] object-cover w-full h-full shadow-lg"
+            className="h-full w-full rounded-xl object-cover shadow-sm ring-2 ring-background"
           />
         </figure>
 
-        {/* Big quote glyph — Flowstep accent */}
-        <Quote
-          className="absolute top-4 right-4 w-7 h-7 text-orange-yellow-crayola/25 rotate-180 fill-current"
+        {/* Small quote mark keeps the card visually anchored without a glow. */}
+        <QuoteIcon
+          className="absolute right-4 top-4 h-7 w-7 text-primary/30"
           aria-hidden
         />
 
         {/* Name + Role + Stars */}
         <div className="mt-4 mb-2.5 pr-8">
-          <h4 className="text-white-2 text-sm font-semibold capitalize">{name}</h4>
-          {role && <p className="text-orange-yellow-crayola text-[11px] mt-0.5">{role}</p>}
+          <h4 className="text-sm font-semibold capitalize text-card-foreground">{name}</h4>
+          {role && <p className="mt-0.5 text-[11px] text-primary">{role}</p>}
           {/* Star rating */}
           <div className="flex items-center gap-0.5 mt-1.5" aria-label={`Rated ${rating} out of 5`}>
             {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`w-3.5 h-3.5 ${
-                  i < Math.round(rating)
-                    ? "text-accent-4 fill-accent-4"
-                    : "text-jet fill-jet"
-                }`}
-                aria-hidden
-              />
+              i < Math.round(rating) ? (
+                <StarFilledIcon
+                  key={i}
+                  className="h-3.5 w-3.5 text-primary"
+                  aria-hidden
+                />
+              ) : (
+                <StarIcon
+                  key={i}
+                  className="h-3.5 w-3.5 text-muted-foreground/40"
+                  aria-hidden
+                />
+              )
             ))}
           </div>
         </div>
 
         {/* Testimonial Text */}
-        <p className="text-light-gray text-[13px] font-light leading-relaxed flex-1">
+        <p className="flex-1 text-base font-normal leading-relaxed text-muted-foreground sm:text-sm">
           {testimonial}
         </p>
       </div>

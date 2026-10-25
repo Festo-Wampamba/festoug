@@ -12,14 +12,14 @@ export function SkillTags({ groups }: { groups: SkillGroup[] }) {
           className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-500 motion-reduce:animate-none"
           style={{ animationDelay: `${i * 90}ms` }}
         >
-          <h4 className="text-light-gray-70 text-[11px] font-medium uppercase tracking-[0.14em] mb-3">
+          <h4 className="mb-3 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
             {group.label}
           </h4>
           <ul className="flex flex-wrap gap-2">
             {group.skills.map((skill) => (
               <li
                 key={skill}
-                className="bg-onyx border border-jet text-light-gray text-[12.5px] font-mono px-3 py-1.5 rounded-full leading-none"
+                className="rounded-full border border-border bg-secondary px-3 py-1.5 font-mono text-[12.5px] leading-none text-secondary-foreground transition-colors duration-200 hover:border-primary/40 hover:text-primary"
               >
                 {skill}
               </li>

@@ -30,22 +30,17 @@ export default async function AdminOverviewPage() {
 
   const totalRevenue = parseFloat(revenueResult?.value || "0");
 
-  // Flowstep violetDark accent sets — purple / green / violet / amber rotation
-  const A = {
-    purple: { text: "text-orange-yellow-crayola", bg: "bg-orange-yellow-crayola/12", ring: "ring-orange-yellow-crayola/25", hover: "hover:border-orange-yellow-crayola/40 hover:shadow-[0_10px_40px_-8px_rgba(127,34,254,0.30)]" },
-    green:  { text: "text-accent-2", bg: "bg-accent-2/12", ring: "ring-accent-2/25", hover: "hover:border-accent-2/40 hover:shadow-[0_10px_40px_-8px_rgba(16,185,129,0.28)]" },
-    violet: { text: "text-accent-3", bg: "bg-accent-3/12", ring: "ring-accent-3/25", hover: "hover:border-accent-3/40 hover:shadow-[0_10px_40px_-8px_rgba(168,85,247,0.28)]" },
-    amber:  { text: "text-accent-4", bg: "bg-accent-4/12", ring: "ring-accent-4/25", hover: "hover:border-accent-4/40 hover:shadow-[0_10px_40px_-8px_rgba(245,158,11,0.28)]" },
-  };
+  // One brand treatment; business status colors remain semantic elsewhere.
+  const accent = { text: "text-primary", bg: "bg-secondary", ring: "ring-border", hover: "hover:border-primary/40 hover:shadow-sm" };
 
   const stats = [
-    { label: "Total Revenue",   value: `$${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: DollarSign, accent: A.green,  href: "/admin/orders" },
-    { label: "Products",        value: productCount.value,       icon: Package,     accent: A.purple, href: "/admin/products" },
-    { label: "Orders",          value: orderCount.value,         icon: ShoppingBag, accent: A.violet, href: "/admin/orders" },
-    { label: "Blog Posts",      value: blogCount.value,          icon: PenSquare,   accent: A.amber,  href: "/admin/blog" },
-    { label: "Active Licenses", value: licenseCount.value,       icon: Key,         accent: A.purple, href: "/admin/orders" },
-    { label: "Pending Reviews", value: pendingReviewCount.value, icon: Star,        accent: A.amber,  href: "/admin/reviews" },
-    { label: "Customers",       value: customerCount.value,      icon: Users,       accent: A.violet, href: "/admin/customers" },
+    { label: "Total Revenue",   value: `$${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: DollarSign, accent: accent,  href: "/admin/orders" },
+    { label: "Products",        value: productCount.value,       icon: Package,     accent: accent, href: "/admin/products" },
+    { label: "Orders",          value: orderCount.value,         icon: ShoppingBag, accent: accent, href: "/admin/orders" },
+    { label: "Blog Posts",      value: blogCount.value,          icon: PenSquare,   accent: accent,  href: "/admin/blog" },
+    { label: "Active Licenses", value: licenseCount.value,       icon: Key,         accent: accent, href: "/admin/orders" },
+    { label: "Pending Reviews", value: pendingReviewCount.value, icon: Star,        accent: accent,  href: "/admin/reviews" },
+    { label: "Customers",       value: customerCount.value,      icon: Users,       accent: accent, href: "/admin/customers" },
   ];
 
   // Recent orders
@@ -62,7 +57,7 @@ export default async function AdminOverviewPage() {
       {/* Page heading */}
       <div>
         <h2 className="text-white-2 text-2xl sm:text-3xl font-bold font-head tracking-tight">Overview</h2>
-        <div className="mt-2 h-1 w-12 rounded-full bg-gradient-to-r from-orange-yellow-crayola to-accent-2" />
+        <div className="mt-2 h-1 w-12 rounded-full bg-primary" />
       </div>
 
       {/* Stats Grid */}
@@ -92,7 +87,7 @@ export default async function AdminOverviewPage() {
       {/* Recent Orders Table */}
       <section className="bg-eerie-black-1 border border-jet rounded-xl sm:rounded-2xl shadow-1 overflow-hidden">
         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-jet flex items-center gap-3">
-          <div className="h-5 w-1 rounded-full bg-gradient-to-b from-orange-yellow-crayola to-accent-2" />
+          <div className="h-5 w-1 rounded-full bg-primary" />
           <h3 className="text-white-2 text-sm sm:text-base font-semibold font-head">Recent Orders</h3>
         </div>
 

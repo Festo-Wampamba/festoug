@@ -15,7 +15,7 @@ export default function ResumePage() {
         <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
           Resume
         </h2>
-        <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-gradient-to-r from-orange-yellow-crayola to-orange-400 rounded-[3px]" />
+        <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-primary rounded-[3px]" />
       </header>
 
       {/* Education */}
@@ -26,7 +26,7 @@ export default function ResumePage() {
           </div>
           <div>
             <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Education</h3>
-            <div className="mt-1.5 h-1 w-10 rounded-full bg-gradient-to-r from-orange-yellow-crayola to-accent-2" />
+            <div className="mt-1.5 h-1 w-10 rounded-full bg-primary" />
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export default function ResumePage() {
           </div>
           <div>
             <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Work History</h3>
-            <div className="mt-1.5 h-1 w-10 rounded-full bg-gradient-to-r from-accent-2 to-orange-yellow-crayola" />
+            <div className="mt-1.5 h-1 w-10 rounded-full bg-primary" />
           </div>
         </div>
 
@@ -84,7 +84,7 @@ export default function ResumePage() {
       <div className="mb-4">
         <div className="mb-6">
           <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">My Skills</h3>
-          <div className="mt-1.5 h-1 w-10 rounded-full bg-gradient-to-r from-orange-yellow-crayola to-accent-2" />
+          <div className="mt-1.5 h-1 w-10 rounded-full bg-primary" />
         </div>
         <SkillTags
           groups={[
