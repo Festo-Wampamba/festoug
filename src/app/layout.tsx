@@ -66,14 +66,14 @@ export const metadata: Metadata = {
     title: "Festo Wampamba | Software Engineer & Digital Store",
     description:
       "Portfolio and digital storefront of Festo Wampamba — Full-Stack Software Engineer.",
-    images: [{ url: "/images/festo-profile-burgundy.png", width: 1254, height: 1254, alt: "Festo Wampamba" }],
+    images: [{ url: "/images/festo03.png", width: 1254, height: 1254, alt: "Festo Wampamba" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Festo Wampamba | Software Engineer & Digital Store",
     description:
       "Portfolio and digital storefront of Festo Wampamba — Full-Stack Software Engineer.",
-    images: ["/images/festo-profile-burgundy.png"],
+    images: ["/images/festo03.png"],
   },
   robots: {
     index: true,
