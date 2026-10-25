@@ -19,7 +19,10 @@ async function fetchRepos(limit: number): Promise<GitHubRepo[]> {
   try {
     const res = await fetch(
       `https://api.github.com/users/${GITHUB_USER}/repos?sort=pushed&per_page=100`,
-      { headers: { Accept: "application/vnd.github+json" } }
+      {
+        headers: { Accept: "application/vnd.github+json" },
+        signal: AbortSignal.timeout(5000),
+      }
     );
     if (!res.ok) {
       console.error(`GitHub repos fetch failed: ${res.status}`);
