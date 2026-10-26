@@ -8,6 +8,21 @@ import {
   LockClosedIcon,
   PaperPlaneIcon,
 } from "@radix-ui/react-icons";
+import { InlineSelect } from "@/components/ui/inline-select";
+
+const PLAN_OPTIONS = [
+  { value: "Lite Plan ($299)", label: "Lite plan — $299" },
+  { value: "Premium Plan ($550)", label: "Premium plan — $550" },
+  { value: "Pro Plan ($699)", label: "Pro plan — $699" },
+  { value: "Custom Enterprise", label: "Custom project" },
+];
+
+const TIMELINE_OPTIONS = [
+  { value: "As soon as possible (Urgent)", label: "As soon as possible", description: "Urgent project start" },
+  { value: "1 to 3 months", label: "1 to 3 months" },
+  { value: "3 to 6 months", label: "3 to 6 months" },
+  { value: "Flexible timeline", label: "Flexible timeline" },
+];
 
 export function ScopingForm() {
   const searchParams = useSearchParams();
@@ -134,36 +149,22 @@ export function ScopingForm() {
         </h3>
         
         <div className="grid grid-cols-1 gap-6">
-          <div>
-            <label htmlFor="plan" className="block text-base font-medium text-foreground mb-2">Interested Plan</label>
-            <select
-              id="plan"
-              aria-label="Interested Plan"
-              value={selectedPlan}
-              onChange={(e) => setSelectedPlan(e.target.value)}
-              className="w-full min-h-[52px] bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
-            >
-              <option value="Lite Plan ($299)">Lite — $299</option>
-              <option value="Premium Plan ($550)">Premium — $550</option>
-              <option value="Pro Plan ($699)">Pro — $699</option>
-              <option value="Custom Enterprise">Custom project</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="timeline" className="block text-base font-medium text-foreground mb-2">Expected Timeline</label>
-            <select
-              id="timeline"
-              aria-label="Expected Timeline"
-              value={selectedTimeline}
-              onChange={(e) => setSelectedTimeline(e.target.value)}
-              className="w-full min-h-[52px] bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors cursor-pointer"
-            >
-              <option value="As soon as possible (Urgent)">As soon as possible</option>
-              <option value="1 to 3 months">1 to 3 months</option>
-              <option value="3 to 6 months">3 to 6 months</option>
-              <option value="Flexible timeline">Flexible timeline</option>
-            </select>
-          </div>
+          <InlineSelect
+            id="plan"
+            name="plan"
+            label="Interested Plan"
+            value={selectedPlan}
+            options={PLAN_OPTIONS}
+            onChange={setSelectedPlan}
+          />
+          <InlineSelect
+            id="timeline"
+            name="timeline"
+            label="Expected Timeline"
+            value={selectedTimeline}
+            options={TIMELINE_OPTIONS}
+            onChange={setSelectedTimeline}
+          />
         </div>
       </div>
 

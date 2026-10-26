@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/layout/providers";
 import { AiAssistant } from "@/components/chat/ai-assistant";
-import { SiteContent } from "@/components/layout/site-content";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -69,7 +68,7 @@ export default function RootLayout({
       <body className={`${geist.variable} ${geistMono.variable} antialiased min-h-dvh bg-background text-foreground`}>
         <a href="#main-content" className="skip-nav">Skip to main content</a>
         <Providers>
-          <SiteContent>{children}</SiteContent>
+          {children}
           <AiAssistant />
         </Providers>
         <Analytics />

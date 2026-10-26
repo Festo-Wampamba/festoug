@@ -48,15 +48,18 @@ export function ClientLogos() {
     if (resumeTimer.current) clearTimeout(resumeTimer.current);
   }, []);
 
-  const logos: { src: string; alt: string; width: number }[] = [
-    { src: "/images/logo-1-color.png",        alt: "Client 1",          width: 120 },
-    { src: "/images/logo-2-color.png",        alt: "Client 2",          width: 120 },
-    { src: "/images/logo-3-color.png",        alt: "Client 3",          width: 120 },
-    { src: "/images/logo-4-color.png",        alt: "Client 4",          width: 120 },
-    { src: "/images/logo-5-color.png",        alt: "Client 5",          width: 120 },
-    { src: "/images/logo-6-color.png",        alt: "Client 6",          width: 120 },
-    { src: "/images/logo-afridrop-color.svg", alt: "Afridrop Solutions", width: 150 },
+  const logos: { src: string; alt: string; width: number; height: number }[] = [
+    { src: "/images/client-campus-homes.png", alt: "CampusHomes",      width: 170, height: 56 },
+    { src: "/images/client-akolet.jpeg",       alt: "Akolet Properties", width: 92, height: 56 },
+    { src: "/images/client-afridrop.png",      alt: "Afridrop Solutions", width: 145, height: 56 },
+    { src: "/images/logo-1-color.png", alt: "Client 1",            width: 120, height: 40 },
+    { src: "/images/logo-2-color.png", alt: "Client 2",            width: 120, height: 40 },
+    { src: "/images/logo-3-color.png", alt: "Client 3",             width: 120, height: 40 },
+    { src: "/images/logo-4-color.png", alt: "Client 4",              width: 120, height: 40 },
+    { src: "/images/logo-5-color.png", alt: "Client 5",             width: 120, height: 40 },
+    { src: "/images/logo-6-color.png", alt: "Client 6",    width: 120, height: 40 },
   ];
+  const accessibleNames = logos.map((logo) => logo.alt).join(", ");
 
   const logoItem = (logo: typeof logos[0], prefix: string, idx: number) => {
     const key = `${prefix}-${idx}`;
@@ -65,7 +68,7 @@ export function ClientLogos() {
     return (
       <div
         key={key}
-        className="mx-6 sm:mx-8 flex items-center shrink-0 cursor-pointer"
+        className="mx-4 flex h-24 w-52 shrink-0 items-center justify-center rounded-xl bg-white px-4 sm:mx-6"
         onMouseEnter={() => { isPausedRef.current = true; setActiveKey(key); }}
         onMouseLeave={() => { isPausedRef.current = false; setActiveKey(null); }}
         onTouchStart={() => {
@@ -84,9 +87,9 @@ export function ClientLogos() {
           src={logo.src}
           alt={logo.alt}
           width={logo.width}
-          height={40}
-          className={`transition-all duration-500 object-contain select-none ${
-            isActive ? "grayscale-0 opacity-100 scale-110" : "grayscale opacity-40"
+          height={logo.height}
+          className={`h-16 w-full rounded-md object-contain select-none transition-transform duration-200 ${
+            isActive ? "opacity-100 scale-[1.04] motion-reduce:scale-100" : "opacity-100"
           }`}
           draggable={false}
         />
@@ -95,7 +98,8 @@ export function ClientLogos() {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card/50 py-5" aria-label="Client logos" role="region">
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card/50 py-5" aria-labelledby="client-logos-label" role="region">
+      <p id="client-logos-label" className="sr-only">Clients and collaborators: {accessibleNames}.</p>
       {prefersReducedMotion !== true && (
         <>
           <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-12 bg-gradient-to-r from-card to-transparent" />
@@ -104,7 +108,7 @@ export function ClientLogos() {
       )}
 
       {prefersReducedMotion === true ? (
-        <div className="flex flex-wrap items-center justify-center" aria-hidden="true">
+        <div className="flex flex-wrap items-center justify-center">
           {logos.map((logo, i) => logoItem(logo, "static", i))}
         </div>
       ) : (

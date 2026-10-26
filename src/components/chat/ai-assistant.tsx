@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { useSession } from "@/lib/auth-client";
+import { usePathname } from "next/navigation";
 import type { UIMessage } from "ai";
 import {
   ChevronDownIcon,
@@ -92,6 +93,8 @@ export function AiAssistant() {
   const messageListRef = useRef<HTMLDivElement>(null);
   const launcherRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const wheelRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
   const { data: session } = useSession();
 
   const initialMessages: UIMessage[] = [
@@ -119,6 +122,44 @@ export function AiAssistant() {
       parts: [{ type: "text", text: `Welcome back, **${firstName}**! I remember our previous conversations. I'm **FestoAI** — here to help with anything: code, tech advice, architecture, global tech trends, or Festo's services. What are you working on today?` }],
     }]);
   }, [session, welcomed, setMessages]);
+
+  useEffect(() => {
+    let frame = 0;
+    const panel = document.querySelector(".portfolio-content");
+    const footer = document.querySelector(".site-footer");
+    const positionWheel = () => {
+      const wheel = wheelRef.current;
+      if (!wheel) return;
+      const compact = window.innerWidth < 1024;
+      const size = compact ? 44 : 52;
+      const panelRight = panel?.getBoundingClientRect().right;
+      const right = compact || panelRight == null ? 12 : Math.max(12, document.documentElement.clientWidth - panelRight - size / 2);
+      const footerTop = footer?.getBoundingClientRect().top;
+      const footerVisible = footerTop != null && footerTop < window.innerHeight;
+      const bottom = Math.min(
+        Math.max(16, footerVisible ? window.innerHeight - footerTop + 12 : 16),
+        Math.max(16, window.innerHeight - size - 112),
+      );
+      wheel.style.setProperty("--wheel-right", `${right}px`);
+      wheel.style.setProperty("--wheel-bottom", `${bottom}px`);
+    };
+    const schedulePosition = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(positionWheel);
+    };
+    const observer = new ResizeObserver(schedulePosition);
+    if (panel) observer.observe(panel);
+    if (footer) observer.observe(footer);
+    positionWheel();
+    window.addEventListener("resize", schedulePosition);
+    window.addEventListener("scroll", schedulePosition, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", schedulePosition);
+      window.removeEventListener("scroll", schedulePosition);
+    };
+  }, [pathname]);
 
   const closeChat = () => {
     dialogRef.current?.close();
@@ -314,11 +355,7 @@ export function AiAssistant() {
         </dialog>
       )}
 
-      <aside className="assistant-dock" aria-label="AI assistant access">
-        <div className="assistant-dock-copy">
-          <p className="text-sm font-medium text-foreground">Festo AI</p>
-          <p className="text-xs text-muted-foreground">Services, projects & technical questions</p>
-        </div>
+      <aside ref={wheelRef} className="assistant-wheel" aria-label="AI assistant access">
         <button
           type="button"
           ref={launcherRef}
@@ -330,7 +367,6 @@ export function AiAssistant() {
           title="Festo AI assistant"
         >
           {isOpen ? <Cross2Icon className="size-5" aria-hidden /> : <LaptopIcon className="size-5" aria-hidden />}
-          <span className="assistant-launcher-label text-sm font-medium">Ask AI</span>
         </button>
       </aside>
     </>

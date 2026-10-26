@@ -14,9 +14,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             {children}
           </main>
         </div>
-        <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-border pb-28 pt-6 text-xs text-muted-foreground sm:pb-8">
-          <p>© {new Date().getFullYear()} Festo Wampamba · Kampala, Uganda</p>
-          <div className="flex items-center gap-6"><a href="https://github.com/Festo-Wampamba" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-primary">GitHub</a><Link href="/contact" className="inline-flex min-h-11 items-center hover:text-primary">Get in touch</Link></div>
+        <footer className="site-footer flex flex-col items-center gap-3 border-t border-border py-5 text-xs text-muted-foreground sm:flex-row sm:justify-between sm:gap-6 sm:py-6">
+          <p className="flex flex-col items-center justify-center gap-x-2 gap-y-1 text-center sm:flex-row sm:flex-wrap sm:justify-start sm:text-left">
+            <span>© {new Date().getFullYear()} Festo Wampamba</span>
+            <span aria-hidden className="hidden sm:inline">·</span>
+            <span>Kampala, Uganda</span>
+          </p>
+          <nav aria-label="Footer navigation" className="flex shrink-0 items-center justify-center gap-6">
+            <a href="https://github.com/Festo-Wampamba" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-sm transition-colors hover:text-primary">GitHub</a>
+            <Link href="/contact" className="inline-flex min-h-11 items-center rounded-sm transition-colors hover:text-primary">Get in touch</Link>
+          </nav>
         </footer>
       </div>
     </ToastProvider>

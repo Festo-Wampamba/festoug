@@ -160,7 +160,7 @@ export default async function ServicesPage() {
           <p className="page-eyebrow mb-2">01 · Focus areas</p>
           <h3 id="service-areas-heading" className="section-heading">What I can help with</h3>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-3">
+        <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {SERVICE_CHIPS.map(({ icon, label }) => (
             <div
               key={label}
