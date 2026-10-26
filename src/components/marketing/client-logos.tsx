@@ -50,8 +50,8 @@ export function ClientLogos() {
 
   const logos: { src: string; alt: string; width: number; height: number }[] = [
     { src: "/images/client-campus-homes.png", alt: "CampusHomes",      width: 170, height: 56 },
-    { src: "/images/client-akolet.jpeg",       alt: "Akolet Properties", width: 92, height: 56 },
-    { src: "/images/client-afridrop.png",      alt: "Afridrop Solutions", width: 145, height: 56 },
+    { src: "/images/client-akolet-transparent.png", alt: "Akolet Properties", width: 92, height: 56 },
+    { src: "/images/client-afridrop-transparent.png", alt: "Afridrop Solutions", width: 145, height: 56 },
     { src: "/images/logo-1-color.png", alt: "Client 1",            width: 120, height: 40 },
     { src: "/images/logo-2-color.png", alt: "Client 2",            width: 120, height: 40 },
     { src: "/images/logo-3-color.png", alt: "Client 3",             width: 120, height: 40 },
@@ -88,7 +88,7 @@ export function ClientLogos() {
           alt={logo.alt}
           width={logo.width}
           height={logo.height}
-          className={`h-16 w-full object-contain select-none mix-blend-multiply dark:mix-blend-normal transition-[filter,opacity,transform] duration-200 motion-reduce:transition-none ${
+          className={`h-16 w-full object-contain select-none transition-[filter,opacity,transform] duration-200 motion-reduce:transition-none ${
             isActive ? "grayscale-0 opacity-100 scale-[1.04] motion-reduce:scale-100" : "grayscale opacity-65"
           }`}
           draggable={false}
