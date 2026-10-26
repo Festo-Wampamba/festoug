@@ -3,6 +3,7 @@ import { ServiceCard } from "@/components/marketing/service-card";
 import { TestimonialCarousel } from "@/components/marketing/testimonial-carousel";
 import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
 import { ClientLogos } from "@/components/marketing/client-logos";
+import { EngineeringIllustration } from "@/components/marketing/engineering-illustration";
 import Link from "next/link";
 import { withRetry } from "@/lib/db";
 import { services, testimonials as testimonialsTable, projects as projectsTable } from "@/lib/db/schema";
@@ -20,7 +21,9 @@ export default async function AboutPage() {
 
   return (
     <div className="space-y-12 sm:space-y-16">
-      <section aria-labelledby="portfolio-intro" className="border-b border-border pb-10 sm:pb-12">
+      <section aria-labelledby="portfolio-intro" className="engineering-hero border-b border-border pb-10 sm:pb-12">
+        <div className="engineering-hero-grid">
+        <div className="min-w-0">
         <p className="page-eyebrow mb-5">Independent software engineer · Kampala</p>
         <h2 id="portfolio-intro" className="max-w-[20ch] text-[2rem] font-semibold leading-[1.12] tracking-[-.045em] text-foreground sm:text-4xl 2xl:text-5xl">Software built around your business.</h2>
         <p className="mt-6 max-w-[56ch] text-base leading-relaxed text-muted-foreground">I’m Festo. I build web applications, backend systems, and the infrastructure that keeps them running. Clear thinking, practical solutions, and care in the details.</p>
@@ -29,6 +32,9 @@ export default async function AboutPage() {
           <Link href="/portfolio" className="inline-flex min-h-12 items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-primary underline-offset-4 hover:underline">Explore my work<ArrowRightIcon className="size-[18px]" aria-hidden /></Link>
         </div>
         <ul aria-label="Areas of expertise" className="mt-8 flex flex-wrap gap-2">{["Web applications", "Backend systems", "Infrastructure"].map(item => <li key={item} className="rounded-md bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground">{item}</li>)}</ul>
+        </div>
+        <EngineeringIllustration />
+        </div>
       </section>
 
       {projects.length > 0 && <section aria-labelledby="selected-work-heading"><div className="mb-6 flex flex-wrap items-baseline justify-between gap-3"><h3 id="selected-work-heading" className="section-heading">Selected work</h3><Link href="/portfolio" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline">All projects<ArrowRightIcon aria-hidden /></Link></div><PortfolioGrid projects={projects} hideCategoryFilter /></section>}

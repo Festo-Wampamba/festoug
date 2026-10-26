@@ -388,3 +388,57 @@
 @layer base {
   input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select { font-size: 1rem; }
 }
+
+/* The hero adapts to its own available width beside the profile column. */
+.engineering-hero { container-type: inline-size; }
+.engineering-hero-grid { display: grid; align-items: center; gap: 2rem; }
+.engineering-scene { min-width: 0; width: 100%; max-width: 38rem; margin-inline: auto; }
+.engineering-diagram { display: block; width: 100%; height: auto; margin-top: .5rem; }
+.engineering-node-label { fill: var(--foreground); font: 500 18px var(--font-sans); }
+.engineering-code { fill: var(--primary); font: 400 16px var(--font-mono); }
+.engineering-api-label { fill: var(--primary-foreground); font: 600 20px var(--font-mono); }
+.engineering-mobile-caption { display: none; text-align: center; margin-top: .75rem; }
+.engineering-packet { opacity: 0; animation-duration: 4.8s; animation-timing-function: linear; animation-iteration-count: infinite; }
+.engineering-packet-app { animation-name: engineering-app-flow; }
+.engineering-packet-code { animation-name: engineering-code-flow; animation-delay: -2.4s; }
+.engineering-packet-data { animation-name: engineering-data-flow; animation-delay: -1.2s; }
+.engineering-packet-cloud { animation-name: engineering-cloud-flow; animation-delay: -3.6s; }
+.engineering-scene[data-paused="true"] .engineering-packet { animation-play-state: paused; }
+@keyframes engineering-app-flow {
+  0%, 70%, 100% { opacity: 0; transform: translate(0, 0); }
+  5% { opacity: 1; transform: translate(0, 0); }
+  20% { opacity: 1; transform: translate(0, 38px); }
+  55% { opacity: 1; transform: translate(114px, 38px); }
+  65% { opacity: 0; transform: translate(114px, 48px); }
+}
+@keyframes engineering-code-flow {
+  0%, 70%, 100% { opacity: 0; transform: translate(0, 0); }
+  5% { opacity: 1; transform: translate(0, 0); }
+  20% { opacity: 1; transform: translate(0, 34px); }
+  55% { opacity: 1; transform: translate(-146px, 34px); }
+  65% { opacity: 0; transform: translate(-146px, 44px); }
+}
+@keyframes engineering-data-flow {
+  0%, 70%, 100% { opacity: 0; transform: translate(0, 0); }
+  5% { opacity: 1; transform: translate(0, 0); }
+  20% { opacity: 1; transform: translate(0, 28px); }
+  55% { opacity: 1; transform: translate(-150px, 28px); }
+  65% { opacity: 0; transform: translate(-150px, 52px); }
+}
+@keyframes engineering-cloud-flow {
+  0%, 70%, 100% { opacity: 0; transform: translate(0, 0); }
+  5% { opacity: 1; transform: translate(0, 0); }
+  20% { opacity: 1; transform: translate(0, 28px); }
+  55% { opacity: 1; transform: translate(150px, 28px); }
+  65% { opacity: 0; transform: translate(150px, 52px); }
+}
+@container (min-width: 56rem) {
+  .engineering-hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 4cqw, 4rem); }
+}
+@media (max-width: 639px) {
+  .engineering-detail { display: none; }
+  .engineering-mobile-caption { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .engineering-packet { animation: none; opacity: 0; }
+}
