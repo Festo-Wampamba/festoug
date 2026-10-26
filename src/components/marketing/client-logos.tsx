@@ -68,7 +68,7 @@ export function ClientLogos() {
     return (
       <div
         key={key}
-        className="mx-4 flex h-24 w-52 shrink-0 items-center justify-center rounded-xl bg-white px-4 sm:mx-6"
+        className="mx-4 flex h-24 w-52 shrink-0 items-center justify-center px-4 sm:mx-6"
         onMouseEnter={() => { isPausedRef.current = true; setActiveKey(key); }}
         onMouseLeave={() => { isPausedRef.current = false; setActiveKey(null); }}
         onTouchStart={() => {
@@ -88,8 +88,8 @@ export function ClientLogos() {
           alt={logo.alt}
           width={logo.width}
           height={logo.height}
-          className={`h-16 w-full rounded-md object-contain select-none transition-transform duration-200 ${
-            isActive ? "opacity-100 scale-[1.04] motion-reduce:scale-100" : "opacity-100"
+          className={`h-16 w-full object-contain select-none mix-blend-multiply dark:mix-blend-normal transition-[filter,opacity,transform] duration-200 motion-reduce:transition-none ${
+            isActive ? "grayscale-0 opacity-100 scale-[1.04] motion-reduce:scale-100" : "grayscale opacity-65"
           }`}
           draggable={false}
         />
