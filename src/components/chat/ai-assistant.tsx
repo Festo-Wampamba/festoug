@@ -85,36 +85,14 @@ const fallbackActions: QuickAction[] = [
 ];
 import ReactMarkdown from "react-markdown";
 
-function useIsLargeScreen() {
-  const [isLarge, setIsLarge] = useState(false);
-  useEffect(() => {
-    const mql = window.matchMedia("(min-width: 1280px)");
-    // Initial read from the matchMedia external system on mount
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsLarge(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setIsLarge(e.matches);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, []);
-  return isLarge;
-}
-
 export function AiAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputLocal, setInputLocal] = useState("");
   const [lastClickedTopic, setLastClickedTopic] = useState<string | null>("initial");
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const isLarge = useIsLargeScreen();
+  const messageListRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const { data: session } = useSession();
-
-  // Drag state for the toggle button (small/medium only)
-  const [btnPos, setBtnPos] = useState<{ x: number; y: number } | null>(null);
-  const isDraggingRef = useRef(false);
-  const movedRef = useRef(false);
-  const startXRef = useRef(0);
-  const startYRef = useRef(0);
-  const origXRef = useRef(0);
-  const origYRef = useRef(0);
 
   const initialMessages: UIMessage[] = [
     {
@@ -142,46 +120,41 @@ export function AiAssistant() {
     }]);
   }, [session, welcomed, setMessages]);
 
-  // Auto-scroll
+  const closeChat = () => {
+    dialogRef.current?.close();
+    setIsOpen(false);
+    launcherRef.current?.focus({ preventScroll: true });
+  };
+
+  const containDialogFocus = (event: React.KeyboardEvent<HTMLDialogElement>) => {
+    if (event.key !== "Tab") return;
+    const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), input:not([disabled]), a[href], [tabindex="0"]'
+    )).filter(element => element.getClientRects().length > 0);
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first && last) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last && first) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  // Native modal behavior contains keyboard focus and supports Escape to close.
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    if (isOpen && dialogRef.current && !dialogRef.current.open) {
+      dialogRef.current.showModal();
     }
+  }, [isOpen]);
+
+  useEffect(() => {
+    messageListRef.current?.scrollTo({
+      top: messageListRef.current.scrollHeight,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
   }, [messages, isOpen]);
-
-
-  // ── Pointer Events (mouse + touch unified, no race conditions, no stale closures) ─
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (isLarge) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    isDraggingRef.current = true;
-    movedRef.current = false;
-    startXRef.current = e.clientX;
-    startYRef.current = e.clientY;
-    // Always read the element's actual rendered position so drag works from CSS default too
-    const rect = e.currentTarget.getBoundingClientRect();
-    origXRef.current = rect.left;
-    origYRef.current = rect.top;
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (!isDraggingRef.current) return;
-    const dx = e.clientX - startXRef.current;
-    const dy = e.clientY - startYRef.current;
-    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
-      movedRef.current = true;
-      setBtnPos({
-        x: Math.max(8, Math.min(window.innerWidth - 52, origXRef.current + dx)),
-        y: Math.max(8, Math.min(window.innerHeight - 52, origYRef.current + dy)),
-      });
-    }
-  };
-
-  const handlePointerUp = () => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    if (!movedRef.current) setIsOpen((prev) => !prev);
-  };
 
   const isLoadingLocally = status === "submitted" || status === "streaming";
 
@@ -204,11 +177,14 @@ export function AiAssistant() {
     <>
       {/* The Chat Window */}
       {isOpen && (
-        <div
-          className="fixed z-50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300 bg-card text-card-foreground border border-border rounded-2xl shadow-lg
-            w-[calc(100vw-16px)] h-[55vh] right-2 bottom-20
-            sm:w-[380px] sm:h-[500px] sm:right-4 sm:bottom-20
-            xl:w-[380px] xl:h-[520px] xl:right-6 xl:bottom-20"
+        <dialog
+          ref={dialogRef}
+          id="festo-ai-dialog"
+          aria-label="Festo AI Assistant"
+          onKeyDown={containDialogFocus}
+          onCancel={event => { event.preventDefault(); closeChat(); }}
+          onClose={() => { setIsOpen(false); launcherRef.current?.focus({ preventScroll: true }); }}
+          className="assistant-panel flex flex-col overflow-hidden border border-border bg-card text-card-foreground rounded-2xl shadow-lg animate-in slide-in-from-bottom-2 fade-in duration-200"
         >
           {/* Header */}
           <div className="p-3 sm:p-4 border-b border-border bg-secondary/50 flex justify-between items-center shrink-0 select-none">
@@ -217,15 +193,15 @@ export function AiAssistant() {
                 <LaptopIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div>
-                <h3 className="text-foreground font-semibold text-xs sm:text-sm">Festo AI Assistant</h3>
-                <p className="text-[11px] text-primary font-medium flex items-center gap-1">
+                <h3 className="text-foreground font-semibold text-base">Festo AI Assistant</h3>
+                <p className="text-xs text-primary font-medium flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary" /> AI assistant
                 </p>
               </div>
             </div>
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
+              onClick={closeChat}
               className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95 transition-colors"
               aria-label="Minimize chat"
             >
@@ -234,7 +210,7 @@ export function AiAssistant() {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 scroll-smooth">
+          <div ref={messageListRef} className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 scroll-smooth">
             {messages.map((m) => {
               const textContent = m.parts
                 ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
@@ -246,7 +222,7 @@ export function AiAssistant() {
                   <div className={`shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center ${m.role === 'user' ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'}`}>
                     {m.role === 'user' ? <PersonIcon className="w-3 h-3 sm:w-4 sm:h-4" /> : <LaptopIcon className="w-3 h-3 sm:w-4 sm:h-4" />}
                   </div>
-                  <div className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl text-xs sm:text-sm ${
+                  <div className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl text-base ${
                     m.role === 'user'
                       ? 'bg-primary text-primary-foreground rounded-tr-sm'
                       : 'bg-muted text-foreground border border-border rounded-tl-sm'
@@ -254,7 +230,7 @@ export function AiAssistant() {
                     {m.role === 'user' ? (
                       <p className="whitespace-pre-wrap">{textContent}</p>
                     ) : (
-                      <div className="prose prose-p:leading-relaxed prose-p:text-foreground prose-li:text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-pre:bg-secondary prose-pre:text-secondary-foreground prose-pre:border prose-pre:border-border max-w-none text-xs sm:text-sm">
+                      <div className="prose prose-p:leading-relaxed prose-p:text-foreground prose-li:text-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary prose-pre:bg-secondary prose-pre:text-secondary-foreground prose-pre:border prose-pre:border-border max-w-none text-base">
                         <ReactMarkdown>{textContent}</ReactMarkdown>
                       </div>
                     )}
@@ -281,24 +257,23 @@ export function AiAssistant() {
 
             {error && (
               <div className="text-center p-2.5 sm:p-3 mt-3 sm:mt-4 bg-destructive/10 border border-destructive/30 rounded-xl">
-                <p className="text-destructive text-xs sm:text-sm">
+                <p className="text-destructive text-base">
                   {error.message || "Something went wrong. Please try again."}
                 </p>
                 <button
                   type="button"
                   onClick={() => setMessages(messages)}
-                  className="mt-1.5 sm:mt-2 inline-flex min-h-11 items-center px-2 text-xs sm:text-sm text-destructive underline underline-offset-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95"
+                  className="mt-1.5 sm:mt-2 inline-flex min-h-11 items-center px-2 text-base text-destructive underline underline-offset-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95"
                 >
                   Dismiss
                 </button>
               </div>
             )}
-            <div ref={bottomRef} />
           </div>
 
           {/* Quick Actions — dynamic follow-up questions */}
           {lastClickedTopic !== null && !isLoadingLocally && messages[messages.length - 1]?.role === "assistant" && (
-            <div className="px-3 sm:px-4 pb-2 sm:pb-3 flex flex-wrap gap-1.5 sm:gap-2">
+            <div className="assistant-quick-actions px-3 sm:px-4 pb-2 sm:pb-3 flex flex-wrap gap-1.5 sm:gap-2">
               {(quickActionMap[lastClickedTopic] ?? fallbackActions).map((action) => (
                 <button
                   key={action.label}
@@ -316,7 +291,8 @@ export function AiAssistant() {
           <div className="p-2.5 sm:p-3 border-t border-border bg-secondary/50 shrink-0">
             <form onSubmit={handleManualSubmit} className="relative flex items-center">
               <input
-                className="w-full min-h-11 bg-background border border-border rounded-xl pl-3 pr-14 sm:pl-4 sm:pr-16 py-2.5 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                className="w-full min-h-11 bg-background border border-border rounded-xl pl-3 pr-14 sm:pl-4 sm:pr-16 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+                aria-label="Message Festo AI"
                 value={inputLocal}
                 onChange={(e) => setInputLocal(e.target.value)}
                 placeholder="Ask anything — code, tech, or about Festo..."
@@ -324,66 +300,39 @@ export function AiAssistant() {
               />
               <button
                 type="submit"
+                aria-label="Send message"
                 disabled={isLoadingLocally || !inputLocal.trim()}
                 className="absolute right-1 sm:right-1.5 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 disabled:pointer-events-none disabled:opacity-50 transition-colors"
               >
                 {isLoadingLocally ? <ReloadIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 motion-safe:animate-spin" /> : <PaperPlaneIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </button>
             </form>
-            <p className="text-center mt-1.5 sm:mt-2 text-[10px] sm:text-xs text-muted-foreground">
+            <p className="text-center mt-1.5 sm:mt-2 text-xs text-muted-foreground">
               AI can make mistakes. Check important pricing info.
             </p>
           </div>
+        </dialog>
+      )}
+
+      <aside className="assistant-dock" aria-label="AI assistant access">
+        <div className="assistant-dock-copy">
+          <p className="text-sm font-medium text-foreground">Festo AI</p>
+          <p className="text-xs text-muted-foreground">Services, projects & technical questions</p>
         </div>
-      )}
-
-      {/* Large screen: static button */}
-      {isLarge && (
-        <>
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className={`peer fixed z-50 bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 ${
-              isOpen ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'
-            }`}
-            aria-label={isOpen ? "Close Festo AI assistant" : "Open Festo AI assistant"}
-          >
-            {isOpen ? <Cross2Icon className="w-6 h-6" /> : <LaptopIcon className="w-6 h-6" />}
-          </button>
-          {!isOpen && (
-            <span
-              role="tooltip"
-              className="fixed z-50 bottom-[2.1rem] right-[5.5rem] whitespace-nowrap bg-card text-foreground text-xs font-medium px-3 py-2 rounded-lg border border-border shadow-lg opacity-0 translate-x-1 pointer-events-none transition-all duration-200 peer-hover:opacity-100 peer-hover:translate-x-0 peer-focus-visible:opacity-100 peer-focus-visible:translate-x-0 motion-reduce:transition-none motion-reduce:translate-x-0"
-            >
-              Open Festo AI assistant
-            </span>
-          )}
-          {!isOpen && (
-            <span className="fixed bottom-[calc(1.5rem+3rem)] right-6 w-4 h-4 bg-primary border-2 border-background rounded-full z-50 pointer-events-none" />
-          )}
-        </>
-      )}
-
-      {/* Small/medium screen: draggable button — renders immediately via CSS */}
-      {!isLarge && (
         <button
           type="button"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          className={`fixed z-50 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 touch-none ${
-            isOpen ? "bg-secondary text-secondary-foreground" : "bg-primary text-primary-foreground"
-          } ${!btnPos ? "bottom-20 right-4" : "chat-btn-dragged"}`}
-           
-          style={btnPos ? ({ "--bx": `${btnPos.x}px`, "--by": `${btnPos.y}px` } as React.CSSProperties) : undefined}
+          ref={launcherRef}
+          onClick={() => { if (isOpen) closeChat(); else setIsOpen(true); }}
+          className="assistant-launcher inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary/90 motion-safe:active:scale-95"
           aria-label={isOpen ? "Close Festo AI assistant" : "Open Festo AI assistant"}
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? "festo-ai-dialog" : undefined}
+          title="Festo AI assistant"
         >
-          {isOpen ? <Cross2Icon className="w-5 h-5" /> : <LaptopIcon className="w-5 h-5" />}
-          {!isOpen && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary border-2 border-background rounded-full pointer-events-none" />
-          )}
+          {isOpen ? <Cross2Icon className="size-5" aria-hidden /> : <LaptopIcon className="size-5" aria-hidden />}
+          <span className="assistant-launcher-label text-sm font-medium">Ask AI</span>
         </button>
-      )}
+      </aside>
     </>
   );
 }
