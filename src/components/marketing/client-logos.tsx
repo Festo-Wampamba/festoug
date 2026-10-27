@@ -48,13 +48,13 @@ export function ClientLogos() {
     if (resumeTimer.current) clearTimeout(resumeTimer.current);
   }, []);
 
-  const logos: { src: string; alt: string; width: number; height: number }[] = [
+  const logos: { src: string; alt: string; width: number; height: number; wordmark?: string }[] = [
     { src: "/images/client-campus-homes.png", alt: "CampusHomes",      width: 170, height: 56 },
-    { src: "/images/client-akolet-transparent.png", alt: "Akolet Properties", width: 92, height: 56 },
+    { src: "/images/client-akolet-transparent.png", alt: "Akolet Properties", width: 92, height: 56, wordmark: "Akolet Properties" },
     { src: "/images/client-afridrop-transparent.png", alt: "Afridrop Solutions", width: 145, height: 56 },
+    { src: "/images/client-phylax-transparent.png", alt: "Phylax", width: 164, height: 56 },
     { src: "/images/logo-1-color.png", alt: "Client 1",            width: 120, height: 40 },
     { src: "/images/logo-2-color.png", alt: "Client 2",            width: 120, height: 40 },
-    { src: "/images/logo-3-color.png", alt: "Client 3",             width: 120, height: 40 },
     { src: "/images/logo-4-color.png", alt: "Client 4",              width: 120, height: 40 },
     { src: "/images/logo-5-color.png", alt: "Client 5",             width: 120, height: 40 },
     { src: "/images/logo-6-color.png", alt: "Client 6",    width: 120, height: 40 },
@@ -83,16 +83,23 @@ export function ClientLogos() {
           }, 1500);
         }}
       >
-        <Image
-          src={logo.src}
-          alt={logo.alt}
-          width={logo.width}
-          height={logo.height}
-          className={`h-16 w-full object-contain select-none transition-[filter,opacity,transform] duration-200 motion-reduce:transition-none ${
+        <div className={`flex w-full items-center justify-center gap-2 transition-[filter,opacity,transform] duration-200 motion-reduce:transition-none ${
             isActive ? "grayscale-0 opacity-100 scale-[1.04] motion-reduce:scale-100" : "grayscale opacity-65"
-          }`}
-          draggable={false}
-        />
+          }`}>
+          <Image
+            src={logo.src}
+            alt={logo.alt}
+            width={logo.width}
+            height={logo.height}
+            className={`${logo.wordmark ? "size-16 shrink-0" : "h-16 w-full"} object-contain select-none`}
+            draggable={false}
+          />
+          {logo.wordmark && (
+            <span aria-hidden="true" className="text-lg font-semibold leading-tight tracking-tight text-[#08687a]">
+              {logo.wordmark}
+            </span>
+          )}
+        </div>
       </div>
     );
   };
