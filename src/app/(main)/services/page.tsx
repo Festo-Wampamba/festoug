@@ -11,6 +11,7 @@ import {
   Share1Icon,
 } from "@radix-ui/react-icons";
 import { MaintenanceCards } from "@/components/marketing/maintenance-cards";
+import { ServiceWorkflow } from "@/components/marketing/service-workflow";
 
 export const metadata: Metadata = {
   title: "Services & Expertise | FestoUG",
@@ -129,31 +130,36 @@ const SERVICE_AREAS: Array<{
 export default async function ServicesPage() {
   return (
     <div className="space-y-14 sm:space-y-20">
-      <header className="service-reveal max-w-[68ch]">
-        <p className="page-eyebrow mb-5">Independent software engineer · Kampala</p>
-        <h2 className="mb-5 text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl">
-          Services <span className="font-light text-muted-foreground">&amp; Expertise</span>
-        </h2>
-        <p className="max-w-[62ch] text-base leading-relaxed text-muted-foreground">
-          I develop web applications, integrate backend systems, and configure the infrastructure they depend on. Each engagement is scoped around your business requirements, existing systems, and handover needs.
-        </p>
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <Link
-            href="/get-started"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary/90 motion-safe:active:scale-[0.98] motion-reduce:active:scale-100"
-          >
-            Discuss your project
-            <ArrowRightIcon className="h-4 w-4" aria-hidden />
-          </Link>
-          <Link
-            href="/portfolio"
-            className="inline-flex min-h-12 items-center gap-2 rounded-xl px-3 py-3 text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
-          >
-            See selected work
-            <ArrowRightIcon className="h-4 w-4" aria-hidden />
-          </Link>
+      <section className="engineering-hero service-reveal" aria-label="Services introduction">
+        <div className="service-hero-grid">
+          <header className="min-w-0">
+            <p className="page-eyebrow mb-5">Independent software engineer · Kampala</p>
+            <h2 className="mb-5 text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl">
+              Services <span className="font-light text-muted-foreground">&amp; Expertise</span>
+            </h2>
+            <p className="max-w-[62ch] text-base leading-relaxed text-muted-foreground">
+              I develop web applications, integrate backend systems, and configure the infrastructure they depend on. Each engagement is scoped around your business requirements, existing systems, and handover needs.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link
+                href="/get-started"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary/90 motion-safe:active:scale-[0.98] motion-reduce:active:scale-100"
+              >
+                Discuss your project
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </Link>
+              <Link
+                href="/portfolio"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl px-3 py-3 text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
+              >
+                See selected work
+                <ArrowRightIcon className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
+          </header>
+          <ServiceWorkflow />
         </div>
-      </header>
+      </section>
 
       <section aria-labelledby="service-areas-heading" className="service-reveal">
         <div className="mb-6">
