@@ -70,8 +70,8 @@ export function Navbar() {
 
   return (
     <header ref={headerRef} className="sticky top-0 z-40 border-b border-border bg-background">
-      <div className="flex min-h-[88px] items-center justify-between gap-4 py-4">
-        <Link href="/" aria-label="Festo Wampamba home" className="min-w-0 text-lg font-semibold tracking-tight text-foreground">
+      <div className="flex min-h-[88px] flex-wrap items-center justify-between gap-4 py-4">
+        <Link href="/" aria-label="Festo Wampamba home" className="max-w-full shrink-0 text-lg font-semibold tracking-tight text-foreground">
           Festo Wampamba<span className="mt-0.5 block text-xs font-normal tracking-normal text-muted-foreground">Software engineer</span>
         </Link>
         <nav aria-label="Main navigation" className="hidden 2xl:block">

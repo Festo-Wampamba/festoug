@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { useSession } from "@/lib/auth-client";
 import { usePathname } from "next/navigation";
+import { useWheelDrive } from "./use-wheel-drive";
 import type { UIMessage } from "ai";
 import {
   ChevronDownIcon,
@@ -94,6 +95,7 @@ export function AiAssistant() {
   const launcherRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const wheelRef = useRef<HTMLElement>(null);
+  const { soundEnabled, soundLoading, soundError, toggleSound } = useWheelDrive(wheelRef, isOpen);
   const pathname = usePathname();
   const { data: session } = useSession();
 
@@ -125,39 +127,37 @@ export function AiAssistant() {
 
   useEffect(() => {
     let frame = 0;
-    const panel = document.querySelector(".portfolio-content");
-    const footer = document.querySelector(".site-footer");
     const positionWheel = () => {
       const wheel = wheelRef.current;
       if (!wheel) return;
-      const compact = window.innerWidth < 1024;
-      const size = compact ? 44 : 52;
-      const panelRight = panel?.getBoundingClientRect().right;
-      const right = compact || panelRight == null ? 12 : Math.max(12, document.documentElement.clientWidth - panelRight - size / 2);
+      // The route layout may stream in after the assistant first mounts.
+      const body = document.querySelector(".portfolio-body");
+      const footer = document.querySelector(".site-footer");
+      const bodyRight = body?.getBoundingClientRect().right;
+      // Let 8px of the tire sit inside the panel edge, within its empty padding.
+      const right = bodyRight == null ? 12 : Math.max(12, document.documentElement.clientWidth - bodyRight - 48);
       const footerTop = footer?.getBoundingClientRect().top;
-      const footerVisible = footerTop != null && footerTop < window.innerHeight;
       const bottom = Math.min(
-        Math.max(16, footerVisible ? window.innerHeight - footerTop + 12 : 16),
-        Math.max(16, window.innerHeight - size - 112),
+        Math.max(16, footerTop != null ? window.innerHeight - footerTop + 12 : 16),
+        Math.max(16, window.innerHeight - 168),
       );
       wheel.style.setProperty("--wheel-right", `${right}px`);
       wheel.style.setProperty("--wheel-bottom", `${bottom}px`);
     };
-    const schedulePosition = () => {
+    const schedule = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(positionWheel);
     };
-    const observer = new ResizeObserver(schedulePosition);
-    if (panel) observer.observe(panel);
-    if (footer) observer.observe(footer);
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
     positionWheel();
-    window.addEventListener("resize", schedulePosition);
-    window.addEventListener("scroll", schedulePosition, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("scroll", schedule, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
-      window.removeEventListener("resize", schedulePosition);
-      window.removeEventListener("scroll", schedulePosition);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("scroll", schedule);
     };
   }, [pathname]);
 
@@ -213,6 +213,25 @@ export function AiAssistant() {
     sendMessage({ text: action.message });
   };
 
+  const launcher = (
+      <aside ref={wheelRef} className="assistant-wheel" aria-label="AI assistant access">
+        <span className="assistant-mobile-label" aria-hidden="true">Festo AI</span>
+        <button
+          type="button"
+          ref={launcherRef}
+          onClick={() => { if (isOpen) closeChat(); else setIsOpen(true); }}
+          className="assistant-launcher inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary/90 motion-safe:active:scale-95"
+          aria-label={isOpen ? "Close Festo AI assistant" : "Open Festo AI assistant"}
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? "festo-ai-dialog" : undefined}
+          title="Festo AI assistant"
+        >
+          <span className="assistant-tire" aria-hidden="true"><span className="assistant-rim" /></span>
+          <span className="assistant-hub">{isOpen ? <Cross2Icon className="size-4" aria-hidden /> : <LaptopIcon className="size-4" aria-hidden />}</span>
+        </button>
+      </aside>
+  );
+
   // Chat window positioning
   return (
     <>
@@ -248,6 +267,16 @@ export function AiAssistant() {
             >
               <ChevronDownIcon className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
+          </div>
+
+          <div className="flex shrink-0 flex-col items-end border-b border-border px-3">
+            <button type="button" onClick={toggleSound} aria-pressed={soundEnabled} disabled={soundLoading}
+              className="inline-flex min-h-11 items-center gap-2 rounded-md text-xs text-muted-foreground hover:text-primary disabled:opacity-50">
+              {soundLoading ? "Loading engine sound…" : `Engine sound: ${soundEnabled ? "on" : "off"}`}
+            </button>
+            <p role="status" className="text-xs text-muted-foreground">
+              {soundError || (soundEnabled ? "Engine idles when stopped. Close the chat and scroll to rev." : "")}
+            </p>
           </div>
 
           {/* Messages Area */}
@@ -355,20 +384,7 @@ export function AiAssistant() {
         </dialog>
       )}
 
-      <aside ref={wheelRef} className="assistant-wheel" aria-label="AI assistant access">
-        <button
-          type="button"
-          ref={launcherRef}
-          onClick={() => { if (isOpen) closeChat(); else setIsOpen(true); }}
-          className="assistant-launcher inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary/90 motion-safe:active:scale-95"
-          aria-label={isOpen ? "Close Festo AI assistant" : "Open Festo AI assistant"}
-          aria-expanded={isOpen}
-          aria-controls={isOpen ? "festo-ai-dialog" : undefined}
-          title="Festo AI assistant"
-        >
-          {isOpen ? <Cross2Icon className="size-5" aria-hidden /> : <LaptopIcon className="size-5" aria-hidden />}
-        </button>
-      </aside>
+      {launcher}
     </>
   );
 }

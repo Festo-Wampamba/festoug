@@ -37,7 +37,7 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
   return (
     <div
       className={`service-card service-card-delay-${index}
-        group relative flex items-start gap-4 rounded-2xl border border-border bg-card p-5
+        group relative grid grid-cols-[2.75rem_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-2xl border border-border bg-card p-5
         transition-[transform,box-shadow,border-color] duration-300 ease-out
         hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm motion-reduce:hover:translate-y-0`}
     >
@@ -53,27 +53,22 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
         )}
       </div>
 
-      <div className="min-w-0 flex-1 pt-0.5">
-        <h4 className="mb-2 text-sm font-bold uppercase tracking-wider leading-snug text-card-foreground font-head">
-          {title}
-        </h4>
+      <h4 className="min-w-0 text-base font-semibold leading-snug text-card-foreground font-head">
+        {title}
+      </h4>
 
-        {/* Divider */}
-        <div className="mb-2.5 h-px w-full bg-border" />
+      <p className="col-span-2 border-t border-border pt-3 text-base font-normal leading-relaxed text-muted-foreground">
+        {description}
+      </p>
 
-        <p className="text-base font-normal leading-relaxed text-muted-foreground">
-          {description}
-        </p>
-
-        <Link
-          href="/services"
-          className="mt-3 inline-flex min-h-11 items-center gap-1 rounded-sm text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
-          aria-label={`Learn more about ${title}`}
-        >
-          Learn more
-          <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:group-hover:translate-x-0" aria-hidden />
-        </Link>
-      </div>
+      <Link
+        href="/services"
+        className="col-span-2 inline-flex min-h-11 items-center gap-2 justify-self-start rounded-sm text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
+        aria-label={`Learn more about ${title}`}
+      >
+        Learn more
+        <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:group-hover:translate-x-0" aria-hidden />
+      </Link>
     </div>
   );
 }

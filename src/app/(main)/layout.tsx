@@ -8,7 +8,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <ToastProvider>
       <div className="portfolio-shell">
         <Navbar />
-        <div className="grid grid-cols-1 items-start gap-6 py-6 sm:py-8 xl:grid-cols-[17rem_minmax(0,1fr)] xl:gap-8 2xl:grid-cols-[18rem_minmax(0,1fr)]">
+        <div className="portfolio-body grid grid-cols-1 items-start gap-6 py-6 sm:py-8 xl:grid-cols-[17rem_minmax(0,1fr)] xl:gap-8 2xl:grid-cols-[18rem_minmax(0,1fr)]">
           <Sidebar />
           <main id="main-content" tabIndex={-1} className="portfolio-content relative min-w-0 rounded-2xl border border-border bg-card p-5 outline-none sm:p-8 2xl:p-10">
             {children}
