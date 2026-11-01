@@ -20,7 +20,7 @@ export default function ResumePage() {
 
       {/* Education */}
       <div className="mb-10">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="grid place-items-center w-10 h-10 rounded-xl bg-orange-yellow-crayola/12 text-orange-yellow-crayola ring-1 ring-orange-yellow-crayola/25">
             <AnimatedBookIcon className="w-[18px] h-[18px]" />
           </div>
@@ -54,7 +54,7 @@ export default function ResumePage() {
 
       {/* Work History */}
       <div className="mb-10">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="grid place-items-center w-10 h-10 rounded-xl bg-accent-2/12 text-accent-2 ring-1 ring-accent-2/25">
             <AnimatedBriefcaseIcon className="w-[18px] h-[18px]" />
           </div>

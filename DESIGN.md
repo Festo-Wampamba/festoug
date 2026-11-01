@@ -38,7 +38,8 @@ or status colors retain their original purpose.
 ## Typography and geometry
 
 - Geist for headings, body, navigation and controls. Geist Mono for code.
-- Body copy starts at 17px on phones, uses 16px from 640px through
+- Body copy uses 16px on phones up to 375px wide and 17px on larger phones,
+  uses 16px from 640px through
   laptop and desktop widths, and increases to 21px at 2400px. Page headings
   on medium screens use a restrained 34–40px scale. Viewport width
   approximates extra-wide displays; physical monitor inches cannot be detected.

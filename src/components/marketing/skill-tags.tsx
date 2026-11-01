@@ -14,7 +14,7 @@ export function SkillTags({ groups }: { groups: SkillGroup[] }) {
         >
           <h4 className="mb-4 flex items-start gap-3 text-base font-semibold leading-snug text-foreground">
             <span aria-hidden="true" className="mt-0.5 font-mono text-xs font-normal text-primary">0{i + 1}</span>
-            <span>{group.label}</span>
+            <span className="min-w-0 [overflow-wrap:anywhere]">{group.label}</span>
           </h4>
           <ul className="skill-grid">
             {group.skills.map((skill) => (
