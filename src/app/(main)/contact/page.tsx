@@ -1,34 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { sendEmail } from "@/app/actions/contact";
-import { Send, MapPin } from "lucide-react";
+import { ChevronDown, MapPin, Send } from "lucide-react";
+
+const FIELD =
+  "w-full rounded-xl border border-input bg-card/70 px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/80 outline-none transition-[border-color,box-shadow] duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
-
-  // Fallback: iframe load can fire before hydration attaches onLoad,
-  // which would leave the placeholder covering a loaded map forever
-  useEffect(() => {
-    const timer = setTimeout(() => setIsMapLoaded(true), 4000);
-    return () => clearTimeout(timer);
-  }, []);
-  const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
     setStatusMessage(null);
 
-    const formData = new FormData(e.currentTarget);
-    const result = await sendEmail(formData);
+    const result = await sendEmail(new FormData(form));
 
     if (result.error) {
       setStatusMessage({ type: "error", text: result.error });
     } else {
       setStatusMessage({ type: "success", text: "Your message has been sent successfully. Thank you for reaching out!" });
-      (e.target as HTMLFormElement).reset();
+      form.reset();
     }
 
     setIsSubmitting(false);
@@ -36,101 +31,100 @@ export default function ContactPage() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <header className="mb-8 relative pb-[15px]">
-        <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
-          Contact
-        </h2>
-        <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-primary rounded-[3px]" />
+      <header className="mb-8 max-w-2xl">
+        <div className="relative pb-[15px]">
+          <h2 className="text-foreground text-[32px] font-semibold tracking-tight">Contact</h2>
+          <div className="absolute bottom-0 left-0 h-1 w-10 rounded-full bg-gold" />
+        </div>
+        <p className="mt-4 text-muted-foreground">
+          Tell me what you need to build, improve, or get working.
+        </p>
       </header>
 
-      {/* Google Map */}
-      <section className="mb-10">
-        <figure className="relative h-[400px] rounded-[16px] overflow-hidden border border-jet bg-eerie-black-1">
-          {/* Themed placeholder shown until the embed finishes loading */}
-          <div
-            aria-hidden="true"
-            className={`absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-eerie-black-1 transition-opacity duration-500 ${
-              isMapLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
-            }`}
-          >
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-onyx border border-jet motion-safe:animate-pulse">
-              <MapPin className="w-5 h-5 text-orange-yellow-crayola" />
+      {/* 1 — The task: write and send */}
+      <section aria-labelledby="contact-form-heading" className="max-w-3xl">
+        <h3 id="contact-form-heading" className="sr-only">Send a message</h3>
+
+        <form onSubmit={handleSubmit} className="grid gap-5">
+          <fieldset className="grid gap-5 md:grid-cols-2">
+            <legend className="sr-only">About you</legend>
+            <div className="grid gap-1.5">
+              <label htmlFor="contact-name" className="text-sm font-medium text-foreground">Full name</label>
+              <input id="contact-name" type="text" name="fullname" autoComplete="name" required className={FIELD} />
             </div>
-            <p className="text-light-gray text-sm font-medium">Bugolobi, Kampala, Uganda</p>
-            <p className="text-light-gray-70 text-xs">Loading map…</p>
-          </div>
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15959.035959227225!2d32.613387183410396!3d0.3124645449513956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbc01495c9873%3A0xa7d285a6dfaac8!2sBugoloobi%2C%20Kampala!5e0!3m2!1sen!2sug!4v1716838058055!5m2!1sen!2sug"
-            width="100%"
-            height="400"
-            loading="lazy"
-            title="Map of Bugolobi, Kampala, Uganda"
-            onLoad={() => setIsMapLoaded(true)}
-            className={`border-0 filter contrast-[1.2] transition-opacity duration-500 hover:filter-none ${
-              isMapLoaded ? "opacity-80" : "opacity-0"
-            }`}
-          ></iframe>
-        </figure>
-      </section>
+            <div className="grid gap-1.5">
+              <label htmlFor="contact-email" className="text-sm font-medium text-foreground">Email address</label>
+              <input id="contact-email" type="email" name="email" autoComplete="email" required className={FIELD} />
+            </div>
+          </fieldset>
 
-      {/* Contact Form */}
-      <section>
-        <h3 className="text-white-2 text-2xl font-semibold capitalize mb-6">Talk to Me</h3>
-
-        {statusMessage && (
-          <div role={statusMessage.type === "error" ? "alert" : "status"} className={`p-4 mb-6 rounded-lg text-sm font-medium ${
-            statusMessage.type === "success"
-              ? "bg-secondary text-secondary-foreground border border-border"
-              : "bg-destructive/10 text-destructive border border-destructive/25"
-          }`}>
-            {statusMessage.text}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="grid gap-2"><label htmlFor="contact-name" className="text-sm font-medium text-foreground">Full name</label><input
-              id="contact-name"
-              type="text"
-              name="fullname"
-              placeholder="Full name"
-              aria-label="Full name"
-              autoComplete="name"
+          <div className="grid gap-1.5">
+            <label htmlFor="contact-message" className="text-sm font-medium text-foreground">Your message</label>
+            <textarea
+              id="contact-message"
+              name="message"
               required
-              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-base font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
-            /></div>
-            <div className="grid gap-2"><label htmlFor="contact-email" className="text-sm font-medium text-foreground">Email address</label><input
-              id="contact-email"
-              type="email"
-              name="email"
-              placeholder="Email address"
-              aria-label="Email address"
-              autoComplete="email"
-              required
-              className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-base font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors"
-            /></div>
+              rows={6}
+              placeholder="What are you working on, and where are you stuck?"
+              className={`${FIELD} min-h-[9rem] resize-y`}
+            />
           </div>
 
-          <div className="grid gap-2"><label htmlFor="contact-message" className="text-sm font-medium text-foreground">Your message</label><textarea
-            id="contact-message"
-            name="message"
-            placeholder="Your Message"
-            aria-label="Your message"
-            required
-            rows={5}
-            className="bg-transparent border border-jet text-white-2 placeholder:text-light-gray-70 text-base font-light px-5 py-4 rounded-[14px] outline-none focus:border-light-gray focus:ring-1 focus:ring-light-gray/40 focus-visible:outline-none selection:bg-light-gray/30 selection:text-white-2 transition-colors resize-y min-h-[120px]"
-          ></textarea></div>
+          <div className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              data-sending={isSubmitting}
+              aria-label={isSubmitting ? "Sending message" : "Send message"}
+              className="send-cta inline-flex min-h-12 items-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <span className="send-plane" aria-hidden>
+                <Send className="size-4" />
+              </span>
+              {isSubmitting ? (
+                <span>Sending…</span>
+              ) : (
+                <span className="send-label" aria-hidden>
+                  <span>Send message</span>
+                  <span>Let it fly</span>
+                </span>
+              )}
+            </button>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex min-h-12 self-start items-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Send className="w-4 h-4" />
-            {isSubmitting ? "Sending..." : "Send Message"}
-          </button>
+            {statusMessage && (
+              <p
+                role={statusMessage.type === "error" ? "alert" : "status"}
+                className={`text-sm font-medium ${statusMessage.type === "success" ? "text-secondary-foreground" : "text-destructive"}`}
+              >
+                {statusMessage.text}
+              </p>
+            )}
+          </div>
         </form>
       </section>
+
+      {/* 2 — Secondary: where I am. Folded away; the embed only loads when opened. */}
+      <details className="disclosure mt-10 max-w-3xl rounded-2xl border border-border bg-eerie-black-1">
+        <summary className="flex min-h-14 items-center gap-3 rounded-2xl px-4 py-3 sm:px-5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground" aria-hidden>
+            <MapPin className="size-[18px]" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-medium text-foreground">Based in Bugolobi, Kampala</span>
+            <span className="block text-xs text-muted-foreground">Show on map</span>
+          </span>
+          <ChevronDown className="disclosure-chevron size-5 shrink-0 text-muted-foreground" aria-hidden />
+        </summary>
+        <figure className="relative m-3 mt-0 h-[320px] overflow-hidden rounded-xl border border-border bg-muted sm:m-4 sm:mt-0">
+          <p className="absolute inset-0 grid place-items-center text-sm text-muted-foreground" aria-hidden>Loading map…</p>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15959.035959227225!2d32.613387183410396!3d0.3124645449513956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbc01495c9873%3A0xa7d285a6dfaac8!2sBugoloobi%2C%20Kampala!5e0!3m2!1sen!2sug!4v1716838058055!5m2!1sen!2sug"
+            loading="lazy"
+            title="Map of Bugolobi, Kampala, Uganda"
+            className="relative size-full border-0"
+          />
+        </figure>
+      </details>
     </div>
   );
 }

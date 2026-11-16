@@ -62,6 +62,11 @@
   --color-white-1: var(--theme-white-1);
   --color-white-2: var(--theme-white-2);
 
+  /* Forest Luxe accents: gold is decorative, gold-ink is the text-safe tone. */
+  --color-gold: var(--gold);
+  --color-gold-ink: var(--gold-ink);
+  --color-sand: var(--sand);
+
   /* Coastal Midnight Palette (theme-aware) */
   --color-cm-bg: var(--theme-cm-bg);
   --color-cm-surface: var(--theme-cm-surface);
@@ -79,37 +84,42 @@
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-/* Emerald / mint / cream. Semantic pairs are the source of truth. */
+/* Forest Luxe: deep forest, sand and gold on cream. Semantic pairs are the source of truth. */
 :root {
   color-scheme: light;
-  --background: #FFF8E7;
-  --foreground: #182D25;
+  --background: #FBF5E6;
+  --foreground: #08251D;
   --card: #FFFCF4;
-  --card-foreground: #182D25;
+  --card-foreground: #08251D;
   --popover: #FFFCF4;
-  --popover-foreground: #182D25;
-  --primary: #065F46;
+  --popover-foreground: #08251D;
+  --primary: #123B2C;
   --primary-foreground: #FFFDF7;
-  --secondary: #E3F2E8;
-  --secondary-foreground: #164D38;
-  --muted: #F0EFE3;
-  --muted-foreground: #4D6057;
-  --accent: #E3F2E8;
-  --accent-foreground: #164D38;
+  --secondary: #E4ECDD;
+  --secondary-foreground: #123B2C;
+  --muted: #F1ECDC;
+  --muted-foreground: #465A50;
+  --accent: #E4ECDD;
+  --accent-foreground: #123B2C;
   --destructive: #A32D32;
-  --border: #D6DFD2;
+  --border: #DFD6BF;
   --input: #819184;
-  --ring: #065F46;
+  --ring: #123B2C;
   --radius: 0.75rem;
+  --gold: #B78B45;
+  --gold-ink: #7A5620;
+  --sand: #D8C19A;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --brand-mint: #A7F3D0;
-  --chart-1: #065F46;
+  --chart-1: #123B2C;
   --chart-2: #267454;
   --chart-3: #51846A;
   --chart-4: #81966B;
   --chart-5: #A7B77E;
   --theme-jet: var(--border);
   --theme-onyx: var(--muted);
-  --theme-eerie-black-1: #F5F3E8;
+  --theme-eerie-black-1: #F6F1E3;
   --theme-eerie-black-2: var(--card);
   --theme-smoky-black: var(--background);
   --theme-accent: var(--primary);
@@ -118,7 +128,7 @@
   --theme-accent-4: var(--primary);
   --theme-vegas-gold: var(--primary);
   --theme-light-gray: var(--muted-foreground);
-  --theme-light-gray-70: #596C60;
+  --theme-light-gray-70: #55675C;
   --theme-bittersweet: var(--destructive);
   --theme-white-1: var(--foreground);
   --theme-white-2: var(--foreground);
@@ -141,11 +151,11 @@
 
 .dark {
   color-scheme: dark;
-  --background: #10221B;
+  --background: #08251D;
   --foreground: #F6F3E8;
-  --card: #172D24;
+  --card: #0F3024;
   --card-foreground: #F6F3E8;
-  --popover: #1B3529;
+  --popover: #123B2C;
   --popover-foreground: #F6F3E8;
   --primary: #A7F3D0;
   --primary-foreground: #10261D;
@@ -159,7 +169,10 @@
   --border: #395144;
   --input: #6D8977;
   --ring: #A7F3D0;
-  --theme-eerie-black-1: #1D372B;
+  --gold: #D8B46A;
+  --gold-ink: #E3C88F;
+  --sand: #B78B45;
+  --theme-eerie-black-1: #15382B;
   --theme-light-gray-70: #ADBFAD;
   --chart-1: #A7F3D0;
   --chart-2: #81CFAC;
@@ -322,8 +335,10 @@
 .bounce-d300 { animation-delay: 300ms; }
 
 /* A separate outer lane keeps the floating tire clear of both content panels. */
-.portfolio-body, .site-footer { margin-inline-end: 72px; }
-.skill-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
+.portfolio-body, .site-footer, .site-header-inner { margin-inline-end: 72px; }
+.skill-groups { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+@media (min-width: 640px) { .skill-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1536px) { .skill-groups { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .skill-group { container-type: inline-size; padding: 16px; }
 .skill-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
 .skill-cell { overflow-wrap: anywhere; padding-inline: 12px; }
@@ -390,7 +405,8 @@
 @media (max-width: 1023px) {
   .assistant-panel { right: 12px; width: min(400px, calc(100vw - 24px)); }
   body:has(.portfolio-shell) .portfolio-body,
-  body:has(.portfolio-shell) .site-footer { margin-inline-end: 0; }
+  body:has(.portfolio-shell) .site-footer,
+  body:has(.portfolio-shell) .site-header-inner { margin-inline-end: 0; }
   /* Full-width reading area with enough final scroll clearance for the dock. */
   .portfolio-shell { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   body:has(.portfolio-shell) .assistant-wheel {
@@ -583,3 +599,90 @@
     .profile-summary > button { grid-column: 2; grid-row: 1; }
   }
 }
+
+/* ─── Forest Luxe atmosphere ───
+   Soft sand, forest and gold washes sit behind everything so the frosted
+   panels have something to pick up. Fixed pseudo-element: cheaper than
+   background-attachment: fixed on mobile. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(62rem 40rem at 90% -10%, color-mix(in oklab, var(--sand) 60%, transparent), transparent 70%),
+    radial-gradient(46rem 36rem at -8% 36%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 70%),
+    radial-gradient(54rem 40rem at 72% 112%, color-mix(in oklab, var(--gold) 26%, transparent), transparent 70%);
+}
+.dark body::before {
+  background:
+    radial-gradient(62rem 40rem at 90% -10%, color-mix(in oklab, var(--sand) 22%, transparent), transparent 70%),
+    radial-gradient(46rem 36rem at -8% 36%, color-mix(in oklab, var(--primary) 9%, transparent), transparent 70%),
+    radial-gradient(54rem 40rem at 72% 112%, color-mix(in oklab, var(--gold) 12%, transparent), transparent 70%);
+}
+
+/* ─── Frosted glass ───
+   .glass        — blur on the element itself (cards, nav, sticky chrome).
+   .glass-panel  — blur on a ::before layer, so the panel does NOT become the
+                   containing block for position:fixed children (lightbox, modals). */
+.glass, .glass-panel::before {
+  --glass-edge: color-mix(in oklab, white 60%, transparent);
+  background: color-mix(in oklab, var(--card) 64%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-edge),
+    0 1px 2px rgb(8 37 29 / 0.04),
+    0 18px 40px -26px rgb(8 37 29 / 0.28);
+}
+.dark .glass, .dark .glass-panel::before { --glass-edge: color-mix(in oklab, white 8%, transparent); }
+.glass, .glass-panel { border-color: color-mix(in oklab, var(--border) 72%, transparent); }
+.glass-panel { background: transparent; }
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.glass-chrome {
+  background: color-mix(in oklab, var(--background) 70%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-panel::before { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .glass-chrome { background: var(--background); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .glass, .glass-panel::before { background: var(--card); }
+  .glass, .glass-panel { border-color: var(--foreground); }
+}
+
+/* ─── Send CTA: label swap + paper plane loop ─── */
+.send-cta { transition: transform 140ms var(--ease-out), background-color 200ms ease; }
+.send-cta:not(:disabled):active { transform: scale(0.97); }
+.send-plane { display: grid; place-items: center; overflow: hidden; width: 1.25rem; height: 1.25rem; }
+.send-label { display: grid; overflow: hidden; text-align: left; }
+.send-label > span { grid-area: 1 / 1; transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out); }
+.send-label > span + span { transform: translateY(110%); opacity: 0; }
+@keyframes plane-fly {
+  0%        { transform: translate(0, 0);          opacity: 1; }
+  45%       { transform: translate(140%, -140%);   opacity: 0; }
+  46%       { transform: translate(-140%, 140%);   opacity: 0; }
+  100%      { transform: translate(0, 0);          opacity: 1; }
+}
+.send-cta[data-sending="true"] .send-plane > svg { animation: plane-fly 1.1s var(--ease-in-out) infinite; }
+@media (hover: hover) and (pointer: fine) {
+  .send-cta:not(:disabled):hover .send-plane > svg { animation: plane-fly 1.1s var(--ease-in-out) infinite; }
+  .send-cta:not(:disabled):hover .send-label > span:first-child { transform: translateY(-110%); opacity: 0; }
+  .send-cta:not(:disabled):hover .send-label > span + span { transform: translateY(0); opacity: 1; }
+}
+
+/* ─── Disclosure (native <details>) ─── */
+.disclosure > summary { list-style: none; cursor: pointer; }
+.disclosure > summary::-webkit-details-marker { display: none; }
+.disclosure .disclosure-chevron { transition: transform 200ms var(--ease-out); }
+.disclosure[open] .disclosure-chevron { transform: rotate(180deg); }

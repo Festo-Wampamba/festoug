@@ -39,7 +39,7 @@ export default async function PortfolioPage() {
         <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
           Portfolio
         </h2>
-        <div className="absolute bottom-0 left-0 w-[40px] h-[5px] bg-primary rounded-[3px]" />
+        <div className="absolute bottom-0 left-0 w-10 h-1 bg-gold rounded-full" />
       </header>
 
       <PortfolioGrid projects={projects} />

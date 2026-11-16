@@ -15,7 +15,7 @@ export function Sidebar() {
   }, []);
 
   return (
-    <aside aria-label="About Festo" className="profile-card min-w-0 self-start rounded-2xl border border-border bg-card p-5 sm:p-6 xl:sticky xl:top-32">
+    <aside aria-label="About Festo" className="profile-card glass min-w-0 self-start rounded-2xl border p-5 sm:p-6 xl:sticky xl:top-32">
       <div className="profile-summary flex items-center gap-3 sm:gap-4 xl:block">
         <figure className="profile-photo size-16 shrink-0 sm:size-[76px] xl:mb-6 xl:aspect-square xl:h-auto xl:w-full">
           <Image src="/images/festo03.png" alt="Festo Wampamba wearing a navy jacket" width={250} height={250} sizes="(min-width: 1536px) 300px, (min-width: 1280px) 280px, 76px" priority className="size-full rounded-xl object-cover" />

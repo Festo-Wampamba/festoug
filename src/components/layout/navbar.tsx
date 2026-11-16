@@ -69,8 +69,8 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(href));
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-40 border-b border-border bg-background">
-      <div className="flex min-h-[88px] flex-wrap items-center justify-between gap-4 py-4">
+    <header ref={headerRef} className="glass-chrome sticky top-0 z-40 border-b border-border">
+      <div className="site-header-inner flex min-h-[76px] flex-wrap items-center justify-between gap-4 py-3">
         <Link href="/" aria-label="Festo Wampamba home" className="max-w-full shrink-0 text-lg font-semibold tracking-tight text-foreground">
           Festo Wampamba<span className="mt-0.5 block text-xs font-normal tracking-normal text-muted-foreground">Software engineer</span>
         </Link>
