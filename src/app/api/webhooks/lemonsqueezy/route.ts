@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { verifyWebhookSignature } from "@/lib/payments/lemonsqueezy";
+import { getSubscriptionVariantId, verifyWebhookSignature } from "@/lib/payments/lemonsqueezy";
 import { db } from "@/lib/db";
 import { orders, licenses, products, users, subscriptions, maintenanceTrials } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -132,6 +132,23 @@ export async function POST(req: Request) {
       }
 
       const lsVariantId      = subData.variant_id?.toString() || "";
+
+      // Same rule as orders: plan, user_id and trial_id arrive in buyer-controllable
+      // custom_data. Only activate when LS charged the variant for the claimed plan
+      // and the trial really belongs to that user.
+      let expectedVariantId: string | undefined;
+      try {
+        expectedVariantId = getSubscriptionVariantId(plan, billingCycle as "ANNUAL");
+      } catch {
+        expectedVariantId = undefined; // unknown plan / billing cycle combination
+      }
+      const ownTrial = await db.query.maintenanceTrials.findFirst({
+        where: and(eq(maintenanceTrials.id, trialId), eq(maintenanceTrials.userId, userId)),
+      });
+      if (!expectedVariantId || lsVariantId !== expectedVariantId || !ownTrial) {
+        console.error(`[WEBHOOK] subscription_created: rejected subscription ${lsSubscriptionId}. Paid variant '${lsVariantId}', claimed plan '${plan}/${billingCycle}' expects '${expectedVariantId}', trial owned by user: ${!!ownTrial}. Not activated — reconcile manually.`);
+        return NextResponse.json({ message: "Subscription acknowledged (variant or trial mismatch — not activated)" }, { status: 200 });
+      }
       const renewsAt         = subData.renews_at
         ? new Date(subData.renews_at)
         : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
