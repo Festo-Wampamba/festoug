@@ -70,6 +70,16 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "Order acknowledged (product not in DB — skipped)" }, { status: 200 });
       }
 
+      // custom_data is buyer-controllable (LS buy links accept it as URL params), so
+      // product_slug alone proves nothing. Only fulfil when the variant LS actually
+      // charged for is this product's variant — otherwise paying for the cheapest
+      // variant with a forged slug would unlock any product.
+      const paidVariantId = orderData.first_order_item?.variant_id;
+      if (!product.variantId || String(paidVariantId) !== product.variantId) {
+        console.error(`[WEBHOOK] order_created: variant mismatch for order ${externalOrderId}. Paid variant '${paidVariantId}', but product '${productSlug}' expects '${product.variantId}'. Not fulfilled — reconcile manually.`);
+        return NextResponse.json({ message: "Order acknowledged (variant mismatch — not fulfilled)" }, { status: 200 });
+      }
+
       // Insert Order
       const [newOrder] = await db.insert(orders).values({
         userId,

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { Toast, type ToastData, type ToastType } from "./toast";
 
@@ -16,11 +16,12 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 let toastId = 0;
 
-export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  const [toasts, setToasts] = useState<ToastData[]>([]);
+const subscribeNever = () => () => {};
 
-  useEffect(() => setMounted(true), []);
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  // True on the client after hydration, false on the server — no effect needed.
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
+  const [toasts, setToasts] = useState<ToastData[]>([]);
 
   const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
