@@ -75,6 +75,8 @@ export async function POST(req: Request) {
     // ponytail: tune CHAT_GLOBAL_PER_HOUR to real traffic.
     const CHAT_GLOBAL_PER_HOUR = 300;
     if (!(await rateLimit(globalKey("chat"), { limit: CHAT_GLOBAL_PER_HOUR, windowSeconds: 3600 })).success) {
+      // Loud on purpose: every visitor is now being turned away.
+      console.error(`[chat] site-wide limit of ${CHAT_GLOBAL_PER_HOUR}/hour reached; assistant is refusing requests`);
       return busy();
     }
 
