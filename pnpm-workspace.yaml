@@ -1,10 +1,14 @@
 allowBuilds:
-  esbuild: set this to true or false
-  msw: set this to true or false
-  sharp: set this to true or false
-  unrs-resolver: set this to true or false
+  esbuild: false
+  msw: false
+  sharp: false
+  unrs-resolver: false
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
 overrides:
   kysely: 0.28.17
+  # Patched versions for two dev-only transitive advisories; drop each once the
+  # parent package asks for a fixed range itself.
+  '@esbuild-kit/core-utils>esbuild': ^0.25.0
+  'minimatch@>=7.0.0 <11.0.1': ^11.0.1
