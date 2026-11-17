@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       if (!productSlug) {
         // Order came from outside the site checkout (e.g. direct LS link) — no product slug attached.
         // Log it for manual reconciliation and acknowledge so LS doesn't retry endlessly.
-        console.warn(`[WEBHOOK] order_created (ID: ${externalOrderId}) has no product_slug in custom_data. Skipping order record. Custom data:`, JSON.stringify(customData));
+        console.warn(`[WEBHOOK] order_created (ID: ${forLog(externalOrderId)}) has no product_slug in custom_data. Skipping order record. Custom data:`, forLog(JSON.stringify(customData)));
         return NextResponse.json({ message: "Order acknowledged (no product_slug — skipped)" }, { status: 200 });
       }
 
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       if (!product) {
         // Product slug sent but not found in DB. Log and acknowledge — returning 500 would
         // cause LS to retry indefinitely; 200 lets us handle it via manual reconciliation.
-        console.error(`[WEBHOOK] order_created: product slug '${productSlug}' not found in DB. Order ID: ${externalOrderId}. Add the product via /admin/products/new or /admin/ls-sync, then replay this order.`);
+        console.error(`[WEBHOOK] order_created: product slug '${forLog(productSlug)}' not found in DB. Order ID: ${forLog(externalOrderId)}. Add the product via /admin/products/new or /admin/ls-sync, then replay this order.`);
         return NextResponse.json({ message: "Order acknowledged (product not in DB — skipped)" }, { status: 200 });
       }
 
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
       const billingCycle = customData.billing_cycle as "MONTHLY" | "ANNUAL" | undefined;
 
       if (!userId || !trialId || !plan || !billingCycle) {
-        console.error("[WEBHOOK] subscription_created: missing custom_data fields", customData);
+        console.error("[WEBHOOK] subscription_created: missing custom_data fields", forLog(JSON.stringify(customData)));
         return NextResponse.json({ error: "Missing custom data" }, { status: 422 });
       }
 
