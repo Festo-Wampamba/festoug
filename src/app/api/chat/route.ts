@@ -3,7 +3,7 @@ import { streamText, type UIMessage, convertToModelMessages } from "ai";
 import { withRetry } from "@/lib/db";
 import { products, services, chatMessages } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { clientKey, getClientIp, globalKey, rateLimit } from "@/lib/rate-limit";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -12,19 +12,17 @@ export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
-    // Per-visitor limit, plus a site-wide ceiling so rotating IPs cannot run up
-    // model costs. ponytail: tune CHAT_GLOBAL_PER_HOUR to real traffic.
-    const CHAT_GLOBAL_PER_HOUR = 300;
-    const ip = getClientIp(req);
-    const [perVisitor, siteWide] = await Promise.all([
-      rateLimit(`chat:${ip}`, { limit: 20, windowSeconds: 60 }),
-      rateLimit("chat:all", { limit: CHAT_GLOBAL_PER_HOUR, windowSeconds: 3600 }),
-    ]);
-    if (!perVisitor.success || !siteWide.success) {
-      return new Response(
+    const busy = () =>
+      new Response(
         JSON.stringify({ error: "The assistant is busy right now. Please try again in a few minutes." }),
         { status: 429, headers: { "Content-Type": "application/json" } }
       );
+
+    // Per-visitor limit first; the site-wide ceiling is only charged further
+    // down, for requests that pass this and the size checks.
+    const ip = getClientIp(req);
+    if (!(await rateLimit(clientKey("chat", ip), { limit: 20, windowSeconds: 60 })).success) {
+      return busy();
     }
 
     let body: { messages?: UIMessage[] };
@@ -70,6 +68,14 @@ export async function POST(req: Request) {
         JSON.stringify({ error: "That message is too long. Please shorten it and try again." }),
         { status: 413, headers: { "Content-Type": "application/json" } }
       );
+    }
+
+    // Site-wide ceiling so rotating IPs cannot run up model costs. It is a hard
+    // stop by design: a busy assistant beats an unbounded bill.
+    // ponytail: tune CHAT_GLOBAL_PER_HOUR to real traffic.
+    const CHAT_GLOBAL_PER_HOUR = 300;
+    if (!(await rateLimit(globalKey("chat"), { limit: CHAT_GLOBAL_PER_HOUR, windowSeconds: 3600 })).success) {
+      return busy();
     }
 
     // Check auth session for registered user memory

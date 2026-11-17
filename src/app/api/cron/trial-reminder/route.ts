@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { maintenanceTrials } from "@/lib/db/schema";
 import { eq, and, isNull, lte, gt } from "drizzle-orm";
 import { sendTrialReminderEmail } from "@/lib/email";
+import { pruneRateLimits } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,11 @@ export async function GET(req: Request) {
       errors.push(`Trial ${trial.id}: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
+
+  // Housekeeping on the same daily schedule: drop stale rate-limit counters.
+  await pruneRateLimits().catch((error) =>
+    console.error("[cron] rate-limit prune failed:", error instanceof Error ? error.message : String(error))
+  );
 
   return NextResponse.json({
     message: `Notified ${notified} of ${expiringTrials.length} expiring trials.`,

@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
-import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { clientKey, getClientIp, globalKey, rateLimit } from "@/lib/rate-limit";
 
 const contactSchema = z.object({
   fullname: z.string().trim().min(1, "Please enter your name.").max(100, "That name is too long."),
@@ -25,11 +25,12 @@ export async function sendEmail(formData: FormData) {
   // Per-visitor limit plus a site-wide ceiling that protects the EmailJS quota
   // even if a sender rotates IPs.
   const ip = getClientIp(await headers());
-  const [perVisitor, siteWide] = await Promise.all([
-    rateLimit(`contact:${ip}`, { limit: 5, windowSeconds: 600 }),
-    rateLimit("contact:all", { limit: 40, windowSeconds: 3600 }),
-  ]);
-  if (!perVisitor.success || !siteWide.success) {
+  // Sequential on purpose: a sender who is already over their own limit must
+  // not also use up the shared ceiling.
+  const allowed =
+    (await rateLimit(clientKey("contact", ip), { limit: 5, windowSeconds: 600 })).success &&
+    (await rateLimit(globalKey("contact"), { limit: 40, windowSeconds: 3600 })).success;
+  if (!allowed) {
     return { error: "You have sent several messages in a short time. Please try again in a few minutes." };
   }
 

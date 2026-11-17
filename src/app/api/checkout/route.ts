@@ -4,13 +4,13 @@ import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { generateCheckoutLink } from "@/lib/payments/lemonsqueezy";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { clientKey, getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
   try {
     // Rate limit: 10 checkout attempts per IP per 5 minutes
     const ip = getClientIp(req);
-    const limiter = await rateLimit(`checkout:${ip}`, { limit: 10, windowSeconds: 300 });
+    const limiter = await rateLimit(clientKey("checkout", ip), { limit: 10, windowSeconds: 300 });
     if (!limiter.success) {
       return NextResponse.json(
         { error: "Too many checkout attempts. Please try again later." },

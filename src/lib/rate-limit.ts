@@ -1,4 +1,6 @@
-import { sql } from "drizzle-orm";
+import { isIP } from "node:net";
+
+import { and, like, lt, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { rateLimits } from "@/lib/db/schema";
@@ -13,7 +15,8 @@ export async function rateLimit(
   identifier: string,
   options: { limit: number; windowSeconds: number }
 ): Promise<{ success: boolean }> {
-  const key = `app:${identifier}`;
+  // The window is part of the key so two limits on one identifier never share a row.
+  const key = `app:${identifier}:${options.windowSeconds}s`;
   const now = Date.now();
   const windowStart = now - options.windowSeconds * 1000;
 
@@ -46,9 +49,22 @@ export async function rateLimit(
  */
 export function getClientIp(source: Request | Headers): string {
   const headers = source instanceof Headers ? source : source.headers;
-  return (
+  const candidate =
     headers.get("x-real-ip")?.trim() ||
     headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-    "unknown"
-  );
+    "";
+  // Only a real address may become part of a key; anything else shares one bucket.
+  return isIP(candidate) ? candidate : "unknown";
+}
+
+/** Per-client key segment. Kept apart from site-wide keys so they can never collide. */
+export const clientKey = (scope: string, ip: string) => `${scope}:ip:${ip}`;
+/** Site-wide key segment. */
+export const globalKey = (scope: string) => `${scope}:global`;
+
+/** Delete this app's counters older than a day (the longest window is an hour). */
+export async function pruneRateLimits(): Promise<void> {
+  await db
+    .delete(rateLimits)
+    .where(and(like(rateLimits.id, "app:%"), lt(rateLimits.lastRequest, Date.now() - 24 * 60 * 60 * 1000)));
 }
