@@ -27,11 +27,13 @@ export async function sendEmail(formData: FormData) {
   const ip = getClientIp(await headers());
   // Sequential on purpose: a sender who is already over their own limit must
   // not also use up the shared ceiling.
-  const allowed =
-    (await rateLimit(clientKey("contact", ip), { limit: 5, windowSeconds: 600 })).success &&
-    (await rateLimit(globalKey("contact"), { limit: 40, windowSeconds: 3600 })).success;
-  if (!allowed) {
+  if (!(await rateLimit(clientKey("contact", ip), { limit: 5, windowSeconds: 600 })).success) {
     return { error: "You have sent several messages in a short time. Please try again in a few minutes." };
+  }
+  if (!(await rateLimit(globalKey("contact"), { limit: 40, windowSeconds: 3600 })).success) {
+    // Loud on purpose: genuine visitors are now being turned away too.
+    console.error("[contact] site-wide limit of 40/hour reached; contact form is refusing messages");
+    return { error: GENERIC_ERROR };
   }
 
   const serviceId = process.env.EMAILJS_SERVICE_ID;
