@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { PauseIcon, PlayIcon } from "@radix-ui/react-icons";
 import { TestimonialCard } from "./testimonial-card";
 
 interface Testimonial {
@@ -14,6 +13,8 @@ interface Testimonial {
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const total = testimonials.length;
+  // Slides advance on their own; hovering, focusing or dragging pauses them.
+  // Reduced-motion users get no autoplay at all.
   const [autoplay, setAutoplay] = useState(true);
 
   useEffect(() => {
@@ -159,7 +160,6 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
               className="flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-secondary"
             ><span aria-hidden className={`h-2 rounded-full transition-colors ${i === current ? "w-5 bg-primary" : "w-2 bg-border"}`} /></button>
           ))}
-          <button type="button" aria-label={autoplay ? "Pause testimonials" : "Play testimonials"} onClick={() => setAutoplay(value => !value)} className="flex size-11 items-center justify-center rounded-lg text-primary transition-colors hover:bg-secondary">{autoplay ? <PauseIcon aria-hidden /> : <PlayIcon aria-hidden />}</button>
         </div>
       )}
     </div>
