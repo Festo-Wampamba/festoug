@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { ReviewCard } from "@/components/reviews/review-card";
 import { ProductReviewForm } from "./product-review-form";
-import { sanitizeHtml } from "@/lib/sanitize";
+import { sanitizeHtml, stripHtml } from "@/lib/sanitize";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +17,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const p = await withRetry((db) => db.query.products.findFirst({
     where: eq(products.slug, slug)
   }));
-  if (!p) return { title: "Product Not Found" };
+  if (!p || !p.isActive) return { title: "Product Not Found" };
   return {
     title: `${p.name} | FestoUG Store`,
-    description: p.description || `Purchase ${p.name} digital download.`,
+    description: (p.description && stripHtml(p.description).slice(0, 160)) || `Purchase ${p.name} digital download.`,
   };
 }
 

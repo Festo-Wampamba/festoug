@@ -18,7 +18,7 @@ export async function generateMetadata({
   const project = await withRetry((db) =>
     db.query.projects.findFirst({ where: eq(projects.slug, slug) })
   );
-  if (!project) return { title: "Project Not Found" };
+  if (!project || !project.isActive) return { title: "Project Not Found" };
   return {
     title: `${project.title} | Portfolio`,
     description: project.description?.slice(0, 160) || `${project.title} — ${project.category}`,

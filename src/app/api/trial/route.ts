@@ -4,11 +4,12 @@ import { db } from "@/lib/db";
 import { maintenanceTrials, subscriptions } from "@/lib/db/schema";
 import { eq, and, or } from "drizzle-orm";
 import { sendTrialWelcomeEmail } from "@/lib/email";
+import { isHttpUrl } from "@/lib/sanitize";
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id || !session.user.email || !session.user.name) {
+    if (!session?.user?.id || !session.user.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -21,6 +22,9 @@ export async function POST(req: Request) {
 
     if (!plan || !billingCycle || !websiteUrl) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+    if (typeof websiteUrl !== "string" || websiteUrl.length > 2048 || !isHttpUrl(websiteUrl)) {
+      return NextResponse.json({ error: "Please enter a valid website address starting with http:// or https://." }, { status: 400 });
     }
     if (!["BASIC", "PRO"].includes(plan)) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
@@ -76,7 +80,7 @@ export async function POST(req: Request) {
 
     await sendTrialWelcomeEmail(
       session.user.email,
-      session.user.name,
+      session.user.name || "there",
       plan,
       trialEndsAt
     );

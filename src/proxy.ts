@@ -114,5 +114,13 @@ export default async function proxy(req: NextRequest) {
 
 export const config = {
   // Proxy always runs on the Node.js runtime (required for auth.api.getSession).
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|images|icons).*)"],
+  // Only the paths this gate actually acts on. Public pages no longer pay for a
+  // session lookup (a database round trip) on every request.
+  matcher: [
+    "/dashboard/:path*",
+    "/trial/:path*",
+    "/admin/:path*",
+    "/auth/:path*",
+    "/api/((?!auth/).*)",
+  ],
 };
