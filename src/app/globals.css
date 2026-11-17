@@ -347,6 +347,10 @@
 @container (max-width: 14rem) {
   .skill-grid { grid-template-columns: minmax(0, 1fr); }
 }
+/* Pause/play for auto-moving content (WCAG 2.2.2): a quiet glass circle with a
+   full 44px touch target. */
+.slider-control { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 9999px; color: var(--primary); }
+.slider-control:hover { color: var(--foreground); }
 .client-marquee-window {
   container-type: inline-size;
   /* Logos fade in and out at the edges instead of being cut off by a frame. */

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { PauseIcon, PlayIcon } from "@radix-ui/react-icons";
 
 const logos = [
   { src: "/images/client-campus-homes.png", alt: "CampusHomes", width: 170, height: 56 },
@@ -26,6 +27,7 @@ function Logo({ logo }: { logo: typeof logos[number] }) {
 }
 
 export function ClientLogos() {
+  const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(true);
 
   useEffect(() => {
@@ -39,12 +41,13 @@ export function ClientLogos() {
   return (
     <div role="region" aria-label="Clients and collaborators" className="client-marquee">
       {/* No frame: the logos slide in their own space and fade in/out at the edges.
-          Hovering or focusing the strip pauses it (see .client-marquee in globals.css). */}
+          Hovering pauses it (see .client-marquee in globals.css); the button below
+          is the pause control WCAG 2.2.2 requires for touch and keyboard users. */}
       <div className="client-marquee-window overflow-hidden">
         {reducedMotion ? (
           <div className="grid grid-cols-2">{logos.map(logo => <Logo key={logo.src} logo={logo} />)}</div>
         ) : (
-          <div className="client-marquee-track">
+          <div className="client-marquee-track" style={{ animationPlayState: paused ? "paused" : "running" }}>
             {[false, true].map(copy => (
               <div key={String(copy)} className="client-marquee-set" aria-hidden={copy || undefined}>
                 {logos.map(logo => <Logo key={logo.src} logo={logo} />)}
@@ -53,6 +56,13 @@ export function ClientLogos() {
           </div>
         )}
       </div>
+      {!reducedMotion && (
+        <div className="mt-2 flex justify-end">
+          <button type="button" className="slider-control liquid-glass liquid-press" onClick={() => setPaused(value => !value)} aria-label={paused ? "Play client logos" : "Pause client logos"}>
+            {paused ? <PlayIcon aria-hidden /> : <PauseIcon aria-hidden />}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
