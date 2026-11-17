@@ -21,6 +21,13 @@ interface LsProduct {
 
 const CATEGORIES = ["SCRIPT", "TEMPLATE", "PLUGIN", "SERVICE", "OTHER"];
 
+async function requestProducts(): Promise<{ lsProducts: LsProduct[]; lsVariants: LsVariant[] }> {
+  const res = await fetch("/api/admin/ls-products");
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to load");
+  return data;
+}
+
 export function LsSyncClient() {
   const [lsProducts, setLsProducts] = useState<LsProduct[]>([]);
   const [lsVariants, setLsVariants] = useState<LsVariant[]>([]);
@@ -29,23 +36,25 @@ export function LsSyncClient() {
   const [importing, setImporting] = useState<string | null>(null);
   const [categories, setCategories] = useState<Record<string, string>>({});
 
+  // State is only set inside promise callbacks, so this is safe to call from the mount effect.
+  function applyProducts(request: ReturnType<typeof requestProducts>) {
+    return request
+      .then((data) => {
+        setLsProducts(data.lsProducts);
+        setLsVariants(data.lsVariants);
+      })
+      .catch((e) => setError(e instanceof Error ? e.message : "Unknown error"))
+      .finally(() => setLoading(false));
+  }
+
   async function load() {
     setLoading(true);
     setError(null);
-    try {
-      const res = await fetch("/api/admin/ls-products");
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to load");
-      setLsProducts(data.lsProducts);
-      setLsVariants(data.lsVariants);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
+    await applyProducts(requestProducts());
   }
 
-  useEffect(() => { load(); }, []);
+  // Initial state is already loading/no-error, so mount only needs the fetch.
+  useEffect(() => { applyProducts(requestProducts()); }, []);
 
   async function importVariant(variant: LsVariant) {
     setImporting(variant.id);

@@ -136,6 +136,7 @@ export function BlogForm({ initialData }: BlogFormProps) {
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="w-full sm:w-64 aspect-video bg-eerie-black-1 border border-jet border-dashed relative rounded-xl overflow-hidden flex items-center justify-center">
             {coverImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
               <img src={coverImageUrl} alt="Cover Preview" className="w-full h-full object-cover" />
             ) : (
               <div className="text-light-gray-70 text-xs flex flex-col items-center gap-2">

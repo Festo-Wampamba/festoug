@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowRightIcon,
@@ -24,21 +24,20 @@ const TIMELINE_OPTIONS = [
   { value: "Flexible timeline", label: "Flexible timeline" },
 ];
 
+const PLAN_BY_TIER: Record<string, string> = {
+  lite: "Lite Plan ($299)",
+  premium: "Premium Plan ($550)",
+  pro: "Pro Plan ($699)",
+};
+
 export function ScopingForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [selectedPlan, setSelectedPlan] = useState<string>("Premium Plan ($550)");
+  const [selectedPlan, setSelectedPlan] = useState<string>(() => PLAN_BY_TIER[searchParams.get("tier") ?? ""] ?? "Premium Plan ($550)");
   const [selectedTimeline, setSelectedTimeline] = useState<string>("As soon as possible (Urgent)");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const tier = searchParams.get("tier");
-    if (tier === "lite") setSelectedPlan("Lite Plan ($299)");
-    else if (tier === "premium") setSelectedPlan("Premium Plan ($550)");
-    else if (tier === "pro") setSelectedPlan("Pro Plan ($699)");
-  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

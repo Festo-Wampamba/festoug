@@ -75,6 +75,7 @@ export default async function AdminTestimonialsPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {t.avatar && (
+                          // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
                           <img
                             src={t.avatar}
                             alt={t.name}

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { products } from "@/lib/db/schema";
+import { orders, products } from "@/lib/db/schema";
 import { eq, and, ne } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
@@ -72,6 +72,17 @@ export async function DELETE(
   }
 
   const { id } = await params;
+
+  // Orders reference products (ON DELETE RESTRICT), so a sold product cannot be
+  // deleted without losing purchase history. Say so instead of failing with a 500.
+  const soldOrder = await db.query.orders.findFirst({ where: eq(orders.productId, id) });
+  if (soldOrder) {
+    return NextResponse.json(
+      { error: "This product has orders and cannot be deleted. Deactivate it instead." },
+      { status: 409 }
+    );
+  }
+
   await db.delete(products).where(eq(products.id, id));
   return NextResponse.json({ success: true });
 }

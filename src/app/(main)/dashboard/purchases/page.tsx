@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { withRetry } from "@/lib/db";
 import { orders, reviews } from "@/lib/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { Download, ExternalLink, Star, Pencil } from "lucide-react";
 import Link from "next/link";
 
@@ -56,6 +56,7 @@ export default async function PurchasesPage() {
                   {/* Product Thumbnail Fallback */}
                   <div className="w-20 h-20 rounded-xl bg-eerie-black-2 border border-jet flex items-center justify-center shrink-0">
                     {product?.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
                       <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover rounded-xl" />
                     ) : (
                       <span className="text-orange-yellow-crayola text-2xl font-bold">{product?.name.charAt(0)}</span>

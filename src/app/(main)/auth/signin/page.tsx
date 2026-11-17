@@ -63,7 +63,7 @@ function SignInForm() {
     });
 
     if (signInError) {
-      if (signInError.code === "EMAIL_NOT_VERIFIED" || signInError.status === 403) {
+      if (signInError.code === "EMAIL_NOT_VERIFIED") {
         setError("Please verify your email — we've sent you a fresh verification link.");
         await sendVerificationEmail({ email: parsed.data.email, callbackURL: callbackUrl }).catch(() => {});
       } else {

@@ -33,6 +33,7 @@ export function ReviewCard({
       <div className="flex items-start gap-4">
         <div className="w-10 h-10 rounded-full bg-eerie-black-2 border border-jet flex items-center justify-center shrink-0 overflow-hidden">
           {userImage ? (
+            // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
             <img src={userImage} alt={userName} className="w-full h-full object-cover" />
           ) : (
             <span className="text-orange-yellow-crayola font-bold text-sm">

@@ -1,38 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Mail, X, Loader2, CheckCircle } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 const DISMISS_KEY = "email-verify-dismissed";
 
+const subscribeNever = () => () => {};
+
 export function EmailVerifyBanner({ email }: { email: string }) {
-  const [visible, setVisible] = useState(false);
+  // False on the server and during hydration, so there is no SSR mismatch.
+  const notDismissedBefore = useSyncExternalStore(subscribeNever, () => !sessionStorage.getItem(DISMISS_KEY), () => false);
+  const [dismissed, setDismissed] = useState(false);
+  const visible = notDismissedBefore && !dismissed;
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Only show after hydration to avoid SSR mismatch
-    if (!sessionStorage.getItem(DISMISS_KEY)) {
-      setVisible(true);
-    }
-  }, []);
-
   const handleDismiss = () => {
     sessionStorage.setItem(DISMISS_KEY, "1");
-    setVisible(false);
+    setDismissed(true);
   };
 
   const handleResend = async () => {
     setSending(true);
     setError(null);
     try {
-      const res = await fetch("/api/auth/resend-verification", { method: "POST" });
-      const data = await res.json();
-      if (res.ok) {
-        setSent(true);
+      const { error: sendError } = await authClient.emailOtp.sendVerificationOtp({ email, type: "email-verification" });
+      if (sendError) {
+        setError(sendError.message || "Failed to send. Please try again.");
       } else {
-        setError(data.error || "Failed to send. Please try again.");
+        setSent(true);
       }
     } catch {
       setError("An unexpected error occurred.");

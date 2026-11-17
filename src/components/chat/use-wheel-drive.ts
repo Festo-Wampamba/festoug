@@ -6,10 +6,12 @@ export function useWheelDrive(wheelRef: RefObject<HTMLElement | null>, isOpen: b
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [soundLoading, setSoundLoading] = useState(false);
   const [soundError, setSoundError] = useState("");
+  const loadingRef = useRef(false);
   const audioRef = useRef<{ context: AudioContext; gain: GainNode; source: AudioBufferSourceNode | null } | null>(null);
 
   const toggleSound = async () => {
-    if (soundLoading) return;
+    // A ref, not state: a second tap before the next render must see the first one.
+    if (loadingRef.current) return;
     if (soundEnabled) {
       audioRef.current?.gain.gain.setTargetAtTime(0, audioRef.current.context.currentTime, 0.03);
       setSoundEnabled(false);
@@ -19,6 +21,7 @@ export function useWheelDrive(wheelRef: RefObject<HTMLElement | null>, isOpen: b
       setSoundError("Engine sound is unavailable in this browser.");
       return;
     }
+    loadingRef.current = true;
     setSoundLoading(true);
     setSoundError("");
     try {
@@ -51,6 +54,7 @@ export function useWheelDrive(wheelRef: RefObject<HTMLElement | null>, isOpen: b
       setSoundEnabled(false);
       setSoundError("Engine sound couldn't load. Please try again.");
     } finally {
+      loadingRef.current = false;
       setSoundLoading(false);
     }
   };

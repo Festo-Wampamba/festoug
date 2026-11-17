@@ -58,10 +58,7 @@ export const auth = betterAuth({
       verify: ({ hash, password }) => bcrypt.compare(password, hash),
     },
     sendResetPassword: async ({ user, url }) => {
-      // Embed email in the reset URL so the reset page can auto sign-in after reset
-      const resetUrl = new URL(url);
-      resetUrl.searchParams.set("email", user.email);
-      await sendPasswordResetEmail(user.email, resetUrl.toString());
+      await sendPasswordResetEmail(user.email, url);
     },
     resetPasswordTokenExpiresIn: 60 * 5, // 5 minutes
   },

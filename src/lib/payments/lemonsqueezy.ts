@@ -1,7 +1,6 @@
 import { 
   lemonSqueezySetup, 
   createCheckout, 
-  type Checkout,
 } from "@lemonsqueezy/lemonsqueezy.js";
 import crypto from "crypto";
 
@@ -77,7 +76,7 @@ export function verifyWebhookSignature(payload: string, signature: string): bool
 
   try {
     return crypto.timingSafeEqual(digest, signatureBuffer);
-  } catch (err) {
+  } catch {
     return false;
   }
 }

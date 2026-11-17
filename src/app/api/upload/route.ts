@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { cloudinary } from "@/lib/cloudinary";
+import { cloudinary, detectImageMime } from "@/lib/cloudinary";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 // SVG intentionally excluded — SVG can embed executable JavaScript.
@@ -10,33 +10,6 @@ const ALLOWED_TYPES = new Set([
   "image/gif",
   "image/webp",
 ]);
-
-/**
- * Detect image type from magic bytes. Returns the verified MIME type
- * or null if the file is not a recognized image. Prevents an uploader
- * from spoofing the Content-Type header.
- */
-function detectMimeFromBytes(buf: Buffer): string | null {
-  if (buf.length < 12) return null;
-  // JPEG: FF D8 FF
-  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
-  // PNG: 89 50 4E 47 0D 0A 1A 0A
-  if (
-    buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47 &&
-    buf[4] === 0x0d && buf[5] === 0x0a && buf[6] === 0x1a && buf[7] === 0x0a
-  ) return "image/png";
-  // GIF: 47 49 46 38 (7|9) 61
-  if (
-    buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38 &&
-    (buf[4] === 0x37 || buf[4] === 0x39) && buf[5] === 0x61
-  ) return "image/gif";
-  // WebP: "RIFF" .... "WEBP"
-  if (
-    buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
-    buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50
-  ) return "image/webp";
-  return null;
-}
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -72,7 +45,7 @@ export async function POST(req: Request) {
     // Verify the declared Content-Type matches the actual file bytes.
     // Prevents an attacker (or compromised admin) from uploading non-image
     // payloads with a forged Content-Type header.
-    const detectedType = detectMimeFromBytes(buffer);
+    const detectedType = detectImageMime(buffer);
     if (!detectedType || !ALLOWED_TYPES.has(detectedType)) {
       return NextResponse.json(
         { error: "File contents do not match a supported image format." },

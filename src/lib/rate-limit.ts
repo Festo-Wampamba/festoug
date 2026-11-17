@@ -1,69 +1,70 @@
+import { isIP } from "node:net";
+
+import { and, like, lt, sql } from "drizzle-orm";
+
+import { db } from "@/lib/db";
+import { rateLimits } from "@/lib/db/schema";
+
 /**
- * Simple in-memory rate limiter for API routes.
- * Uses a sliding window approach per IP address.
+ * Fixed-window rate limiter stored in Postgres (the same `rateLimit` table Better
+ * Auth uses), so counts are shared across every server instance and survive
+ * restarts. One atomic upsert per call — works on the neon-http driver.
+ * Keys are prefixed "app:" so they never collide with Better Auth's rows.
  */
-
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
-
-const store = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries every 60 seconds
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of store) {
-    if (now > entry.resetAt) store.delete(key);
-  }
-}, 60_000);
-
-interface RateLimitOptions {
-  /** Max requests allowed in the window */
-  limit: number;
-  /** Window duration in seconds */
-  windowSeconds: number;
-}
-
-interface RateLimitResult {
-  success: boolean;
-  remaining: number;
-  resetAt: number;
-}
-
-export function rateLimit(
+export async function rateLimit(
   identifier: string,
-  options: RateLimitOptions
-): RateLimitResult {
+  options: { limit: number; windowSeconds: number }
+): Promise<{ success: boolean }> {
+  // The window is part of the key so two limits on one identifier never share a row.
+  const key = `app:${identifier}:${options.windowSeconds}s`;
   const now = Date.now();
-  const entry = store.get(identifier);
+  const windowStart = now - options.windowSeconds * 1000;
 
-  if (!entry || now > entry.resetAt) {
-    // New window
-    store.set(identifier, {
-      count: 1,
-      resetAt: now + options.windowSeconds * 1000,
-    });
-    return { success: true, remaining: options.limit - 1, resetAt: now + options.windowSeconds * 1000 };
+  try {
+    const [row] = await db
+      .insert(rateLimits)
+      .values({ id: key, key, count: 1, lastRequest: now })
+      .onConflictDoUpdate({
+        target: rateLimits.id,
+        set: {
+          // lastRequest holds the start of the current window.
+          count: sql`case when ${rateLimits.lastRequest} < ${windowStart} then 1 else ${rateLimits.count} + 1 end`,
+          lastRequest: sql`case when ${rateLimits.lastRequest} < ${windowStart} then ${now} else ${rateLimits.lastRequest} end`,
+        },
+      })
+      .returning({ count: rateLimits.count });
+    return { success: (row?.count ?? 1) <= options.limit };
+  } catch (error) {
+    // Fail closed: these guard paid APIs and outbound email.
+    console.error("[rate-limit] database check failed:", error instanceof Error ? error.message : String(error));
+    return { success: false };
   }
-
-  if (entry.count >= options.limit) {
-    return { success: false, remaining: 0, resetAt: entry.resetAt };
-  }
-
-  entry.count++;
-  return { success: true, remaining: options.limit - entry.count, resetAt: entry.resetAt };
 }
 
-/** Extract client IP from request headers */
-export function getClientIp(req: Request & { ip?: string }): string {
-  // If running in an environment where req.ip is populated (e.g. Next.js Edge/Middleware)
-  if (req.ip) return req.ip;
-  // Fallback to proxy headers. Prioritize x-real-ip as it's typically set by the immediate proxy (e.g. Nginx, Vercel).
-  const realIp = req.headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
-  // Fallback to x-forwarded-for, but be aware it can be spoofed if not stripped by the proxy.
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return "unknown";
+/**
+ * Client IP for rate-limit keys. Trusted only because Vercel overwrites
+ * x-real-ip / x-forwarded-for with the real client address. If this app is
+ * moved behind another proxy (e.g. nginx), that proxy must overwrite both
+ * headers itself, or clients can pick their own key.
+ */
+export function getClientIp(source: Request | Headers): string {
+  const headers = source instanceof Headers ? source : source.headers;
+  const candidate =
+    headers.get("x-real-ip")?.trim() ||
+    headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+    "";
+  // Only a real address may become part of a key; anything else shares one bucket.
+  return isIP(candidate) ? candidate : "unknown";
+}
+
+/** Per-client key segment. Kept apart from site-wide keys so they can never collide. */
+export const clientKey = (scope: string, ip: string) => `${scope}:ip:${ip}`;
+/** Site-wide key segment. */
+export const globalKey = (scope: string) => `${scope}:global`;
+
+/** Delete this app's counters older than a day (the longest window is an hour). */
+export async function pruneRateLimits(): Promise<void> {
+  await db
+    .delete(rateLimits)
+    .where(and(like(rateLimits.id, "app:%"), lt(rateLimits.lastRequest, Date.now() - 24 * 60 * 60 * 1000)));
 }

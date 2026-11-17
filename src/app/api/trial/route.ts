@@ -4,11 +4,12 @@ import { db } from "@/lib/db";
 import { maintenanceTrials, subscriptions } from "@/lib/db/schema";
 import { eq, and, or } from "drizzle-orm";
 import { sendTrialWelcomeEmail } from "@/lib/email";
+import { isHttpUrl } from "@/lib/sanitize";
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id || !session.user.email || !session.user.name) {
+    if (!session?.user?.id || !session.user.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -21,6 +22,9 @@ export async function POST(req: Request) {
 
     if (!plan || !billingCycle || !websiteUrl) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+    if (typeof websiteUrl !== "string" || websiteUrl.length > 2048 || !isHttpUrl(websiteUrl)) {
+      return NextResponse.json({ error: "Please enter a valid website address starting with http:// or https://." }, { status: 400 });
     }
     if (!["BASIC", "PRO"].includes(plan)) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
@@ -61,22 +65,32 @@ export async function POST(req: Request) {
     const now = new Date();
     const trialEndsAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    const [trial] = await db
-      .insert(maintenanceTrials)
-      .values({
-        userId:        session.user.id,
-        plan,
-        billingCycle,
-        websiteUrl,
-        status:        "ACTIVE",
-        trialStartsAt: now,
-        trialEndsAt,
-      })
-      .returning();
+    let trial: typeof maintenanceTrials.$inferSelect;
+    try {
+      [trial] = await db
+        .insert(maintenanceTrials)
+        .values({
+          userId:        session.user.id,
+          plan,
+          billingCycle,
+          websiteUrl,
+          status:        "ACTIVE",
+          trialStartsAt: now,
+          trialEndsAt,
+        })
+        .returning();
+    } catch (error) {
+      // trial_one_active_per_user: a concurrent request already started a trial.
+      if ((error as { code?: string; cause?: { code?: string } }).code === "23505" ||
+          (error as { cause?: { code?: string } }).cause?.code === "23505") {
+        return NextResponse.json({ error: "You already have an active trial or subscription." }, { status: 409 });
+      }
+      throw error;
+    }
 
     await sendTrialWelcomeEmail(
       session.user.email,
-      session.user.name,
+      session.user.name || "there",
       plan,
       trialEndsAt
     );

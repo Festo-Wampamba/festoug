@@ -1,12 +1,39 @@
 "use server";
 
-export async function sendEmail(formData: FormData) {
-  const fullname = formData.get("fullname");
-  const email = formData.get("email");
-  const message = formData.get("message");
+import { headers } from "next/headers";
+import { z } from "zod";
+import { clientKey, getClientIp, globalKey, rateLimit } from "@/lib/rate-limit";
 
-  if (!fullname || !email || !message) {
-    return { error: "All fields are required." };
+const contactSchema = z.object({
+  fullname: z.string().trim().min(1, "Please enter your name.").max(100, "That name is too long."),
+  email: z.string().trim().email("Please enter a valid email address.").max(254),
+  message: z.string().trim().min(1, "Please write a message.").max(5000, "That message is too long (5,000 characters max)."),
+});
+
+const GENERIC_ERROR = "Your message could not be sent. Please try again, or email me directly.";
+
+export async function sendEmail(formData: FormData) {
+  const parsed = contactSchema.safeParse({
+    fullname: formData.get("fullname"),
+    email: formData.get("email"),
+    message: formData.get("message"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  // Per-visitor limit plus a site-wide ceiling that protects the EmailJS quota
+  // even if a sender rotates IPs.
+  const ip = getClientIp(await headers());
+  // Sequential on purpose: a sender who is already over their own limit must
+  // not also use up the shared ceiling.
+  if (!(await rateLimit(clientKey("contact", ip), { limit: 5, windowSeconds: 600 })).success) {
+    return { error: "You have sent several messages in a short time. Please try again in a few minutes." };
+  }
+  if (!(await rateLimit(globalKey("contact"), { limit: 40, windowSeconds: 3600 })).success) {
+    // Loud on purpose: genuine visitors are now being turned away too.
+    console.error("[contact] site-wide limit of 40/hour reached; contact form is refusing messages");
+    return { error: GENERIC_ERROR };
   }
 
   const serviceId = process.env.EMAILJS_SERVICE_ID;
@@ -15,35 +42,36 @@ export async function sendEmail(formData: FormData) {
   const accessToken = process.env.EMAILJS_PRIVATE_KEY;
 
   if (!serviceId || !templateId || !userId) {
-    return { error: "Email service is not configured on the server." };
+    console.error("[contact] EmailJS is not configured (EMAILJS_SERVICE_ID / TEMPLATE_ID / USER_ID).");
+    return { error: GENERIC_ERROR };
   }
 
   try {
     const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         service_id: serviceId,
         template_id: templateId,
         user_id: userId,
-        accessToken: accessToken,
+        accessToken,
         template_params: {
-          from_name: fullname,
-          from_email: email,
-          message: message,
+          from_name: parsed.data.fullname,
+          from_email: parsed.data.email,
+          message: parsed.data.message,
         },
       }),
     });
 
     if (!response.ok) {
-      const text = await response.text();
-      return { error: `Failed to send email: ${text}` };
+      // Provider detail stays in the server log; the visitor gets a plain message.
+      console.error("[contact] EmailJS rejected the message:", response.status, await response.text());
+      return { error: GENERIC_ERROR };
     }
 
     return { success: true };
   } catch (error) {
-    return { error: (error instanceof Error ? error.message : String(error)) || "An unexpected error occurred." };
+    console.error("[contact] EmailJS request failed:", error instanceof Error ? error.message : String(error));
+    return { error: GENERIC_ERROR };
   }
 }

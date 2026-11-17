@@ -68,6 +68,7 @@ export function SettingsAvatarSection({
       <div className="relative">
         <div className="w-20 h-20 rounded-full bg-jet flex justify-center items-center overflow-hidden border border-jet">
           {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
             <img src={preview} alt="Avatar" className="w-full h-full object-cover" />
           ) : (
             <span className="text-3xl font-bold text-orange-yellow-crayola">

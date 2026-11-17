@@ -2,9 +2,10 @@ import { withRetry } from "@/lib/db";
 import { maintenanceTrials, subscriptions } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
-import { ChevronLeft, Clock, CheckCircle, XCircle } from "lucide-react";
+import { ChevronLeft, Clock, CheckCircle } from "lucide-react";
 import { AdminNotifyButton } from "@/components/admin/admin-notify-button";
 import { CustomerActions } from "@/components/admin/toggle-customer";
+import { isHttpUrl } from "@/lib/sanitize";
 
 export const metadata = { title: "Admin | Subscriptions & Trials" };
 export const dynamic = "force-dynamic";
@@ -181,7 +182,7 @@ export default async function AdminSubscriptionsPage() {
                         </td>
                         <td className="px-5 py-4">
                           <a
-                            href={trial.websiteUrl}
+                            href={isHttpUrl(trial.websiteUrl) ? trial.websiteUrl : undefined}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-orange-yellow-crayola hover:underline text-xs truncate max-w-[160px] block"

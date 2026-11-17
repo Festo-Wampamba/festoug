@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
-import { verifyWebhookSignature } from "@/lib/payments/lemonsqueezy";
+import { getSubscriptionVariantId, verifyWebhookSignature } from "@/lib/payments/lemonsqueezy";
 import { db } from "@/lib/db";
 import { orders, licenses, products, users, subscriptions, maintenanceTrials } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import crypto from "crypto";
+
+// Payload values are attacker-influenced. Strip every control and line-separator
+// character (not just CR/LF — U+0085, U+2028 and U+2029 also break lines in some
+// log viewers) and cap the length, so they cannot forge or flood log entries.
+const forLog = (value: unknown) =>
+  String(value).replace(/\r|\n/g, "").replace(/[\p{Cc}\p{Zl}\p{Zp}]+/gu, " ").slice(0, 200);
 
 export async function POST(req: Request) {
   try {
@@ -31,14 +37,11 @@ export async function POST(req: Request) {
       const currency = orderData.currency.toUpperCase();
 
       // Idempotency: LS retries webhooks and can deliver the same event more than
-      // once. Skip if this order is already recorded — prevents duplicate rows and,
-      // critically, duplicate license issuance for a single payment.
-      const alreadyProcessed = await db.query.orders.findFirst({
+      // once. An existing order is reused, never inserted twice — but we still
+      // fall through, so a retry can issue the license a failed first attempt missed.
+      const existingOrder = await db.query.orders.findFirst({
         where: eq(orders.externalOrderId, externalOrderId),
       });
-      if (alreadyProcessed) {
-        return NextResponse.json({ message: "Order already processed" }, { status: 200 });
-      }
 
       // Look up user if passed in custom data
       let userId = null;
@@ -55,7 +58,7 @@ export async function POST(req: Request) {
       if (!productSlug) {
         // Order came from outside the site checkout (e.g. direct LS link) — no product slug attached.
         // Log it for manual reconciliation and acknowledge so LS doesn't retry endlessly.
-        console.warn(`[WEBHOOK] order_created (ID: ${externalOrderId}) has no product_slug in custom_data. Skipping order record. Custom data:`, JSON.stringify(customData));
+        console.warn("[WEBHOOK] order_created (ID: %s) has no product_slug in custom_data. Skipping order record. Custom data: %s", forLog(externalOrderId), forLog(JSON.stringify(customData)));
         return NextResponse.json({ message: "Order acknowledged (no product_slug — skipped)" }, { status: 200 });
       }
 
@@ -66,35 +69,93 @@ export async function POST(req: Request) {
       if (!product) {
         // Product slug sent but not found in DB. Log and acknowledge — returning 500 would
         // cause LS to retry indefinitely; 200 lets us handle it via manual reconciliation.
-        console.error(`[WEBHOOK] order_created: product slug '${productSlug}' not found in DB. Order ID: ${externalOrderId}. Add the product via /admin/products/new or /admin/ls-sync, then replay this order.`);
+        console.error(`[WEBHOOK] order_created: product slug '${forLog(productSlug)}' not found in DB. Order ID: ${forLog(externalOrderId)}. Add the product via /admin/products/new or /admin/ls-sync, then replay this order.`);
         return NextResponse.json({ message: "Order acknowledged (product not in DB — skipped)" }, { status: 200 });
       }
 
-      // Insert Order
-      const [newOrder] = await db.insert(orders).values({
-        userId,
-        productId: product.id,
-        gateway: "LEMONSQUEEZY",
-        externalOrderId,
-        status: "COMPLETED",
-        amount,
-        currency,
-      }).returning();
+      // custom_data is buyer-controllable (LS buy links accept it as URL params), so
+      // product_slug alone proves nothing. Only fulfil when the variant LS actually
+      // charged for is this product's variant — otherwise paying for the cheapest
+      // variant with a forged slug would unlock any product.
+      const paidVariantId = orderData.first_order_item?.variant_id;
+      if (!product.variantId || String(paidVariantId) !== product.variantId) {
+        console.error(`[WEBHOOK] order_created: variant mismatch for order ${forLog(externalOrderId)}. Paid variant '${forLog(paidVariantId)}', but product '${forLog(productSlug)}' expects '${product.variantId}'. Not fulfilled — reconcile manually.`);
+        return NextResponse.json({ message: "Order acknowledged (variant mismatch — not fulfilled)" }, { status: 200 });
+      }
 
-      // If it's a digital scalable product (Script/Template), issue a License
-      if (product.category === "SCRIPT" || product.category === "TEMPLATE" || product.category === "PLUGIN") {
-        const licenseKey = crypto.randomBytes(16).toString("hex").toUpperCase();
-        
-        if (userId) {
-          await db.insert(licenses).values({
-            orderId: newOrder.id,
+      const order =
+        existingOrder ??
+        (
+          await db.insert(orders).values({
             userId,
             productId: product.id,
-            licenseKey,
+            gateway: "LEMONSQUEEZY",
+            externalOrderId,
+            status: "COMPLETED",
+            amount,
+            currency,
+          }).returning()
+        )[0];
+
+      // Digital products (script / template / plugin) get exactly one license per order.
+      const isLicensed = product.category === "SCRIPT" || product.category === "TEMPLATE" || product.category === "PLUGIN";
+      if (isLicensed && userId) {
+        const existingLicense = await db.query.licenses.findFirst({
+          where: eq(licenses.orderId, order.id),
+        });
+        if (!existingLicense) {
+          await db.insert(licenses).values({
+            orderId: order.id,
+            userId,
+            productId: product.id,
+            licenseKey: crypto.randomBytes(16).toString("hex").toUpperCase(),
             isActive: true,
           });
         }
       }
+    }
+
+    // A refund takes the purchase back: mark the order and switch off its license.
+    if (eventName === "order_refunded") {
+      const [refunded] = await db
+        .update(orders)
+        .set({ status: "REFUNDED" })
+        .where(eq(orders.externalOrderId, payload.data.id.toString()))
+        .returning({ id: orders.id });
+      if (refunded) {
+        await db.update(licenses).set({ isActive: false }).where(eq(licenses.orderId, refunded.id));
+      }
+    }
+
+    // Keep our subscription row in step with Lemon Squeezy after creation.
+    if (
+      eventName === "subscription_updated" ||
+      eventName === "subscription_cancelled" ||
+      eventName === "subscription_resumed" ||
+      eventName === "subscription_expired"
+    ) {
+      const subData = payload.data.attributes;
+      // Allowlist, failing closed: only active / on_trial grant access. "cancelled"
+      // keeps access until ends_at (LS sends "expired" after). paused, past_due,
+      // unpaid, expired and any status we don't recognise lose access; LS sends
+      // another update with "active" if payment recovers.
+      const status =
+        subData.status === "active" || subData.status === "on_trial"
+          ? ("ACTIVE" as const)
+          : subData.status === "cancelled"
+          ? ("CANCELLED" as const)
+          : ("EXPIRED" as const);
+      const periodEnd = subData.ends_at ?? subData.renews_at;
+
+      await db
+        .update(subscriptions)
+        .set({
+          status,
+          ...(status === "CANCELLED" ? { cancelledAt: new Date() } : {}),
+          ...(status === "ACTIVE" ? { cancelledAt: null } : {}),
+          ...(periodEnd ? { currentPeriodEnd: new Date(periodEnd) } : {}),
+        })
+        .where(eq(subscriptions.lsSubscriptionId, payload.data.id.toString()));
     }
 
     if (eventName === "subscription_created") {
@@ -107,7 +168,7 @@ export async function POST(req: Request) {
       const billingCycle = customData.billing_cycle as "MONTHLY" | "ANNUAL" | undefined;
 
       if (!userId || !trialId || !plan || !billingCycle) {
-        console.error("[WEBHOOK] subscription_created: missing custom_data fields", customData);
+        console.error("[WEBHOOK] subscription_created: missing custom_data fields", forLog(JSON.stringify(customData)));
         return NextResponse.json({ error: "Missing custom data" }, { status: 422 });
       }
 
@@ -122,6 +183,23 @@ export async function POST(req: Request) {
       }
 
       const lsVariantId      = subData.variant_id?.toString() || "";
+
+      // Same rule as orders: plan, user_id and trial_id arrive in buyer-controllable
+      // custom_data. Only activate when LS charged the variant for the claimed plan
+      // and the trial really belongs to that user.
+      let expectedVariantId: string | undefined;
+      try {
+        expectedVariantId = getSubscriptionVariantId(plan, billingCycle as "ANNUAL");
+      } catch {
+        expectedVariantId = undefined; // unknown plan / billing cycle combination
+      }
+      const ownTrial = await db.query.maintenanceTrials.findFirst({
+        where: and(eq(maintenanceTrials.id, trialId), eq(maintenanceTrials.userId, userId)),
+      });
+      if (!expectedVariantId || lsVariantId !== expectedVariantId || !ownTrial) {
+        console.error(`[WEBHOOK] subscription_created: rejected subscription ${forLog(lsSubscriptionId)}. Paid variant '${forLog(lsVariantId)}', claimed plan '${forLog(plan)}/${forLog(billingCycle)}' expects '${expectedVariantId}', trial owned by user: ${!!ownTrial}. Not activated — reconcile manually.`);
+        return NextResponse.json({ message: "Subscription acknowledged (variant or trial mismatch — not activated)" }, { status: 200 });
+      }
       const renewsAt         = subData.renews_at
         ? new Date(subData.renews_at)
         : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);

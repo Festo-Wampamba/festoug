@@ -19,21 +19,18 @@ export default async function AdminLayout({
 
   return (
     <ToastProvider>
-      <div className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 xl:py-12 animate-in fade-in duration-500 min-h-dvh">
-        {/* Admin Banner */}
-        <header className="mb-6 sm:mb-8 flex items-center gap-2 sm:gap-3">
-          <div className="bg-orange-yellow-crayola/10 border border-orange-yellow-crayola/20 p-2 sm:p-2.5 rounded-xl shrink-0">
-            <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-orange-yellow-crayola" />
+      <div className="mx-auto min-h-dvh max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8 xl:py-10">
+        <header className="mb-6 flex items-center gap-3 sm:mb-8">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Shield className="size-5" aria-hidden />
           </div>
           <div className="min-w-0">
-            <h1 className="text-white-2 text-lg sm:text-xl md:text-2xl font-bold truncate">Admin Dashboard</h1>
-            <p className="text-light-gray-70 text-[10px] sm:text-xs truncate">
-              Welcome, {session.user.name} · {session.user.role}
-            </p>
+            <h1 className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl">Admin</h1>
+            <p className="truncate text-sm text-muted-foreground">Signed in as {session.user.name}</p>
           </div>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
+        <div className="flex flex-col gap-5 lg:flex-row lg:gap-8">
           <AdminNav />
 
           <div className="flex-1 min-w-0">

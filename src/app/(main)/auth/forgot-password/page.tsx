@@ -96,7 +96,8 @@ export default function ForgotPasswordPage() {
     setError(null);
     setIsLoading("otp-send");
     try {
-      await authClient.emailOtp.requestPasswordReset({ email: step.email });
+      const { error: resendErr } = await authClient.emailOtp.requestPasswordReset({ email: step.email });
+      if (resendErr) setError(resendErr.message || "Failed to resend code.");
     } catch {
       setError("Failed to resend code.");
     } finally {

@@ -18,6 +18,7 @@ export function DeleteAccountButton() {
         throw new Error(data.error || "Failed to delete account");
       }
       await signOut();
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- full reload clears the cached session after sign-out
       window.location.href = "/";
     } catch (err) {
       alert(err instanceof Error ? err.message : String(err));

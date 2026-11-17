@@ -84,7 +84,7 @@ export function TiptapEditor({ content = "", onChange, placeholder = "Start writ
       
       // Insert the image at the current cursor position
       editor.chain().focus().setImage({ src: url }).run();
-    } catch (err) {
+    } catch {
       alert("Failed to upload inline image.");
     } finally {
       setUploading(false);

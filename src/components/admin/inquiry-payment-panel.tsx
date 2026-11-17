@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DollarSign, Plus, Loader2, Clock } from "lucide-react";
+import { useToast } from "@/components/ui/toast-provider";
 
 interface PaymentLog {
   id: string;
@@ -14,7 +15,6 @@ interface PaymentLog {
 interface Props {
   id: string;
   currentPaymentStatus: string;
-  currentPaymentNote?: string | null;
 }
 
 const PAYMENT_STATUSES = [
@@ -30,7 +30,7 @@ const EVENT_COLORS: Record<string, string> = {
   STATUS_CHANGE: "text-light-gray-70",
 };
 
-export function InquiryPaymentPanel({ id, currentPaymentStatus, currentPaymentNote }: Props) {
+export function InquiryPaymentPanel({ id, currentPaymentStatus }: Props) {
   const [paymentStatus, setPaymentStatus] = useState(currentPaymentStatus);
   const [logs, setLogs] = useState<PaymentLog[]>([]);
   const [logsLoaded, setLogsLoaded] = useState(false);
@@ -40,26 +40,33 @@ export function InquiryPaymentPanel({ id, currentPaymentStatus, currentPaymentNo
   const [newAmount, setNewAmount] = useState("");
   const [newEvent, setNewEvent] = useState("NOTE");
   const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
 
   async function loadLogs() {
     if (logsLoaded) return;
-    const res = await fetch(`/api/admin/inquiries/${id}/logs`);
-    const data = await res.json();
-    setLogs(data);
-    setLogsLoaded(true);
+    try {
+      const res = await fetch(`/api/admin/inquiries/${id}/logs`);
+      if (!res.ok) throw new Error();
+      setLogs(await res.json());
+      setLogsLoaded(true);
+    } catch {
+      toast.error("Could not load the payment history.");
+    }
   }
 
   async function updatePaymentStatus(next: string) {
     if (next === paymentStatus) return;
     setSaving(true);
     try {
-      await fetch(`/api/admin/inquiries/${id}`, {
+      const res = await fetch(`/api/admin/inquiries/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentStatus: next }),
       });
+      if (!res.ok) throw new Error();
+      setPaymentStatus(next);
       // Auto-log the status change
-      await fetch(`/api/admin/inquiries/${id}/logs`, {
+      const logRes = await fetch(`/api/admin/inquiries/${id}/logs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,8 +74,10 @@ export function InquiryPaymentPanel({ id, currentPaymentStatus, currentPaymentNo
           note: `Payment status changed to ${next.replace("_", " ")}`,
         }),
       });
-      setPaymentStatus(next);
+      if (!logRes.ok) toast.error("Status saved, but the history entry was not recorded.");
       setLogsLoaded(false); // refresh logs next open
+    } catch {
+      toast.error("Could not update the payment status. Nothing was changed.");
     } finally {
       setSaving(false);
     }
@@ -83,12 +92,15 @@ export function InquiryPaymentPanel({ id, currentPaymentStatus, currentPaymentNo
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ eventType: newEvent, amount: newAmount.trim() || null, note: newNote.trim() }),
       });
+      if (!res.ok) throw new Error();
       const log = await res.json();
       setLogs((prev) => [...prev, log]);
       setLogsLoaded(true);
       setNewNote("");
       setNewAmount("");
       setShowAddNote(false);
+    } catch {
+      toast.error("Could not save the note. Please try again.");
     } finally {
       setSaving(false);
     }

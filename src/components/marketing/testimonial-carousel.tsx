@@ -79,7 +79,10 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
   const onTouchEnd   = (e: React.TouchEvent) => {
     if (dragStartX.current === null) return;
     const diff = dragStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) diff > 0 ? goNext() : goPrev();
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) goNext();
+      else goPrev();
+    }
     dragStartX.current = null;
     resume();
   };
@@ -88,7 +91,10 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
   const onMouseUp       = (e: React.MouseEvent) => {
     if (dragStartX.current === null) return;
     const diff = dragStartX.current - e.clientX;
-    if (Math.abs(diff) > 40) diff > 0 ? goNext() : goPrev();
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) goNext();
+      else goPrev();
+    }
     dragStartX.current = null;
     resume();
   };

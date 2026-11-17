@@ -3,7 +3,7 @@ import { streamText, type UIMessage, convertToModelMessages } from "ai";
 import { withRetry } from "@/lib/db";
 import { products, services, chatMessages } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { clientKey, getClientIp, globalKey, rateLimit } from "@/lib/rate-limit";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -12,24 +12,17 @@ export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
-    // Rate limit: 20 chat messages per IP per minute
-    let ip: string;
-    try {
-      ip = getClientIp(req);
-    } catch {
-      ip = "unknown";
-    }
+    const busy = () =>
+      new Response(
+        JSON.stringify({ error: "The assistant is busy right now. Please try again in a few minutes." }),
+        { status: 429, headers: { "Content-Type": "application/json" } }
+      );
 
-    try {
-      const limiter = rateLimit(`chat:${ip}`, { limit: 20, windowSeconds: 60 });
-      if (!limiter.success) {
-        return new Response(
-          JSON.stringify({ error: "Too many requests. Please slow down." }),
-          { status: 429, headers: { "Content-Type": "application/json" } }
-        );
-      }
-    } catch (e) {
-      console.warn("Rate limiter error, allowing request:", e);
+    // Per-visitor limit first; the site-wide ceiling is only charged further
+    // down, for requests that pass this and the size checks.
+    const ip = getClientIp(req);
+    if (!(await rateLimit(clientKey("chat", ip), { limit: 20, windowSeconds: 60 })).success) {
+      return busy();
     }
 
     let body: { messages?: UIMessage[] };
@@ -51,9 +44,41 @@ export async function POST(req: Request) {
       );
     }
 
-    // Cap conversation length to prevent abuse
+    // This endpoint is public and every request is billed to the model provider,
+    // so bound what a client can send: only user/assistant turns (a client-supplied
+    // "system" turn could override the prompt), text parts only, and capped sizes.
     const MAX_MESSAGES = 50;
-    const trimmedMessages = messages.slice(-MAX_MESSAGES);
+    const MAX_USER_MESSAGE_CHARS = 4_000;
+    const MAX_TOTAL_CHARS = 40_000;
+
+    const trimmedMessages = messages
+      .filter((m) => m && (m.role === "user" || m.role === "assistant") && Array.isArray(m.parts))
+      .map((m) => ({ ...m, parts: m.parts.filter((part) => part.type === "text") }))
+      .slice(-MAX_MESSAGES);
+
+    const textLength = (m: UIMessage) =>
+      m.parts.reduce((total, part) => total + (part.type === "text" ? part.text.length : 0), 0);
+    const totalChars = trimmedMessages.reduce((total, m) => total + textLength(m), 0);
+    const hasOversizedUserMessage = trimmedMessages.some(
+      (m) => m.role === "user" && textLength(m) > MAX_USER_MESSAGE_CHARS
+    );
+
+    if (trimmedMessages.length === 0 || hasOversizedUserMessage || totalChars > MAX_TOTAL_CHARS) {
+      return new Response(
+        JSON.stringify({ error: "That message is too long. Please shorten it and try again." }),
+        { status: 413, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Site-wide ceiling so rotating IPs cannot run up model costs. It is a hard
+    // stop by design: a busy assistant beats an unbounded bill.
+    // ponytail: tune CHAT_GLOBAL_PER_HOUR to real traffic.
+    const CHAT_GLOBAL_PER_HOUR = 300;
+    if (!(await rateLimit(globalKey("chat"), { limit: CHAT_GLOBAL_PER_HOUR, windowSeconds: 3600 })).success) {
+      // Loud on purpose: every visitor is now being turned away.
+      console.error(`[chat] site-wide limit of ${CHAT_GLOBAL_PER_HOUR}/hour reached; assistant is refusing requests`);
+      return busy();
+    }
 
     // Check auth session for registered user memory
     let userId: string | null = null;
@@ -216,10 +241,10 @@ If the user needs human support: direct them to festotechug@gmail.com
 
     const result = streamText({
       model: openrouter.chat("meta-llama/llama-4-maverick"),
-      system: systemPrompt,
+      instructions: systemPrompt,
       messages: modelMessages,
       temperature: 0.7,
-      onFinish: async ({ text }) => {
+      onEnd: async ({ text }) => {
         // Persist conversation for registered users
         if (userId && lastUserText) {
           try {

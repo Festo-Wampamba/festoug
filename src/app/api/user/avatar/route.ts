@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { withRetry } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { cloudinary } from "@/lib/cloudinary";
+import { cloudinary, detectImageMime } from "@/lib/cloudinary";
 import { avatarUploadSchema } from "@/lib/validations";
 
 export async function POST(req: Request) {
@@ -38,7 +38,13 @@ export async function POST(req: Request) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+    // file.type is whatever the client claims; trust the bytes instead.
+    const detectedType = detectImageMime(buffer);
+    if (!detectedType || detectedType !== file.type) {
+      return NextResponse.json({ error: "That file is not a valid image." }, { status: 400 });
+    }
+    const base64 = `data:${detectedType};base64,${buffer.toString("base64")}`;
 
     const result = await cloudinary.uploader.upload(base64, {
       folder: "festoug/avatars",

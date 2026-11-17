@@ -1,6 +1,6 @@
 ---
 name: FestoUG
-description: Emerald, mint and cream for a clear, personal business portfolio.
+description: Forest Luxe — deep forest, sand and gold on cream for a clear, personal business portfolio.
 ---
 
 # FestoUG design system
@@ -11,27 +11,32 @@ and a restrained visual hierarchy. Do not fabricate client results or metrics.
 
 ## Palette and balance
 
-Cream is the default canvas. Warm card surfaces and dark green-neutral text
-carry most of the interface. Emerald identifies primary actions and active
-navigation. Mint is supporting emphasis, never a large competing accent.
+Cream is the default canvas, washed with soft sand, forest and gold gradients.
+Frosted card surfaces and deep forest text carry most of the interface. Forest
+green identifies primary actions and active navigation. Gold is a decorative
+accent only (heading rules, attention markers); use `gold-ink` when gold must
+carry text. Sage is supporting emphasis, never a large competing accent.
 
 | Role | Light | Dark |
 | --- | --- | --- |
-| Canvas | #FFF8E7 | #10221B |
-| Surface | #FFFCF4 | #172D24 |
-| Main text | #182D25 | #F6F3E8 |
-| Supporting text | #4D6057 | #B7C8BA |
-| Primary action | #065F46 | #A7F3D0 |
+| Canvas | #FBF5E6 | #08251D |
+| Surface | #FFFCF4 | #0F3024 |
+| Main text | #08251D | #F6F3E8 |
+| Supporting text | #465A50 | #B7C8BA |
+| Primary action | #123B2C | #A7F3D0 |
 | Text on primary | #FFFDF7 | #10261D |
-| Supporting surface | #E3F2E8 | #234332 |
-| Text on supporting surface | #164D38 | #C7EED9 |
-| Structural border | #D6DFD2 | #395144 |
+| Supporting surface | #E4ECDD | #234332 |
+| Text on supporting surface | #123B2C | #C7EED9 |
+| Structural border | #DFD6BF | #395144 |
+| Gold accent (decorative) | #B78B45 | #D8B46A |
+| Gold ink (text-safe) | #7A5620 | #E3C88F |
+| Sand wash | #D8C19A | #B78B45 |
 | Input boundary | #819184 | #6D8977 |
 
 Use semantic Tailwind tokens (`background`, `foreground`, `card`, `primary`,
 `primary-foreground`, `secondary`, `muted-foreground`, `border`, `input`).
 The old portfolio color names remain compatibility aliases in globals.css.
-They must not introduce purple, amber, or a second decorative accent.
+They must not introduce purple or any accent beyond forest and gold.
 Real client logos, project screenshots, language colors and meaningful error
 or status colors retain their original purpose.
 
@@ -54,7 +59,12 @@ or status colors retain their original purpose.
 - Public content uses a profile column and a wider work column on desktop;
   stack them on small screens. Use two project columns where space permits.
 - Use quiet borders and restrained 8–16px corner radii. Avoid decorative glows,
-  gradient underlines, giant background numbers and repeated floating panels.
+  gradient underlines and giant background numbers.
+- Layered panels are frosted glass: `.glass` (blur on the element) for cards,
+  nav and chrome; `.glass-panel` (blur on a ::before layer) for containers that
+  hold `position: fixed` children. Never stack glass on glass — cards inside a
+  glass panel stay solid. Both fall back to solid under
+  `prefers-reduced-transparency`.
 - Refreshed components use Radix icons from @radix-ui/react-icons.
 
 ## Interaction
@@ -71,7 +81,8 @@ or status colors retain their original purpose.
 ## Motion and accessibility
 
 Use short, purposeful hover and press feedback. Avoid decorative continuous
-motion. Carousels must honor reduced-motion preferences and support pausing.
+motion; the one exception is the contact Send button, whose plane loops only
+while hovered or sending. Shared curves live in `--ease-out` / `--ease-in-out`. Carousels must honor reduced-motion preferences and support pausing.
 Never hide content behind an entrance animation when reduced motion is active.
 
 Verify light and dark color pairs separately. Normal text should meet WCAG AA

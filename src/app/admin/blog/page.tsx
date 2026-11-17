@@ -1,6 +1,4 @@
 import { withRetry } from "@/lib/db";
-import { blogPosts } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
 import Link from "next/link";
 import { PenSquare, Eye, EyeOff, Pencil, Star, ChevronLeft } from "lucide-react";
 import { DeleteBlogButton } from "@/components/admin/delete-blog-button";
