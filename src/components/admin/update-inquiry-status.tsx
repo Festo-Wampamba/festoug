@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/components/ui/toast-provider";
 
 interface Props {
   id: string;
@@ -12,17 +13,21 @@ const STATUSES = ["NEW", "REVIEWED", "CLOSED"];
 export function UpdateInquiryStatus({ id, currentStatus }: Props) {
   const [status, setStatus] = useState(currentStatus);
   const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
 
   async function update(next: string) {
     if (next === status) return;
     setSaving(true);
     try {
-      await fetch(`/api/admin/inquiries/${id}`, {
+      const res = await fetch(`/api/admin/inquiries/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: next }),
       });
+      if (!res.ok) throw new Error();
       setStatus(next);
+    } catch {
+      toast.error("Could not update the inquiry status. Nothing was changed.");
     } finally {
       setSaving(false);
     }

@@ -29,9 +29,11 @@ export function NotificationBell() {
   const unread = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
+    // A failed load just leaves the bell empty; it is not worth interrupting the page.
     fetch("/api/notifications")
-      .then((r) => r.json())
-      .then((data) => Array.isArray(data) && setNotifications(data));
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => Array.isArray(data) && setNotifications(data))
+      .catch(() => {});
   }, []);
 
   // Close on outside click
@@ -44,12 +46,14 @@ export function NotificationBell() {
   }, []);
 
   async function markAllRead() {
-    await fetch("/api/notifications", { method: "PATCH" });
+    const res = await fetch("/api/notifications", { method: "PATCH" }).catch(() => null);
+    if (!res?.ok) return; // keep them unread so the badge stays truthful
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   }
 
   async function markRead(id: string) {
-    await fetch(`/api/notifications/${id}`, { method: "PATCH" });
+    const res = await fetch(`/api/notifications/${id}`, { method: "PATCH" }).catch(() => null);
+    if (!res?.ok) return;
     setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n));
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/components/ui/toast-provider";
 import { Bell, Loader2, X, Send } from "lucide-react";
 
 interface Props {
@@ -25,18 +26,22 @@ export function AdminNotifyButton({ userId, userName, defaultType = "INFO", defa
   const [link, setLink] = useState(defaultLink ?? "");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const { toast } = useToast();
 
   async function send() {
     if (!title.trim() || !message.trim()) return;
     setSending(true);
     try {
-      await fetch("/api/admin/notifications", {
+      const res = await fetch("/api/admin/notifications", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, title: title.trim(), message: message.trim(), type, link: link.trim() || null }),
       });
+      if (!res.ok) throw new Error();
       setSent(true);
       setTimeout(() => { setOpen(false); setSent(false); setTitle(""); setMessage(""); }, 1200);
+    } catch {
+      toast.error("The notification was not sent. Please try again.");
     } finally {
       setSending(false);
     }

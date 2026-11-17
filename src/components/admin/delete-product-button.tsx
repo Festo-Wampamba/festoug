@@ -25,7 +25,8 @@ export function DeleteProductButton({
         toast.success("Product deleted successfully");
         router.refresh();
       } else {
-        toast.error("Failed to delete product");
+        const data = await res.json().catch(() => null);
+        toast.error(data?.error ?? "Failed to delete product");
       }
     } finally {
       setPending(false);
