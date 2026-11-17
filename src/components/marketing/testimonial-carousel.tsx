@@ -14,6 +14,8 @@ interface Testimonial {
 
 export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const total = testimonials.length;
+  // Slides advance on their own; hovering, focusing or dragging pauses them, and
+  // the pause button stops them outright (WCAG 2.2.2). Reduced motion: no autoplay.
   const [autoplay, setAutoplay] = useState(true);
 
   useEffect(() => {
@@ -159,7 +161,7 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
               className="flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-secondary"
             ><span aria-hidden className={`h-2 rounded-full transition-colors ${i === current ? "w-5 bg-primary" : "w-2 bg-border"}`} /></button>
           ))}
-          <button type="button" aria-label={autoplay ? "Pause testimonials" : "Play testimonials"} onClick={() => setAutoplay(value => !value)} className="flex size-11 items-center justify-center rounded-lg text-primary transition-colors hover:bg-secondary">{autoplay ? <PauseIcon aria-hidden /> : <PlayIcon aria-hidden />}</button>
+          <button type="button" aria-label={autoplay ? "Pause testimonials" : "Play testimonials"} onClick={() => setAutoplay(value => !value)} className="slider-control liquid-glass liquid-press">{autoplay ? <PauseIcon aria-hidden /> : <PlayIcon aria-hidden />}</button>
         </div>
       )}
     </div>
