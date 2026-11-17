@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { withRetry } from "@/lib/db";
-import { orders, licenses, products } from "@/lib/db/schema";
+import { orders, licenses } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { ShoppingBag, KeyRound, MonitorSmartphone, ArrowRight, AlertTriangle } from "lucide-react";
 import Link from "next/link";

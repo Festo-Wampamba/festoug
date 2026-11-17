@@ -149,6 +149,7 @@ export function TestimonialForm({ testimonial }: TestimonialFormProps) {
           </label>
           {avatarUrl && (
             <div className="w-12 h-12 rounded-xl overflow-hidden border border-jet shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only */}
               <img src={avatarUrl} alt="Preview" className="w-full h-full object-cover" />
             </div>
           )}

@@ -4,10 +4,10 @@
 - [x] Configure PostgreSQL and Drizzle ORM
 - [x] Create comprehensive Database Schema
 - [x] Seed JSON data to PostgreSQL
-- [x] Configure Auth.js v5 (Google, GitHub, Credentials)
+- [x] Configure Better Auth (Google, GitHub, email + password with OTP verification)
 - [x] Build `/auth/signin` User Interface
 - [x] Build `/auth/signup` User Interface
-- [x] Secure API Route `/api/auth/register`
+- [x] Auth routes served by Better Auth at `/api/auth/[...all]`
 - [x] Implement Route Protection (`proxy.ts`)
 
 ---

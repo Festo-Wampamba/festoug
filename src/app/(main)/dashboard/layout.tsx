@@ -58,6 +58,7 @@ export default async function DashboardLayout({
               title="View & edit your profile"
             >
               {user.image ? (
+                // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
                 <img src={user.image} alt={user.name || "User"} className="w-11 h-11 rounded-full border-2 border-orange-yellow-crayola/30 group-hover:border-orange-yellow-crayola/60 transition-colors shrink-0" />
               ) : (
                 <div className="w-11 h-11 rounded-full bg-orange-yellow-crayola/10 text-orange-yellow-crayola border-2 border-orange-yellow-crayola/30 group-hover:border-orange-yellow-crayola/60 transition-colors flex items-center justify-center font-bold text-lg shrink-0">

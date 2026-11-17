@@ -52,6 +52,7 @@ export default async function StorePage() {
               {/* Thumbnail */}
               <div className="aspect-video bg-eerie-black-2 relative overflow-hidden flex items-center justify-center">
                 {product.thumbnailUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
                   <img 
                     src={product.thumbnailUrl} 
                     alt={product.name}

@@ -92,6 +92,7 @@ export function Navbar() {
                 <div id="account-panel" className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-border bg-popover p-2 text-popover-foreground shadow-lg">
                   <div className="mb-1 border-b border-border px-3 py-3"><p className="truncate text-sm font-semibold">{session.user.name}</p><p className="truncate text-xs text-muted-foreground">{session.user.email}</p></div>
                   {session.user.role === "ADMIN" ? <Link href="/admin" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm hover:bg-secondary"><LockClosedIcon aria-hidden />Admin panel</Link> : <><Link href="/dashboard" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm hover:bg-secondary"><DashboardIcon aria-hidden />Dashboard</Link><Link href="/dashboard/settings" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm hover:bg-secondary"><GearIcon aria-hidden />Profile settings</Link></>}
+                  {/* eslint-disable-next-line @next/next/no-location-assign-relative-destination -- full reload clears the cached session after sign-out */}
                   <button type="button" onClick={() => { setAccountOpen(false); signOut().finally(() => { window.location.href = "/"; }); }} className="mt-1 flex min-h-11 w-full items-center gap-3 rounded-lg border-t border-border px-3 text-left text-sm text-destructive hover:bg-destructive/10"><ExitIcon aria-hidden />Sign out</button>
                 </div>
               )}

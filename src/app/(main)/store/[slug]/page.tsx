@@ -119,6 +119,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <div className="lg:col-span-8 space-y-10">
           <div className="aspect-video bg-eerie-black-1 border border-jet rounded-[20px] overflow-hidden flex items-center justify-center relative shadow-1">
             {product.thumbnailUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- arbitrary or blob: source; next/image allows Cloudinary only
               <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />
             ) : (
               <div className="text-center p-12">

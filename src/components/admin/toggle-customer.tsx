@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserCheck, UserX, Ban, Loader2, ShieldAlert, ShieldCheck, Trash2 } from "lucide-react";
+import { Ban, Loader2, ShieldAlert, ShieldCheck, Trash2 } from "lucide-react";
 
 type AccountStatus = "ACTIVE" | "SUSPENDED" | "BANNED";
 

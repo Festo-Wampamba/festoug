@@ -1,6 +1,4 @@
 import { withRetry } from "@/lib/db";
-import { orders, licenses } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 

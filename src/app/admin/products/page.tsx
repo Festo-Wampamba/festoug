@@ -2,7 +2,7 @@ import { withRetry } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, ChevronLeft } from "lucide-react";
+import { Plus, Pencil, ChevronLeft } from "lucide-react";
 import { DeleteProductButton } from "@/components/admin/delete-product-button";
 
 export const metadata = { title: "Admin | Products" };
