@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { Mail, X, Loader2, CheckCircle } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 const DISMISS_KEY = "email-verify-dismissed";
 
@@ -25,12 +26,11 @@ export function EmailVerifyBanner({ email }: { email: string }) {
     setSending(true);
     setError(null);
     try {
-      const res = await fetch("/api/auth/resend-verification", { method: "POST" });
-      const data = await res.json();
-      if (res.ok) {
-        setSent(true);
+      const { error: sendError } = await authClient.emailOtp.sendVerificationOtp({ email, type: "email-verification" });
+      if (sendError) {
+        setError(sendError.message || "Failed to send. Please try again.");
       } else {
-        setError(data.error || "Failed to send. Please try again.");
+        setSent(true);
       }
     } catch {
       setError("An unexpected error occurred.");
