@@ -5,6 +5,9 @@ import { orders, licenses, products, users, subscriptions, maintenanceTrials } f
 import { and, eq } from "drizzle-orm";
 import crypto from "crypto";
 
+// Payload values are attacker-influenced; strip line breaks so they cannot forge log entries.
+const forLog = (value: unknown) => String(value).replace(/[\r\n]+/g, " ");
+
 export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
@@ -76,7 +79,7 @@ export async function POST(req: Request) {
       // variant with a forged slug would unlock any product.
       const paidVariantId = orderData.first_order_item?.variant_id;
       if (!product.variantId || String(paidVariantId) !== product.variantId) {
-        console.error(`[WEBHOOK] order_created: variant mismatch for order ${externalOrderId}. Paid variant '${paidVariantId}', but product '${productSlug}' expects '${product.variantId}'. Not fulfilled — reconcile manually.`);
+        console.error(`[WEBHOOK] order_created: variant mismatch for order ${forLog(externalOrderId)}. Paid variant '${forLog(paidVariantId)}', but product '${forLog(productSlug)}' expects '${product.variantId}'. Not fulfilled — reconcile manually.`);
         return NextResponse.json({ message: "Order acknowledged (variant mismatch — not fulfilled)" }, { status: 200 });
       }
 
@@ -146,7 +149,7 @@ export async function POST(req: Request) {
         where: and(eq(maintenanceTrials.id, trialId), eq(maintenanceTrials.userId, userId)),
       });
       if (!expectedVariantId || lsVariantId !== expectedVariantId || !ownTrial) {
-        console.error(`[WEBHOOK] subscription_created: rejected subscription ${lsSubscriptionId}. Paid variant '${lsVariantId}', claimed plan '${plan}/${billingCycle}' expects '${expectedVariantId}', trial owned by user: ${!!ownTrial}. Not activated — reconcile manually.`);
+        console.error(`[WEBHOOK] subscription_created: rejected subscription ${forLog(lsSubscriptionId)}. Paid variant '${forLog(lsVariantId)}', claimed plan '${forLog(plan)}/${forLog(billingCycle)}' expects '${expectedVariantId}', trial owned by user: ${!!ownTrial}. Not activated — reconcile manually.`);
         return NextResponse.json({ message: "Subscription acknowledged (variant or trial mismatch — not activated)" }, { status: 200 });
       }
       const renewsAt         = subData.renews_at
