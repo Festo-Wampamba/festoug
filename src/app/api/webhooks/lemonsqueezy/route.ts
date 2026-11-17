@@ -9,7 +9,7 @@ import crypto from "crypto";
 // character (not just CR/LF — U+0085, U+2028 and U+2029 also break lines in some
 // log viewers) and cap the length, so they cannot forge or flood log entries.
 const forLog = (value: unknown) =>
-  String(value).replace(/[\r\n]+/g, " ").replace(/[\p{Cc}\p{Zl}\p{Zp}]+/gu, " ").slice(0, 200);
+  String(value).replace(/\r|\n/g, "").replace(/[\p{Cc}\p{Zl}\p{Zp}]+/gu, " ").slice(0, 200);
 
 export async function POST(req: Request) {
   try {
