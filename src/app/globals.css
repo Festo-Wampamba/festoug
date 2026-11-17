@@ -677,6 +677,48 @@ body::before {
   .glass, .glass-panel { border-color: var(--foreground); }
 }
 
+/* ─── Liquid glass controls (navigation tabs, header buttons, menus) ───
+   A brighter, more saturated glass than .glass: a strong top-edge highlight
+   (light catching the rim), a faint bottom edge, and a soft drop shadow.
+   .liquid-pill is the tinted "selected" glass that slides between tabs;
+   .liquid-hover is the faint pill that follows the pointer.
+   .liquid-menu is denser so menu text stays legible over busy content. */
+.liquid-glass, .liquid-menu {
+  background: color-mix(in oklab, var(--card) 58%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid color-mix(in oklab, white 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 85%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--foreground) 6%, transparent),
+    0 1px 2px rgb(8 37 29 / 0.06),
+    0 12px 32px -18px rgb(8 37 29 / 0.35);
+}
+.liquid-menu { background: color-mix(in oklab, var(--popover) 88%, transparent); }
+.dark .liquid-glass, .dark .liquid-menu {
+  border-color: color-mix(in oklab, white 12%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 14%, transparent),
+    0 12px 32px -18px rgb(0 0 0 / 0.6);
+}
+.liquid-pill {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 84%, white), var(--primary));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 35%, transparent),
+    inset 0 -1px 0 rgb(0 0 0 / 0.15),
+    0 6px 16px -8px color-mix(in oklab, var(--primary) 70%, transparent);
+}
+.liquid-hover { background: color-mix(in oklab, var(--foreground) 7%, transparent); }
+/* Press feedback on glass buttons: instant on pointer-down. */
+.liquid-press { transition: transform 120ms var(--ease-out), background-color 200ms ease, color 200ms ease; }
+.liquid-press:active { transform: scale(0.96); }
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass, .liquid-menu { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .liquid-glass, .liquid-menu { background: var(--card); border-color: var(--foreground); }
+}
+
 /* ─── Send CTA: label swap + paper plane loop ─── */
 .send-cta { transition: transform 140ms var(--ease-out), background-color 200ms ease; }
 .send-cta:not(:disabled):active { transform: scale(0.97); }

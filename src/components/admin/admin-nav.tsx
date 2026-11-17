@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LazyMotion, MotionConfig, domMax, m } from "motion/react";
 import {
   LayoutDashboard,
   Package,
@@ -50,6 +51,8 @@ export function AdminNav() {
 
   return (
     <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-60 lg:self-start">
+      <LazyMotion features={domMax} strict>
+      <MotionConfig reducedMotion="user">
       <nav aria-label="Admin" className="glass rounded-2xl border p-3">
         {NAV_GROUPS.map((group, index) => (
           <div key={group.label ?? "top"} className={index > 0 ? "mt-4" : undefined}>
@@ -62,13 +65,22 @@ export function AdminNav() {
               {group.items.map((item) => {
                 const active = isActive(item.href);
                 return (
-                  <li key={item.href}>
+                  <li key={item.href} className="relative">
+                    {/* The selected highlight glides between items instead of jumping. */}
+                    {active && (
+                      <m.span
+                        layoutId="admin-active"
+                        aria-hidden
+                        className="liquid-pill absolute inset-0 rounded-xl"
+                        transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+                      />
+                    )}
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors duration-150 ${
+                      className={`liquid-press relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium ${
                         active
-                          ? "bg-primary text-primary-foreground"
+                          ? "text-primary-foreground"
                           : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                       }`}
                     >
@@ -89,6 +101,8 @@ export function AdminNav() {
           <ArrowLeft className="size-4 shrink-0" aria-hidden /> Back to site
         </Link>
       </nav>
+      </MotionConfig>
+      </LazyMotion>
     </aside>
   );
 }
