@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
-import { rateLimit } from "@/lib/rate-limit";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 const contactSchema = z.object({
   fullname: z.string().trim().min(1, "Please enter your name.").max(100, "That name is too long."),
@@ -22,14 +22,14 @@ export async function sendEmail(formData: FormData) {
     return { error: parsed.error.issues[0].message };
   }
 
-  // ponytail: in-memory limiter, per server instance. Move to the DB-backed
-  // limiter Better Auth uses if contact spam ever gets past this.
-  const requestHeaders = await headers();
-  const ip =
-    requestHeaders.get("x-real-ip")?.trim() ||
-    requestHeaders.get("x-forwarded-for")?.split(",")[0].trim() ||
-    "unknown";
-  if (!rateLimit(`contact:${ip}`, { limit: 5, windowSeconds: 600 }).success) {
+  // Per-visitor limit plus a site-wide ceiling that protects the EmailJS quota
+  // even if a sender rotates IPs.
+  const ip = getClientIp(await headers());
+  const [perVisitor, siteWide] = await Promise.all([
+    rateLimit(`contact:${ip}`, { limit: 5, windowSeconds: 600 }),
+    rateLimit("contact:all", { limit: 40, windowSeconds: 3600 }),
+  ]);
+  if (!perVisitor.success || !siteWide.success) {
     return { error: "You have sent several messages in a short time. Please try again in a few minutes." };
   }
 

@@ -12,24 +12,19 @@ export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
-    // Rate limit: 20 chat messages per IP per minute
-    let ip: string;
-    try {
-      ip = getClientIp(req);
-    } catch {
-      ip = "unknown";
-    }
-
-    try {
-      const limiter = rateLimit(`chat:${ip}`, { limit: 20, windowSeconds: 60 });
-      if (!limiter.success) {
-        return new Response(
-          JSON.stringify({ error: "Too many requests. Please slow down." }),
-          { status: 429, headers: { "Content-Type": "application/json" } }
-        );
-      }
-    } catch (e) {
-      console.warn("Rate limiter error, allowing request:", e);
+    // Per-visitor limit, plus a site-wide ceiling so rotating IPs cannot run up
+    // model costs. ponytail: tune CHAT_GLOBAL_PER_HOUR to real traffic.
+    const CHAT_GLOBAL_PER_HOUR = 300;
+    const ip = getClientIp(req);
+    const [perVisitor, siteWide] = await Promise.all([
+      rateLimit(`chat:${ip}`, { limit: 20, windowSeconds: 60 }),
+      rateLimit("chat:all", { limit: CHAT_GLOBAL_PER_HOUR, windowSeconds: 3600 }),
+    ]);
+    if (!perVisitor.success || !siteWide.success) {
+      return new Response(
+        JSON.stringify({ error: "The assistant is busy right now. Please try again in a few minutes." }),
+        { status: 429, headers: { "Content-Type": "application/json" } }
+      );
     }
 
     let body: { messages?: UIMessage[] };

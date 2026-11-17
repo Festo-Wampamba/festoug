@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   try {
     // Rate limit: 10 checkout attempts per IP per 5 minutes
     const ip = getClientIp(req);
-    const limiter = rateLimit(`checkout:${ip}`, { limit: 10, windowSeconds: 300 });
+    const limiter = await rateLimit(`checkout:${ip}`, { limit: 10, windowSeconds: 300 });
     if (!limiter.success) {
       return NextResponse.json(
         { error: "Too many checkout attempts. Please try again later." },

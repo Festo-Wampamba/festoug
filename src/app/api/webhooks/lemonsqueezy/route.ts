@@ -135,15 +135,16 @@ export async function POST(req: Request) {
       eventName === "subscription_expired"
     ) {
       const subData = payload.data.attributes;
-      // LS statuses: on_trial, active, paused, past_due, unpaid, cancelled, expired.
-      // "cancelled" keeps access until ends_at; LS then sends "expired".
-      // ponytail: paused / past_due stay ACTIVE (grace). Add a status if they must lock access.
+      // Allowlist, failing closed: only active / on_trial grant access. "cancelled"
+      // keeps access until ends_at (LS sends "expired" after). paused, past_due,
+      // unpaid, expired and any status we don't recognise lose access; LS sends
+      // another update with "active" if payment recovers.
       const status =
-        subData.status === "expired" || subData.status === "unpaid"
-          ? ("EXPIRED" as const)
+        subData.status === "active" || subData.status === "on_trial"
+          ? ("ACTIVE" as const)
           : subData.status === "cancelled"
           ? ("CANCELLED" as const)
-          : ("ACTIVE" as const);
+          : ("EXPIRED" as const);
       const periodEnd = subData.ends_at ?? subData.renews_at;
 
       await db

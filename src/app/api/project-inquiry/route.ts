@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     // Public, unauthenticated endpoint — rate limit to prevent spam / DB flooding
     // / admin email bombing.
     const ip = getClientIp(req);
-    const limiter = rateLimit(`project-inquiry:${ip}`, { limit: 3, windowSeconds: 900 });
+    const limiter = await rateLimit(`project-inquiry:${ip}`, { limit: 3, windowSeconds: 900 });
     if (!limiter.success) {
       return NextResponse.json(
         { error: "Too many submissions. Please try again later." },
