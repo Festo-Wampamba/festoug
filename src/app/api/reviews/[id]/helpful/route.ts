@@ -37,28 +37,24 @@ export async function POST(
     ),
   });
 
+  // The neon-http driver has no transactions, so this is two plain statements.
+  // The count is recomputed from the votes table rather than incremented, which
+  // keeps it correct even if a request dies between the two.
   if (existingVote) {
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(reviewHelpfulVotes)
-        .where(eq(reviewHelpfulVotes.id, existingVote.id));
-      await tx
-        .update(reviews)
-        .set({ helpfulCount: sql`${reviews.helpfulCount} - 1` })
-        .where(eq(reviews.id, id));
-    });
-    return NextResponse.json({ voted: false });
+    await db.delete(reviewHelpfulVotes).where(eq(reviewHelpfulVotes.id, existingVote.id));
   } else {
-    await db.transaction(async (tx) => {
-      await tx.insert(reviewHelpfulVotes).values({
-        reviewId: id,
-        userId: session.user.id,
-      });
-      await tx
-        .update(reviews)
-        .set({ helpfulCount: sql`${reviews.helpfulCount} + 1` })
-        .where(eq(reviews.id, id));
-    });
-    return NextResponse.json({ voted: true });
+    await db
+      .insert(reviewHelpfulVotes)
+      .values({ reviewId: id, userId: session.user.id })
+      .onConflictDoNothing(); // unique (review, user) — a double click is not an error
   }
+
+  await db
+    .update(reviews)
+    .set({
+      helpfulCount: sql`(select count(*)::int from ${reviewHelpfulVotes} where ${reviewHelpfulVotes.reviewId} = ${id})`,
+    })
+    .where(eq(reviews.id, id));
+
+  return NextResponse.json({ voted: !existingVote });
 }

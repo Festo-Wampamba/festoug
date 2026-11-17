@@ -37,14 +37,11 @@ export async function POST(req: Request) {
       const currency = orderData.currency.toUpperCase();
 
       // Idempotency: LS retries webhooks and can deliver the same event more than
-      // once. Skip if this order is already recorded — prevents duplicate rows and,
-      // critically, duplicate license issuance for a single payment.
-      const alreadyProcessed = await db.query.orders.findFirst({
+      // once. An existing order is reused, never inserted twice — but we still
+      // fall through, so a retry can issue the license a failed first attempt missed.
+      const existingOrder = await db.query.orders.findFirst({
         where: eq(orders.externalOrderId, externalOrderId),
       });
-      if (alreadyProcessed) {
-        return NextResponse.json({ message: "Order already processed" }, { status: 200 });
-      }
 
       // Look up user if passed in custom data
       let userId = null;
@@ -86,31 +83,78 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "Order acknowledged (variant mismatch — not fulfilled)" }, { status: 200 });
       }
 
-      // Insert Order
-      const [newOrder] = await db.insert(orders).values({
-        userId,
-        productId: product.id,
-        gateway: "LEMONSQUEEZY",
-        externalOrderId,
-        status: "COMPLETED",
-        amount,
-        currency,
-      }).returning();
-
-      // If it's a digital scalable product (Script/Template), issue a License
-      if (product.category === "SCRIPT" || product.category === "TEMPLATE" || product.category === "PLUGIN") {
-        const licenseKey = crypto.randomBytes(16).toString("hex").toUpperCase();
-        
-        if (userId) {
-          await db.insert(licenses).values({
-            orderId: newOrder.id,
+      const order =
+        existingOrder ??
+        (
+          await db.insert(orders).values({
             userId,
             productId: product.id,
-            licenseKey,
+            gateway: "LEMONSQUEEZY",
+            externalOrderId,
+            status: "COMPLETED",
+            amount,
+            currency,
+          }).returning()
+        )[0];
+
+      // Digital products (script / template / plugin) get exactly one license per order.
+      const isLicensed = product.category === "SCRIPT" || product.category === "TEMPLATE" || product.category === "PLUGIN";
+      if (isLicensed && userId) {
+        const existingLicense = await db.query.licenses.findFirst({
+          where: eq(licenses.orderId, order.id),
+        });
+        if (!existingLicense) {
+          await db.insert(licenses).values({
+            orderId: order.id,
+            userId,
+            productId: product.id,
+            licenseKey: crypto.randomBytes(16).toString("hex").toUpperCase(),
             isActive: true,
           });
         }
       }
+    }
+
+    // A refund takes the purchase back: mark the order and switch off its license.
+    if (eventName === "order_refunded") {
+      const [refunded] = await db
+        .update(orders)
+        .set({ status: "REFUNDED" })
+        .where(eq(orders.externalOrderId, payload.data.id.toString()))
+        .returning({ id: orders.id });
+      if (refunded) {
+        await db.update(licenses).set({ isActive: false }).where(eq(licenses.orderId, refunded.id));
+      }
+    }
+
+    // Keep our subscription row in step with Lemon Squeezy after creation.
+    if (
+      eventName === "subscription_updated" ||
+      eventName === "subscription_cancelled" ||
+      eventName === "subscription_resumed" ||
+      eventName === "subscription_expired"
+    ) {
+      const subData = payload.data.attributes;
+      // LS statuses: on_trial, active, paused, past_due, unpaid, cancelled, expired.
+      // "cancelled" keeps access until ends_at; LS then sends "expired".
+      // ponytail: paused / past_due stay ACTIVE (grace). Add a status if they must lock access.
+      const status =
+        subData.status === "expired" || subData.status === "unpaid"
+          ? ("EXPIRED" as const)
+          : subData.status === "cancelled"
+          ? ("CANCELLED" as const)
+          : ("ACTIVE" as const);
+      const periodEnd = subData.ends_at ?? subData.renews_at;
+
+      await db
+        .update(subscriptions)
+        .set({
+          status,
+          ...(status === "CANCELLED" ? { cancelledAt: new Date() } : {}),
+          ...(status === "ACTIVE" ? { cancelledAt: null } : {}),
+          ...(periodEnd ? { currentPeriodEnd: new Date(periodEnd) } : {}),
+        })
+        .where(eq(subscriptions.lsSubscriptionId, payload.data.id.toString()));
     }
 
     if (eventName === "subscription_created") {
