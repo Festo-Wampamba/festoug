@@ -2,6 +2,9 @@
   "name": "festoug",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,9 +20,8 @@
     "dev:setup": "docker compose up -d && sleep 2 && pnpm db:push"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.146",
-    "@ai-sdk/openai": "^3.0.143",
-    "@ai-sdk/react": "3.0.335",
+    "@ai-sdk/openai": "^4.0.118",
+    "@ai-sdk/react": "4.0.177",
     "@base-ui/react": "^1.9.0",
     "@better-auth/infra": "^0.2.14",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
@@ -35,7 +37,7 @@
     "@types/pg": "^8.23.1",
     "@types/sanitize-html": "^2.16.2",
     "@vercel/analytics": "^2.0.1",
-    "ai": "^6.0.332",
+    "ai": "^7.0.173",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.7.25",
     "class-variance-authority": "^0.7.1",
@@ -46,7 +48,7 @@
     "lucide-react": "^0.577.0",
     "motion": "^14.14.0",
     "next": "16.4.6",
-    "postgres": "^3.4.9",
+    "postgres": "^4.1.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-markdown": "^10.1.0",
@@ -59,16 +61,16 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.5",
-    "@types/node": "^20.19.43",
+    "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.10",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.4.6",
     "shadcn": "^4.23.0",
     "tailwindcss": "^4.3.5",
     "tsx": "^4.23.15",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }

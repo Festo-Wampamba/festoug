@@ -241,10 +241,10 @@ If the user needs human support: direct them to festotechug@gmail.com
 
     const result = streamText({
       model: openrouter.chat("meta-llama/llama-4-maverick"),
-      system: systemPrompt,
+      instructions: systemPrompt,
       messages: modelMessages,
       temperature: 0.7,
-      onFinish: async ({ text }) => {
+      onEnd: async ({ text }) => {
         // Persist conversation for registered users
         if (userId && lastUserText) {
           try {
