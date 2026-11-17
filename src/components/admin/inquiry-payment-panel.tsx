@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DollarSign, Plus, Loader2, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/toast-provider";
 
@@ -15,7 +15,6 @@ interface PaymentLog {
 interface Props {
   id: string;
   currentPaymentStatus: string;
-  currentPaymentNote?: string | null;
 }
 
 const PAYMENT_STATUSES = [
@@ -31,7 +30,7 @@ const EVENT_COLORS: Record<string, string> = {
   STATUS_CHANGE: "text-light-gray-70",
 };
 
-export function InquiryPaymentPanel({ id, currentPaymentStatus, currentPaymentNote }: Props) {
+export function InquiryPaymentPanel({ id, currentPaymentStatus }: Props) {
   const [paymentStatus, setPaymentStatus] = useState(currentPaymentStatus);
   const [logs, setLogs] = useState<PaymentLog[]>([]);
   const [logsLoaded, setLogsLoaded] = useState(false);

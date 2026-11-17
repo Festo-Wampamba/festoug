@@ -7,7 +7,7 @@ import { UpdateInquiryStatus } from "@/components/admin/update-inquiry-status";
 import { InquiryPaymentPanel } from "@/components/admin/inquiry-payment-panel";
 import { AdminNotifyButton } from "@/components/admin/admin-notify-button";
 import { db } from "@/lib/db";
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 
 export const metadata = { title: "Admin | Project Inquiries" };
 export const dynamic = "force-dynamic";
@@ -35,18 +35,12 @@ export default async function AdminInquiriesPage() {
     db.select().from(projectInquiries).orderBy(desc(projectInquiries.createdAt))
   );
 
-  // Fetch user IDs matched by email for notify button
+  // Account ids for inquiry emails, so the notify button can reach registered users.
   const emailList = [...new Set(allInquiries.map((i) => i.email))];
   const matchedUsers = emailList.length > 0
-    ? await db.select({ id: users.id, email: users.email }).from(users).where(
-        // check each email — in practice these are low volume
-      eq(users.email, emailList[0]) // placeholder; we'll match client-side below
-      ).limit(0) // we'll do a different approach
+    ? await db.select({ id: users.id, email: users.email }).from(users).where(inArray(users.email, emailList))
     : [];
-
-  // Simpler: fetch all customer IDs+emails in one shot
-  const allMatchedUsers = await db.select({ id: users.id, email: users.email }).from(users);
-  const userByEmail = Object.fromEntries(allMatchedUsers.map((u) => [u.email, u.id]));
+  const userByEmail = Object.fromEntries(matchedUsers.map((u) => [u.email, u.id]));
 
   const newCount = allInquiries.filter((i) => i.status === "NEW").length;
   const unpaidCount = allInquiries.filter((i) => i.paymentStatus === "PENDING").length;
@@ -148,7 +142,7 @@ export default async function AdminInquiriesPage() {
                     <InquiryPaymentPanel
                       id={inquiry.id}
                       currentPaymentStatus={inquiry.paymentStatus}
-                      currentPaymentNote={inquiry.paymentNote}
+                     
                     />
                   </div>
                 </div>
