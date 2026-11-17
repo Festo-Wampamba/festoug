@@ -51,9 +51,31 @@ export async function POST(req: Request) {
       );
     }
 
-    // Cap conversation length to prevent abuse
+    // This endpoint is public and every request is billed to the model provider,
+    // so bound what a client can send: only user/assistant turns (a client-supplied
+    // "system" turn could override the prompt), text parts only, and capped sizes.
     const MAX_MESSAGES = 50;
-    const trimmedMessages = messages.slice(-MAX_MESSAGES);
+    const MAX_USER_MESSAGE_CHARS = 4_000;
+    const MAX_TOTAL_CHARS = 40_000;
+
+    const trimmedMessages = messages
+      .filter((m) => m && (m.role === "user" || m.role === "assistant") && Array.isArray(m.parts))
+      .map((m) => ({ ...m, parts: m.parts.filter((part) => part.type === "text") }))
+      .slice(-MAX_MESSAGES);
+
+    const textLength = (m: UIMessage) =>
+      m.parts.reduce((total, part) => total + (part.type === "text" ? part.text.length : 0), 0);
+    const totalChars = trimmedMessages.reduce((total, m) => total + textLength(m), 0);
+    const hasOversizedUserMessage = trimmedMessages.some(
+      (m) => m.role === "user" && textLength(m) > MAX_USER_MESSAGE_CHARS
+    );
+
+    if (trimmedMessages.length === 0 || hasOversizedUserMessage || totalChars > MAX_TOTAL_CHARS) {
+      return new Response(
+        JSON.stringify({ error: "That message is too long. Please shorten it and try again." }),
+        { status: 413, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     // Check auth session for registered user memory
     let userId: string | null = null;
