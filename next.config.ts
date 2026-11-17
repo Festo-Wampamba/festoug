@@ -4,9 +4,6 @@ const nextConfig: NextConfig = {
   // Parent folders may contain other projects and lockfiles. Resolve this app locally.
   turbopack: { root: process.cwd() },
   outputFileTracingRoot: process.cwd(),
-  // Prevent Next.js from bundling server-only packages that require native Node.js modules.
-  // isomorphic-dompurify and jsdom use DOM APIs not available in the bundled server runtime.
-  serverExternalPackages: ["isomorphic-dompurify", "jsdom", "dompurify"],
   images: {
     remotePatterns: [
       {
