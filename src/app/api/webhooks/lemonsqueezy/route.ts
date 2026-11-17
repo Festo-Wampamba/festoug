@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       if (!productSlug) {
         // Order came from outside the site checkout (e.g. direct LS link) — no product slug attached.
         // Log it for manual reconciliation and acknowledge so LS doesn't retry endlessly.
-        console.warn(`[WEBHOOK] order_created (ID: ${forLog(externalOrderId)}) has no product_slug in custom_data. Skipping order record. Custom data:`, forLog(JSON.stringify(customData)));
+        console.warn("[WEBHOOK] order_created (ID: %s) has no product_slug in custom_data. Skipping order record. Custom data: %s", forLog(externalOrderId), forLog(JSON.stringify(customData)));
         return NextResponse.json({ message: "Order acknowledged (no product_slug — skipped)" }, { status: 200 });
       }
 
