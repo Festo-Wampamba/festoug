@@ -9,7 +9,6 @@ import {
   uuid,
   numeric,
   index,
-  primaryKey,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
@@ -361,6 +360,10 @@ export const maintenanceTrials = pgTable(
     userIdx:   index("trial_user_idx").on(t.userId),
     statusIdx: index("trial_status_idx").on(t.status),
     endsIdx:   index("trial_ends_idx").on(t.trialEndsAt),
+    // Two simultaneous sign-ups must not both create an active trial.
+    oneActivePerUser: uniqueIndex("trial_one_active_per_user")
+      .on(t.userId)
+      .where(sql`${t.status} = 'ACTIVE'`),
   })
 );
 
@@ -444,7 +447,7 @@ export const notifications = pgTable(
 );
 
 // ─── Relations ────────────────────────────────────────────────────────────────
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const usersRelations = relations(users, ({ many }) => ({
   orders:             many(orders),

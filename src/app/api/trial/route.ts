@@ -65,18 +65,28 @@ export async function POST(req: Request) {
     const now = new Date();
     const trialEndsAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    const [trial] = await db
-      .insert(maintenanceTrials)
-      .values({
-        userId:        session.user.id,
-        plan,
-        billingCycle,
-        websiteUrl,
-        status:        "ACTIVE",
-        trialStartsAt: now,
-        trialEndsAt,
-      })
-      .returning();
+    let trial: typeof maintenanceTrials.$inferSelect;
+    try {
+      [trial] = await db
+        .insert(maintenanceTrials)
+        .values({
+          userId:        session.user.id,
+          plan,
+          billingCycle,
+          websiteUrl,
+          status:        "ACTIVE",
+          trialStartsAt: now,
+          trialEndsAt,
+        })
+        .returning();
+    } catch (error) {
+      // trial_one_active_per_user: a concurrent request already started a trial.
+      if ((error as { code?: string; cause?: { code?: string } }).code === "23505" ||
+          (error as { cause?: { code?: string } }).cause?.code === "23505") {
+        return NextResponse.json({ error: "You already have an active trial or subscription." }, { status: 409 });
+      }
+      throw error;
+    }
 
     await sendTrialWelcomeEmail(
       session.user.email,
