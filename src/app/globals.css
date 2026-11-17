@@ -483,7 +483,8 @@
   width: 100%;
   max-width: 2000px;
   margin-inline: auto;
-  padding-inline: clamp(1rem, 3vw, 3rem);
+  --shell-gutter: clamp(1rem, 3vw, 3rem);
+  padding-inline: var(--shell-gutter);
 }
 /* Keep tablet and laptop headings proportional to their 16px reading size. */
 @media (min-width: 640px) and (max-width: 2399px) {
@@ -647,18 +648,75 @@ body::before {
   border-radius: inherit;
   pointer-events: none;
 }
-.glass-chrome {
+/* Sticky header: the frost and hairline live on a ::before layer that reaches
+   out across the page gutters and fades to transparent inside them, so the bar
+   melts into the page instead of ending in hard corners. Only the gutters fade;
+   the header's text and controls never sit on the faded part. */
+.glass-chrome { isolation: isolate; }
+.glass-chrome::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline: calc(-1 * var(--shell-gutter, 0px));
+  z-index: -1;
+  pointer-events: none;
   background: color-mix(in oklab, var(--background) 70%, transparent);
+  border-bottom: 1px solid var(--border);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   backdrop-filter: blur(18px) saturate(160%);
+  --chrome-fade: var(--shell-gutter, 1rem);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--chrome-fade), #000 calc(100% - var(--chrome-fade)), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--chrome-fade), #000 calc(100% - var(--chrome-fade)), transparent);
 }
 @media (prefers-reduced-transparency: reduce) {
   .glass, .glass-panel::before { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .glass-chrome { background: var(--background); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .glass-chrome::before { background: var(--background); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 @media (prefers-contrast: more) {
   .glass, .glass-panel::before { background: var(--card); }
   .glass, .glass-panel { border-color: var(--foreground); }
+}
+
+/* ─── Liquid glass controls (navigation tabs, header buttons, menus) ───
+   A brighter, more saturated glass than .glass: a strong top-edge highlight
+   (light catching the rim), a faint bottom edge, and a soft drop shadow.
+   .liquid-pill is the tinted "selected" glass that slides between tabs;
+   .liquid-hover is the faint pill that follows the pointer.
+   .liquid-menu is denser so menu text stays legible over busy content. */
+.liquid-glass, .liquid-menu {
+  background: color-mix(in oklab, var(--card) 58%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid color-mix(in oklab, white 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 85%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--foreground) 6%, transparent),
+    0 1px 2px rgb(8 37 29 / 0.06),
+    0 12px 32px -18px rgb(8 37 29 / 0.35);
+}
+.liquid-menu { background: color-mix(in oklab, var(--popover) 88%, transparent); }
+.dark .liquid-glass, .dark .liquid-menu {
+  border-color: color-mix(in oklab, white 12%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 14%, transparent),
+    0 12px 32px -18px rgb(0 0 0 / 0.6);
+}
+.liquid-pill {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 84%, white), var(--primary));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 35%, transparent),
+    inset 0 -1px 0 rgb(0 0 0 / 0.15),
+    0 6px 16px -8px color-mix(in oklab, var(--primary) 70%, transparent);
+}
+.liquid-hover { background: color-mix(in oklab, var(--foreground) 7%, transparent); }
+/* Press feedback on glass buttons: instant on pointer-down. */
+.liquid-press { transition: transform 120ms var(--ease-out), background-color 200ms ease, color 200ms ease; }
+.liquid-press:active { transform: scale(0.96); }
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass, .liquid-menu { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .liquid-glass, .liquid-menu { background: var(--card); border-color: var(--foreground); }
 }
 
 /* ─── Send CTA: label swap + paper plane loop ─── */
