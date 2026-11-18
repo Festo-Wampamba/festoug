@@ -41,9 +41,9 @@ export function ClientLogos() {
   return (
     <div role="region" aria-label="Clients and collaborators" className="client-marquee">
       {/* No frame: the logos slide in their own space and fade in/out at the edges.
-          Hovering pauses it (see .client-marquee in globals.css); the button below
-          is the pause control WCAG 2.2.2 requires for touch and keyboard users. */}
-      <div className="client-marquee-window overflow-hidden">
+          Hovering (mouse) or tapping (touch) the logos pauses it; the button below
+          is the pause control WCAG 2.2.2 requires for keyboard and screen-reader users. */}
+      <div className="client-marquee-window overflow-hidden" onClick={() => setPaused(value => !value)}>
         {reducedMotion ? (
           <div className="grid grid-cols-2">{logos.map(logo => <Logo key={logo.src} logo={logo} />)}</div>
         ) : (

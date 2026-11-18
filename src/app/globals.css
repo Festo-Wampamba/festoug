@@ -360,7 +360,10 @@
 .client-marquee-track { display: flex; width: max-content; animation: client-flow 45s linear infinite; }
 .client-marquee-set { display: flex; }
 .client-marquee-set .client-logo { width: 50cqw; flex: 0 0 50cqw; }
-.client-marquee:hover .client-marquee-track, .client-marquee:focus-within .client-marquee-track { animation-play-state: paused !important; }
+/* Hover-pause only on the logos and only for real pointers: on the whole region it
+   also caught the focused play button (stuck paused), and touch screens keep a
+   sticky :hover after a tap. Touch users tap the logos instead (client-logos.tsx). */
+@media (hover: hover) { .client-marquee-window:hover .client-marquee-track { animation-play-state: paused !important; } }
 @keyframes client-flow { to { transform: translateX(-50%); } }
 @media (min-width: 640px) { .client-marquee-set .client-logo { width: 25cqw; flex-basis: 25cqw; } }
 .assistant-wheel {
