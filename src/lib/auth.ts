@@ -1,4 +1,6 @@
 import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+
 import { auth as betterAuth } from "@/lib/better-auth";
 
 /**
@@ -30,4 +32,20 @@ export async function auth() {
       emailVerified: !!u.emailVerified,
     },
   };
+}
+
+/**
+ * Admin gate for API route handlers. Returns the session for an admin, or a
+ * 403 response to return as-is:
+ *   const session = await requireAdmin();
+ *   if (session instanceof NextResponse) return session;
+ * proxy.ts also gates /api/admin, but every handler checks again so a matcher
+ * change can never expose admin writes.
+ */
+export async function requireAdmin() {
+  const session = await auth();
+  if (session?.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return session;
 }

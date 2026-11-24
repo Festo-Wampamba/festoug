@@ -1,16 +1,14 @@
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { productSchema } from "@/lib/validations";
 
 // CREATE a new product
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const body = await req.json();
 
