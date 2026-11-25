@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users, bannedEmails } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -10,10 +10,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    if (session?.user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
+    const session = await requireAdmin();
+    if (session instanceof NextResponse) return session;
 
     const { id } = await params;
     const body = await request.json();
@@ -76,10 +74,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    if (session?.user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
+    const session = await requireAdmin();
+    if (session instanceof NextResponse) return session;
 
     const { id } = await params;
 

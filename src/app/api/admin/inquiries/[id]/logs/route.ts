@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { inquiryPaymentLogs } from "@/lib/db/schema";
 import { eq, asc } from "drizzle-orm";
 
 // GET — fetch all payment logs for an inquiry
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const { id } = await params;
   const logs = await db
@@ -23,10 +21,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
 // POST — add a new payment log entry
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const { id } = await params;
   const { eventType, amount, note } = await req.json();

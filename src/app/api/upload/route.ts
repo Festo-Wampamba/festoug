@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { cloudinary, detectImageMime } from "@/lib/cloudinary";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -12,10 +12,8 @@ const ALLOWED_TYPES = new Set([
 ]);
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   try {
     const formData = await req.formData();
