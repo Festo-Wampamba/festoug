@@ -42,9 +42,9 @@ export function BlogCard({ title, category, date, image, description, link, isFe
               <time dateTime={date}>{date}</time>
             </div>
 
-            <h3 className="text-white-2 text-[18px] font-semibold leading-tight mb-[10px] group-hover:text-orange-yellow-crayola transition-colors">
+            <h2 className="text-white-2 text-[18px] font-semibold leading-tight mb-[10px] group-hover:text-orange-yellow-crayola transition-colors">
               {title}
-            </h3>
+            </h2>
             
             <p className="text-light-gray text-[15px] font-light leading-[1.6]">
               {description}

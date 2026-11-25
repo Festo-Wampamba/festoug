@@ -34,7 +34,7 @@ export default async function DashboardLayout({
   const isEmailVerified = !!dbUser?.emailVerified;
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       {!isEmailVerified && <EmailVerifyBanner email={user.email ?? ""} />}
 
       {/* Dashboard Header */}

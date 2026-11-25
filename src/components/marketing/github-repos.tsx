@@ -37,9 +37,9 @@ export function GithubRepos({ repos }: { repos: GitHubRepo[] }) {
             className="group flex h-full flex-col rounded-2xl border border-border bg-card p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm motion-reduce:hover:translate-y-0"
           >
             <div className="mb-2 flex items-start justify-between gap-2">
-              <h4 className="break-all font-head text-base font-bold leading-snug text-card-foreground transition-colors group-hover:text-primary">
+              <h3 className="break-all font-head text-base font-bold leading-snug text-card-foreground transition-colors group-hover:text-primary">
                 {repo.name}
-              </h4>
+              </h3>
               <ExternalLinkIcon
                 className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-[color,opacity] group-hover:text-primary group-hover:opacity-100"
                 aria-hidden

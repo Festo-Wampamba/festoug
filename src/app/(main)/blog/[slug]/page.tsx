@@ -58,7 +58,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   `;
 
   return (
-    <article className="animate-in fade-in duration-500 max-w-3xl mx-auto pb-10">
+    <article className="max-w-3xl mx-auto pb-10">
       <div className="mb-8">
         <Link
           href="/blog"

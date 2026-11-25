@@ -10,13 +10,13 @@ export const metadata: Metadata = {
 
 export default function GetStartedPage() {
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       
       {/* Page Header */}
       <header className="mb-10 md:mb-16 max-w-[65ch]">
-        <h2 className="text-foreground text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-primary before:rounded-sm">
+        <h1 className="text-foreground text-3xl md:text-5xl font-semibold mb-6 pb-5 capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-12 before:h-1 before:bg-primary before:rounded-sm">
           Let&apos;s Build <span className="text-muted-foreground font-light">Something Great</span>
-        </h2>
+        </h1>
         
         <p className="text-muted-foreground text-base max-w-2xl leading-relaxed">
           Please provide some details about your upcoming project or engineering needs. 
@@ -35,9 +35,9 @@ export default function GetStartedPage() {
         {/* Sidebar Info Column */}
         <div className="w-full">
           <aside className="bg-card text-card-foreground border border-border rounded-3xl p-6 md:p-8">
-            <h3 className="text-xl font-semibold text-foreground mb-6 pb-4 border-b border-border">
+            <h2 className="text-xl font-semibold text-foreground mb-6 pb-4 border-b border-border">
               What Happens Next?
-            </h3>
+            </h2>
             
             <ul className="space-y-6">
               <li className="flex items-start gap-4">
@@ -45,7 +45,7 @@ export default function GetStartedPage() {
                   <ClockIcon className="w-5 h-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="text-foreground font-medium mb-1">24-Hour Review</h4>
+                  <h3 className="text-foreground font-medium mb-1">24-Hour Review</h3>
                   <p className="text-muted-foreground text-base leading-relaxed">I will review your requirements and get back to you within one business day.</p>
                 </div>
               </li>
@@ -55,7 +55,7 @@ export default function GetStartedPage() {
                   <TargetIcon className="w-5 h-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="text-foreground font-medium mb-1">Project Alignment</h4>
+                  <h3 className="text-foreground font-medium mb-1">Project Alignment</h3>
                   <p className="text-muted-foreground text-base leading-relaxed">We&apos;ll jump on a quick discovery call to ensure our goals and technical approaches align perfectly.</p>
                 </div>
               </li>
@@ -65,7 +65,7 @@ export default function GetStartedPage() {
                   <CheckCircledIcon className="w-5 h-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="text-foreground font-medium mb-1">Proposal & Deposit</h4>
+                  <h3 className="text-foreground font-medium mb-1">Proposal & Deposit</h3>
                   <p className="text-muted-foreground text-base leading-relaxed">You&apos;ll receive a detailed proposal. Upon paying the secure deposit, development begins immediately.</p>
                 </div>
               </li>

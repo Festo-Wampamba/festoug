@@ -31,7 +31,7 @@ export default async function SettingsPage() {
   const hasPassword = !!credentialAccount;
 
   return (
-    <div className="animate-in fade-in zoom-in-95 duration-500 max-w-3xl">
+    <div className="max-w-3xl">
       <h3 className="text-2xl font-semibold text-white-2 mb-6">Profile Settings</h3>
 
       <div className="bg-eerie-black-1 border border-jet rounded-2xl shadow-1 p-6 md:p-8 space-y-8">

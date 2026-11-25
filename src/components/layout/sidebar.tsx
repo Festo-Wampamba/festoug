@@ -21,7 +21,7 @@ export function Sidebar() {
           <Image src="/images/festo03.png" alt="Festo Wampamba wearing a navy jacket" width={250} height={250} sizes="(min-width: 1536px) 300px, (min-width: 1280px) 280px, 76px" priority className="size-full rounded-xl object-cover" />
         </figure>
         <div className="profile-copy min-w-0 flex-1">
-          <h1 className="profile-name break-words text-lg font-semibold tracking-tight text-foreground sm:text-xl">Festo Wampamba</h1>
+          <p className="profile-name break-words text-lg font-semibold tracking-tight text-foreground sm:text-xl">Festo Wampamba</p>
           <p className="profile-role mt-1 text-sm text-muted-foreground">Software engineer</p>
           <p className="mt-3 hidden text-sm leading-relaxed text-muted-foreground xl:block">Web applications, backend systems, and the infrastructure behind them.</p>
         </div>
@@ -29,7 +29,7 @@ export function Sidebar() {
       </div>
       <div id="profile-contacts" className={`${expanded ? "block" : "hidden"} mt-6 border-t border-border pt-5 xl:block`}>
         <ul className="space-y-3">
-          <ContactItem icon={<EnvelopeClosedIcon />} title="Email" href="mailto:festotechug@gmail.com" value="festotechug@gmail.com" />
+          <ContactItem icon={<EnvelopeClosedIcon />} title="Email" href="mailto:festotechug@gmail.com" value={<>festotechug@<wbr />gmail.com</>} />
           <ContactItem icon={<MobileIcon />} title="Phone" href="tel:+256754230525" value="+256 754230525" />
           <ContactItem icon={<ChatBubbleIcon />} title="WhatsApp" href="https://wa.me/256754230525" value="Chat on WhatsApp" />
           <ContactItem icon={<FileTextIcon />} title="Resume" href="/festoug.pdf" value="Download resume" download />
@@ -40,6 +40,6 @@ export function Sidebar() {
   );
 }
 
-function ContactItem({ icon, title, value, ...link }: { icon: ReactNode; title: string; value: string; href: string; download?: boolean; target?: string; rel?: string }) {
-  return <li><a {...link} className="group flex min-h-12 items-start gap-3 rounded-lg py-1 text-sm transition-colors hover:text-primary"><span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground [&>svg]:size-[18px]" aria-hidden>{icon}</span><span className="min-w-0 pt-0.5"><span className="block text-xs font-medium uppercase tracking-[.08em] text-muted-foreground">{title}</span><span className="mt-0.5 block break-words text-base leading-relaxed text-foreground group-hover:text-primary [overflow-wrap:anywhere]">{value}</span></span></a></li>;
+function ContactItem({ icon, title, value, ...link }: { icon: ReactNode; title: string; value: ReactNode; href: string; download?: boolean; target?: string; rel?: string }) {
+  return <li><a {...link} className="group flex min-h-12 items-start gap-3 rounded-lg py-1 text-sm transition-colors hover:text-primary"><span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground [&>svg]:size-[18px]" aria-hidden>{icon}</span><span className="min-w-0 pt-0.5"><span className="block text-xs font-medium uppercase tracking-[.08em] text-muted-foreground">{title}</span><span className="mt-0.5 block break-words text-base leading-relaxed text-foreground group-hover:text-primary">{value}</span></span></a></li>;
 }

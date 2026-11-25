@@ -37,12 +37,12 @@ export function TimelineItem({ institution, period, program, role, description }
         p-4 sm:p-5 transition-[transform,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
         hover:-translate-y-1 motion-reduce:hover:translate-y-0"
     >
-      <h4 className="text-white-2 text-base font-bold capitalize mb-1 font-head leading-snug">
+      <h3 className="text-white-2 text-base font-bold capitalize mb-1 font-head leading-snug">
         {program || role}
-      </h4>
-      <h5 className="text-accent-3 text-sm font-medium capitalize mb-1">
+      </h3>
+      <h4 className="text-accent-3 text-sm font-medium capitalize mb-1">
         {institution}
-      </h5>
+      </h4>
       <span className="text-accent-2 text-xs font-medium block mb-2.5 tracking-wide">
         {period}
       </span>

@@ -22,11 +22,11 @@ export default async function StorePage() {
   );
 
   return (
-    <article className="animate-in fade-in duration-500 xl:pr-[60px]">
+    <article className="xl:pr-[60px]">
       <header className="mb-10 md:mb-16">
-        <h2 className="text-white-2 text-[32px] font-semibold tracking-tight mb-6 pb-[15px] capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-10 before:h-1 before:bg-gold before:rounded-full">
+        <h1 className="text-white-2 text-[32px] font-semibold tracking-tight mb-6 pb-[15px] capitalize relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-10 before:h-1 before:bg-gold before:rounded-full">
           Digital Store
-        </h2>
+        </h1>
         <p className="text-light-gray text-base font-light leading-relaxed max-w-2xl">
           Premium scripts, Next.js templates, and productivity tools designed to help you ship faster. 
           Buy once, use forever.
@@ -36,7 +36,7 @@ export default async function StorePage() {
       {availableProducts.length === 0 ? (
         <div className="bg-eerie-black-1 border border-jet rounded-[20px] p-12 text-center shadow-1">
           <ShoppingCart className="w-12 h-12 text-light-gray-70 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white-2 mb-2">Store is Empty</h3>
+          <h2 className="text-xl font-semibold text-white-2 mb-2">Store is Empty</h2>
           <p className="text-light-gray font-light">
             I am currently migrating my digital products. Check back soon!
           </p>
@@ -74,9 +74,9 @@ export default async function StorePage() {
 
               {/* Body */}
               <div className="p-5">
-                <h3 className="text-lg font-bold text-white-2 mb-2 line-clamp-1 group-hover:text-orange-yellow-crayola transition-colors">
+                <h2 className="text-lg font-bold text-white-2 mb-2 line-clamp-1 group-hover:text-orange-yellow-crayola transition-colors">
                   {product.name}
-                </h3>
+                </h2>
                 <p className="text-light-gray text-sm font-light line-clamp-2 mb-4">
                   {product.description ? stripHtml(product.description) || "No description available." : "No description available."}
                 </p>
@@ -99,7 +99,7 @@ export default async function StorePage() {
               <div className="flex items-center justify-center w-12 h-12 rounded-full bg-onyx border border-jet">
                 <PackagePlus className="w-5 h-5 text-light-gray-70" aria-hidden />
               </div>
-              <h3 className="text-white-2 text-base font-semibold">More products on the way</h3>
+              <h2 className="text-white-2 text-base font-semibold">More products on the way</h2>
               <p className="text-light-gray-70 text-sm font-light max-w-[26ch]">
                 New templates and developer tools are in the works.
               </p>

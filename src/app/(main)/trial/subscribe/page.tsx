@@ -23,9 +23,9 @@ export default async function TrialSubscribePage({ searchParams }: Props) {
 
   if (!id) {
     return (
-      <div className="animate-in fade-in duration-500 max-w-xl mx-auto text-center py-20">
+      <div className="max-w-xl mx-auto text-center py-20">
         <AlertTriangle className="w-10 h-10 text-orange-400 mx-auto mb-4" />
-        <h2 className="text-white-2 text-2xl font-semibold mb-3">Invalid link</h2>
+        <h1 className="text-white-2 text-2xl font-semibold mb-3">Invalid link</h1>
         <p className="text-light-gray text-sm mb-6">This subscribe link is missing a trial ID.</p>
         <Link href="/services" className="text-orange-yellow-crayola hover:underline text-sm">← Back to Services</Link>
       </div>
@@ -41,9 +41,9 @@ export default async function TrialSubscribePage({ searchParams }: Props) {
 
   if (!trial) {
     return (
-      <div className="animate-in fade-in duration-500 max-w-xl mx-auto text-center py-20">
+      <div className="max-w-xl mx-auto text-center py-20">
         <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-4" />
-        <h2 className="text-white-2 text-2xl font-semibold mb-3">Trial not found</h2>
+        <h1 className="text-white-2 text-2xl font-semibold mb-3">Trial not found</h1>
         <p className="text-light-gray text-sm mb-6">This link doesn&apos;t match your account.</p>
         <Link href="/dashboard/subscription" className="text-orange-yellow-crayola hover:underline text-sm">Go to Dashboard →</Link>
       </div>
@@ -56,9 +56,9 @@ export default async function TrialSubscribePage({ searchParams }: Props) {
 
   if (trial.status === "EXPIRED" || new Date() > trial.trialEndsAt) {
     return (
-      <div className="animate-in fade-in duration-500 max-w-xl mx-auto text-center py-20">
+      <div className="max-w-xl mx-auto text-center py-20">
         <AlertTriangle className="w-10 h-10 text-orange-400 mx-auto mb-4" />
-        <h2 className="text-white-2 text-2xl font-semibold mb-3">Trial expired</h2>
+        <h1 className="text-white-2 text-2xl font-semibold mb-3">Trial expired</h1>
         <p className="text-light-gray text-sm mb-6">Your 14-day trial has ended. Start a new trial to continue.</p>
         <Link
           href="/trial/onboarding"
@@ -84,9 +84,9 @@ export default async function TrialSubscribePage({ searchParams }: Props) {
     );
   } catch (err) {
     return (
-      <div className="animate-in fade-in duration-500 max-w-xl mx-auto text-center py-20">
+      <div className="max-w-xl mx-auto text-center py-20">
         <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-4" />
-        <h2 className="text-white-2 text-2xl font-semibold mb-3">Checkout unavailable</h2>
+        <h1 className="text-white-2 text-2xl font-semibold mb-3">Checkout unavailable</h1>
         <p className="text-light-gray text-sm mb-2">
           We couldn&apos;t generate your checkout link. This is usually a configuration issue on our end.
         </p>

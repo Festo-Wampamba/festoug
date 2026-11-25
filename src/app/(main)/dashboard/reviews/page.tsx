@@ -24,7 +24,7 @@ export default async function MyReviewsPage() {
   );
 
   return (
-    <div className="animate-in fade-in zoom-in-95 duration-500">
+    <div>
       <div className="flex items-center gap-4 mb-6">
         <Link
           href="/dashboard"

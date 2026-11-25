@@ -12,10 +12,10 @@ export function SkillTags({ groups }: { groups: SkillGroup[] }) {
           className="skill-group min-w-0 rounded-xl border border-border p-4 sm:p-5 animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-500 motion-reduce:animate-none"
           style={{ animationDelay: `${i * 90}ms` }}
         >
-          <h4 className="mb-4 flex items-start gap-3 text-base font-semibold leading-snug text-foreground">
+          <h3 className="mb-4 flex items-start gap-3 text-base font-semibold leading-snug text-foreground">
             <span aria-hidden="true" className="mt-0.5 font-mono text-xs font-normal text-primary">0{i + 1}</span>
             <span className="min-w-0 [overflow-wrap:anywhere]">{group.label}</span>
-          </h4>
+          </h3>
           <ul className="skill-grid">
             {group.skills.map((skill) => (
               <li

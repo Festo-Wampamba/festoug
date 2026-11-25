@@ -37,11 +37,11 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
   );
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       <header className="mb-8 relative pb-[15px]">
-        <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
+        <h1 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
           Blog
-        </h2>
+        </h1>
         <div className="absolute bottom-0 left-0 w-10 h-1 bg-gold rounded-full" />
       </header>
 

@@ -134,9 +134,9 @@ export default async function ServicesPage() {
         <div className="service-hero-grid">
           <header className="min-w-0">
             <p className="page-eyebrow mb-5">Independent software engineer · Kampala</p>
-            <h2 className="mb-5 text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl">
+            <h1 className="mb-5 text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl">
               Services <span className="font-light text-muted-foreground">&amp; Expertise</span>
-            </h2>
+            </h1>
             <p className="max-w-[62ch] text-base leading-relaxed text-muted-foreground">
               I develop web applications, integrate backend systems, and configure the infrastructure they depend on. Each engagement is scoped around your business requirements, existing systems, and handover needs.
             </p>
@@ -164,7 +164,7 @@ export default async function ServicesPage() {
       <section aria-labelledby="service-areas-heading" className="service-reveal">
         <div className="mb-6">
           <p className="page-eyebrow mb-2">01 · Focus areas</p>
-          <h3 id="service-areas-heading" className="section-heading">What I can help with</h3>
+          <h2 id="service-areas-heading" className="section-heading">What I can help with</h2>
         </div>
         <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {SERVICE_CHIPS.map(({ icon, label }) => (
@@ -182,7 +182,7 @@ export default async function ServicesPage() {
       <section aria-labelledby="work-heading" className="services-detail-section service-reveal">
         <div className="mb-8 max-w-[62ch]">
           <p className="page-eyebrow mb-2">02 · Services</p>
-          <h3 id="work-heading" className="section-heading">Practical support for the whole stack</h3>
+          <h2 id="work-heading" className="section-heading">Practical support for the whole stack</h2>
           <p className="mt-2 text-base leading-relaxed text-muted-foreground">
             Choose a focused workstream or combine areas when the product, application, and infrastructure need to move together.
           </p>
@@ -201,7 +201,7 @@ export default async function ServicesPage() {
                 <span className="font-mono text-xs font-medium tracking-[0.16em] text-muted-foreground">0{index + 1}</span>
               </div>
 
-              <h4 className="text-xl font-semibold tracking-tight">{name}</h4>
+              <h3 className="text-xl font-semibold tracking-tight">{name}</h3>
               <p className="mt-3 text-base leading-relaxed text-muted-foreground">{summary}</p>
 
               <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Deliverables</p>
@@ -233,7 +233,7 @@ export default async function ServicesPage() {
       <section aria-labelledby="process-heading" className="service-reveal">
         <div className="mb-6 max-w-[62ch]">
           <p className="page-eyebrow mb-2">03 · Working together</p>
-          <h3 id="process-heading" className="section-heading">A clear path from need to handover</h3>
+          <h2 id="process-heading" className="section-heading">A clear path from need to handover</h2>
           <p className="mt-2 text-base leading-relaxed text-muted-foreground">
             Every engagement starts with context and ends with a result you can understand, use, and maintain.
           </p>
@@ -247,7 +247,7 @@ export default async function ServicesPage() {
                 </span>
                 <span className="font-mono text-xs font-medium tracking-[0.16em] text-muted-foreground">{step.number}</span>
               </div>
-              <h4 className="text-lg font-semibold tracking-tight">{step.title}</h4>
+              <h3 className="text-lg font-semibold tracking-tight">{step.title}</h3>
               <p className="mt-2 text-base leading-relaxed text-muted-foreground">{step.description}</p>
             </li>
           ))}
@@ -257,7 +257,7 @@ export default async function ServicesPage() {
       <section aria-labelledby="support-heading" className="service-reveal">
         <div className="mb-8 max-w-[62ch]">
           <p className="page-eyebrow mb-2">04 · Ongoing support</p>
-          <h3 id="support-heading" className="section-heading">Ongoing maintenance & technical support</h3>
+          <h2 id="support-heading" className="section-heading">Ongoing maintenance & technical support</h2>
           <p className="mt-2 text-base leading-relaxed text-muted-foreground">
             Support arrangements are scoped around your application, infrastructure, release schedule, and response requirements.
           </p>

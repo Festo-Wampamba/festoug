@@ -40,7 +40,7 @@ function OnboardingForm() {
   }
 
   return (
-    <div className="animate-in fade-in duration-500 max-w-xl mx-auto">
+    <div className="max-w-xl mx-auto">
       <Link
         href="/services"
         className="inline-flex items-center gap-2 text-light-gray-70 hover:text-white-2 transition-colors mb-8 text-sm"
@@ -55,7 +55,7 @@ function OnboardingForm() {
           </div>
           <span className="text-green-400 text-sm font-medium tracking-wide uppercase">14-Day Free Trial</span>
         </div>
-        <h2 className="text-white-2 text-3xl font-semibold mb-3">Start your free trial</h2>
+        <h1 className="text-white-2 text-3xl font-semibold mb-3">Start your free trial</h1>
         <p className="text-light-gray text-sm leading-relaxed">
           No credit card required. Full access for 14 days. Cancel anytime.
         </p>

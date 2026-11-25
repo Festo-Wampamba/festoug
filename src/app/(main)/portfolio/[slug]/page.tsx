@@ -20,7 +20,7 @@ export async function generateMetadata({
   );
   if (!project || !project.isActive) return { title: "Project Not Found" };
   return {
-    title: `${project.title} | Portfolio`,
+    title: `${project.title} | Work`,
     description: project.description?.slice(0, 160) || `${project.title} — ${project.category}`,
   };
 }
@@ -39,12 +39,12 @@ export default async function ProjectDetailPage({
   if (!project || !project.isActive) notFound();
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       <Link
         href="/portfolio"
         className="inline-flex items-center gap-2 text-light-gray hover:text-orange-yellow-crayola transition-colors text-sm font-medium mb-6"
       >
-        <ChevronLeft className="w-4 h-4" /> Back to Portfolio
+        <ChevronLeft className="w-4 h-4" /> Back to Work
       </Link>
 
       {/* Hero image */}
