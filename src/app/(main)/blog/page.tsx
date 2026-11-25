@@ -39,7 +39,7 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
           <p className="text-light-gray">No blog posts found at the moment. Check back soon!</p>
         </div>
       ) : (
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-[30px] mb-10">
+        <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,22rem),1fr))] gap-[30px] mb-10">
           {posts.map((post) => {
             const dateStr = new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
               year: "numeric",

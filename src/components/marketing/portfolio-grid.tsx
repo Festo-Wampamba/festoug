@@ -110,7 +110,7 @@ export function PortfolioGrid({ projects, limit, hideCategoryFilter }: Portfolio
         </ul>
       )}
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,22rem),1fr))] gap-6 mb-8">
         {filteredProjects.map((project, index) => (
           <li
             key={project.id}

@@ -65,18 +65,81 @@ blog and a SaaS (accounts, dashboard, licenses, maintenance trials). Decision:
 - [ ] Replace mockup-looking thumbnails with real screenshots
 - [ ] Rebuild project cards (`portfolio-grid.tsx`) to show role, stack and the
       result line, linking to `/portfolio/[slug]`
-- [ ] Unpublish or rewrite the generic Apr 2025 blog posts (admin → Blog)
+- [ ] Unpublish or rewrite the generic blog posts dated Apr 2026 (admin → Blog;
+      the review first said Apr 2025, which was wrong)
 - [ ] Keep Store out of the header until it has 3+ products
 
 ## Phase 4: layout, type and resolutions
 
-- [ ] Full profile sidebar on Home only; inner pages get a slim contact strip
-      and full-width content (`(main)/layout.tsx`, `sidebar.tsx`)
-- [ ] Headline scale `clamp(2.5rem, 3vw, 4rem)` so 1920+ screens don't look timid
-- [ ] Cap reading width at ~72ch; shrink the 2000px shell to ~1440–1600px
-- [ ] Mobile: remove the duplicate name card at the top; shrink the "Festo AI"
-      bar (~80px of every screen) to a floating button
+- [x] Full profile card on Home only; inner pages get a slim contact bar
+      (photo, Email, WhatsApp, Resume) and full-width content (`sidebar.tsx`)
+- [x] Card grids (Work, blog, testimonials) pick columns from the space:
+      3 on full-width pages at 1440, 2 beside the Home sidebar, 1 on phones
+- [x] Hero headline `clamp(2rem, 1.25rem + 2vw, 4rem)`: 49px at 1440, 58px at 1920
+- [x] Shell capped at 1600px (was 2000px); project descriptions and the
+      testimonials intro capped at 72ch (blog posts already were)
+- [x] Mobile: profile card shows the summary instead of repeating the name
+      from the header; the 80px "Festo AI" bar is now a 56px floating button
+- [x] Layer separation: canvas, card and border tokens adjusted (see palette
+      verdict); glass panels 82% opaque instead of 64%
 - [ ] Optional: pair Geist body with a display face for headlines
+
+## Hosting and auth roadmap (decided order)
+
+1. **Merge #48, #49, #50.** None of them depends on where the site runs.
+2. **Phase 4 (UI).** Also host-independent, so it doesn't wait for the move.
+3. **Move to the VPS with Better Auth unchanged.** Change one big thing at a
+   time: if login breaks after the move, it's the move, not a new auth system.
+4. **Decide on Zitadel only after the VPS is stable** (see the trade-off below).
+
+### What the VPS move involves
+
+Vercel lock-in is small. The database layer already switches to postgres.js
+for any non-Neon URL.
+
+| Vercel piece | VPS replacement |
+| --- | --- |
+| Neon database | Postgres 16 in Docker on the VPS (`docker-compose.yml` already binds it to 127.0.0.1); move data with `pg_dump` / `pg_restore` |
+| Builds and hosting | `next build` + `next start` under systemd (or Docker), single instance |
+| HTTPS and domain | Caddy in front (automatic TLS); DNS cut-over with a low TTL |
+| Cron (`vercel.json`, trial reminder 09:00) | systemd timer or crontab calling `/api/cron/trial-reminder` with `CRON_SECRET` |
+| `@vercel/analytics` | remove, or self-host Umami / Plausible |
+| `VERCEL_URL` in Better Auth trusted origins | the VPS domain only |
+| Client IP (`x-real-ip`) for rate limits | the proxy **must overwrite** `X-Real-IP` and `X-Forwarded-For`, or clients can dodge rate limits (`lib/rate-limit.ts`) |
+| Data cache (phase 2) | works as-is on one instance (file cache in `.next/cache`); several instances would need a shared cache handler |
+
+"Set up the database well" means:
+- separate users for the app and for migrations
+- commit the missing migration for the one-active-trial index, then use
+  `db:migrate` (not `db:push`) in production
+- nightly `pg_dump` copied off the server, with a tested restore
+- Postgres not reachable from the internet
+
+Keep Vercel live for a week after the cut-over as the rollback.
+
+### Zitadel vs Better Auth: the trade-off
+
+Better Auth runs inside the app. Zitadel is a separate identity server: its
+own service, database, domain (e.g. `auth.festoug.com`), upgrades and backups.
+If Zitadel is down, nobody can sign in.
+
+**Zitadel is worth it if** several apps will share one login (SSO), or you
+need organisations, SAML, passkeys/MFA and audit logs out of the box.
+**Keep Better Auth if** festoug.com is the only app: it already handles email
+verification, OAuth, roles, bans and rate limits.
+
+If Zitadel goes ahead, the code is ready for it in one important way: 39
+server files only call `auth()` / `requireAdmin()` from `lib/auth.ts`, so the
+switch happens behind that one seam. The work:
+
+- OIDC login replaces `lib/better-auth.ts`, the auth API route, the session
+  check in `proxy.ts`, and the 5 custom auth pages (Zitadel hosts the login)
+- 12 client files that use `auth-client` move to the new session hook
+- keep the local `user` table (13 tables reference it); add a Zitadel subject
+  ID column and match existing users by verified email
+- import existing bcrypt password hashes into Zitadel so nobody has to reset;
+  Google/GitHub users re-link on their next sign-in
+- map ADMIN / CUSTOMER and ban/suspend to Zitadel project roles
 
 ## Palette verdict
 
@@ -92,7 +155,12 @@ most AAA:
 | Gold ink / canvas (light) | 6.1 |
 | Gold accent / canvas (light, decorative only) | 2.8 |
 
-**One thing to change later (phase 4):** layers don't separate. Surface vs
+**Done in phase 4:** canvas `#F3EAD4` / `#071F18`, surface `#FFFDF7` /
+`#113427`, border `#D3C6A7` / `#3F594B`. Card vs canvas is now 1.18:1 light
+(was 1.06) and 1.27:1 dark (was 1.14); main text stays AAA (13.6 / 15.5),
+supporting text AA (6.2 / 9.8), gold ink AA (5.5). DESIGN.md updated.
+
+**The original finding:** layers don't separate. Surface vs
 canvas is 1.06:1 in light mode and 1.14:1 in dark, and borders are 1.33:1.
 Cream glass on cream canvas makes every page feel flat and slightly washed
 out. Fix by deepening the canvas a step or strengthening borders and shadows
@@ -136,4 +204,14 @@ production server against the real DB shows cold 200–980ms vs warm 7–20ms;
 9 tagged cache entries written; all 9 content pages render with no errors.
 Not verified: an admin save clearing the cache live (needs an admin login).
 Next: phase 3 content (case studies, screenshots, blog clean-up) and phase 4.
+
+### 2026-11-25 · `feat/phase4-layout` · phase 4 + hosting roadmap
+Added the hosting and auth roadmap (VPS move first with Better Auth kept;
+Zitadel decided after). Phase 4: Home-only profile card, contact bar and
+full-width inner pages, width-driven card grids, fluid headline, 1600px shell,
+72ch text caps, floating mobile assistant, palette layer separation.
+Verified at 375 / 1440 / 1920, light and dark: no sideways scroll, 44px
+targets in the contact bar, 3/2/1 grid columns as intended.
+Corrected: blog posts are dated Apr 2026, not Apr 2025.
+Next: phase 3 content; then the VPS move.
 Next: phase 2 (caching) and the case-study content for phase 3.
