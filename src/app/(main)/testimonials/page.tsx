@@ -37,11 +37,11 @@ export default async function TestimonialsPage() {
         <div className="absolute bottom-0 left-0 w-10 h-1 bg-gold rounded-full" />
       </header>
 
-      <p className="text-light-gray text-base font-light leading-relaxed mb-8">
+      <p className="max-w-[72ch] text-light-gray text-base font-light leading-relaxed mb-8">
         Here&apos;s what clients and collaborators have to say about working with me.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,22rem),1fr))] gap-6">
         {testimonials.map((t) => (
           <div
             key={t.id}

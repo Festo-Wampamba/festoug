@@ -19,15 +19,15 @@ carry text. Sage is supporting emphasis, never a large competing accent.
 
 | Role | Light | Dark |
 | --- | --- | --- |
-| Canvas | #FBF5E6 | #08251D |
-| Surface | #FFFCF4 | #0F3024 |
+| Canvas | #F3EAD4 | #071F18 |
+| Surface | #FFFDF7 | #113427 |
 | Main text | #08251D | #F6F3E8 |
 | Supporting text | #465A50 | #B7C8BA |
 | Primary action | #123B2C | #A7F3D0 |
 | Text on primary | #FFFDF7 | #10261D |
 | Supporting surface | #E4ECDD | #234332 |
 | Text on supporting surface | #123B2C | #C7EED9 |
-| Structural border | #DFD6BF | #395144 |
+| Structural border | #D3C6A7 | #3F594B |
 | Gold accent (decorative) | #B78B45 | #D8B46A |
 | Gold ink (text-safe) | #7A5620 | #E3C88F |
 | Sand wash | #D8C19A | #B78B45 |

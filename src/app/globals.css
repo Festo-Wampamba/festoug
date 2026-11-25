@@ -87,22 +87,22 @@
 /* Forest Luxe: deep forest, sand and gold on cream. Semantic pairs are the source of truth. */
 :root {
   color-scheme: light;
-  --background: #FBF5E6;
+  --background: #F3EAD4;
   --foreground: #08251D;
-  --card: #FFFCF4;
+  --card: #FFFDF7;
   --card-foreground: #08251D;
-  --popover: #FFFCF4;
+  --popover: #FFFDF7;
   --popover-foreground: #08251D;
   --primary: #123B2C;
   --primary-foreground: #FFFDF7;
   --secondary: #E4ECDD;
   --secondary-foreground: #123B2C;
-  --muted: #F1ECDC;
+  --muted: #EDE3CB;
   --muted-foreground: #465A50;
   --accent: #E4ECDD;
   --accent-foreground: #123B2C;
   --destructive: #A32D32;
-  --border: #DFD6BF;
+  --border: #D3C6A7;
   --input: #819184;
   --ring: #123B2C;
   --radius: 0.75rem;
@@ -151,9 +151,9 @@
 
 .dark {
   color-scheme: dark;
-  --background: #08251D;
+  --background: #071F18;
   --foreground: #F6F3E8;
-  --card: #0F3024;
+  --card: #113427;
   --card-foreground: #F6F3E8;
   --popover: #123B2C;
   --popover-foreground: #F6F3E8;
@@ -166,7 +166,7 @@
   --accent: #234332;
   --accent-foreground: #C7EED9;
   --destructive: #F5B1B1;
-  --border: #395144;
+  --border: #3F594B;
   --input: #6D8977;
   --ring: #A7F3D0;
   --gold: #D8B46A;
@@ -417,26 +417,14 @@
   body:has(.portfolio-shell) .portfolio-body,
   body:has(.portfolio-shell) .site-footer,
   body:has(.portfolio-shell) .site-header-inner { margin-inline-end: 0; }
-  /* Full-width reading area with enough final scroll clearance for the dock. */
-  .portfolio-shell { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
-  body:has(.portfolio-shell) .assistant-wheel {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: calc(80px + env(safe-area-inset-bottom, 0px));
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-    border-top: 1px solid var(--border);
-    background: var(--background);
-  }
-  body:has(.portfolio-shell) .assistant-mobile-label { display: block; color: var(--primary); font-size: 1rem; font-weight: 500; }
+  /* The assistant is a floating button here too (it used to be an 80px bar
+     across every screen). The padding lets the last line scroll clear of it. */
+  .portfolio-shell { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
   body:has(.portfolio-shell) .assistant-wheel::before,
   body:has(.portfolio-shell) .assistant-wheel::after { display: none; }
   body:has(.portfolio-shell) .assistant-panel {
-    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
-    height: min(620px, calc(100dvh - 112px - env(safe-area-inset-bottom, 0px)));
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    height: min(620px, calc(100dvh - 108px - env(safe-area-inset-bottom, 0px)));
   }
 }
 @media (max-width: 639px) {
@@ -491,7 +479,8 @@
   --text-sm: 1rem;
   --text-sm--line-height: 1.6;
   width: 100%;
-  max-width: 2000px;
+  /* Wider than this and lines get too long and the layout feels empty on 1920+ screens. */
+  max-width: 1600px;
   margin-inline: auto;
   --shell-gutter: clamp(1rem, 3vw, 3rem);
   padding-inline: var(--shell-gutter);
@@ -504,6 +493,16 @@
     --text-5xl: 2.5rem;
     --text-5xl--line-height: 1.15;
   }
+}
+/* Inner pages swap the profile column for a contact bar, so the content spans
+   the full row instead of sitting beside an empty sidebar track. */
+.portfolio-body:has(> [data-variant="compact"]) { grid-template-columns: minmax(0, 1fr); }
+
+/* The hero headline grows with the viewport (32px at 640, ~49px at 1440, 64px cap)
+   so wide screens don't show a timid headline in a large panel. 375px and below
+   keeps its own size further down. */
+@media (min-width: 376px) {
+  .portfolio-headline { font-size: clamp(2rem, 1.25rem + 2vw, 4rem); }
 }
 .page-eyebrow { color: var(--primary); font-size: .875rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
 .section-heading { color: var(--foreground); font-size: clamp(1.5rem, 2.4vw, 1.875rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.3; }
@@ -639,7 +638,8 @@ body::before {
                    containing block for position:fixed children (lightbox, modals). */
 .glass, .glass-panel::before {
   --glass-edge: color-mix(in oklab, white 60%, transparent);
-  background: color-mix(in oklab, var(--card) 64%, transparent);
+  /* 82%, not lower: panels must read as a layer above the canvas, not dissolve into it. */
+  background: color-mix(in oklab, var(--card) 82%, transparent);
   -webkit-backdrop-filter: blur(22px) saturate(150%);
   backdrop-filter: blur(22px) saturate(150%);
   box-shadow:
