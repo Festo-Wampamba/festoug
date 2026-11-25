@@ -1,6 +1,4 @@
-import { withRetry } from "@/lib/db";
-import { projects as projectsTable } from "@/lib/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { getActiveProjects } from "@/lib/content";
 import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
 import { GithubRepos } from "@/components/marketing/github-repos";
 import { getGitHubRepos } from "@/lib/github";
@@ -14,13 +12,7 @@ export const metadata = {
 
 export default async function PortfolioPage() {
   const [dbProjects, repos] = await Promise.all([
-    withRetry((db) =>
-      db
-        .select()
-        .from(projectsTable)
-        .where(eq(projectsTable.isActive, true))
-        .orderBy(asc(projectsTable.sortOrder))
-    ),
+    getActiveProjects(),
     getGitHubRepos(6),
   ]);
 

@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   description: "Web development, server administration, network engineering, and ongoing technical support.",
 };
 
-export const dynamic = "force-dynamic";
 
 type ServiceIcon = typeof CodeIcon;
 

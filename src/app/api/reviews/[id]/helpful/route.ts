@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { reviews, reviewHelpfulVotes } from "@/lib/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function POST(
   req: NextRequest,
@@ -55,6 +56,7 @@ export async function POST(
       helpfulCount: sql`(select count(*)::int from ${reviewHelpfulVotes} where ${reviewHelpfulVotes.reviewId} = ${id})`,
     })
     .where(eq(reviews.id, id));
+  revalidateContent("reviews");
 
   return NextResponse.json({ voted: !existingVote });
 }

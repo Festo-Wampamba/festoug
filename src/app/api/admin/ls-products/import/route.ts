@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { revalidateContent } from "@/lib/content";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -50,6 +51,7 @@ export async function POST(req: Request) {
     variantId,
     isActive: true,
   }).returning();
+  revalidateContent("products");
 
   return NextResponse.json({ product }, { status: 201 });
 }

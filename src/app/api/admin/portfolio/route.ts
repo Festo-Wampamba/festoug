@@ -4,6 +4,7 @@ import { projects } from "@/lib/db/schema";
 import { projectSchema } from "@/lib/validations";
 import { asc } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function GET() {
   const session = await auth();
@@ -34,5 +35,6 @@ export async function POST(req: NextRequest) {
   }
 
   const [project] = await db.insert(projects).values(result.data).returning();
+  revalidateContent("projects");
   return NextResponse.json(project, { status: 201 });
 }

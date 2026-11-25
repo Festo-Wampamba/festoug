@@ -1,6 +1,4 @@
-import { withRetry } from "@/lib/db";
-import { testimonials as testimonialsTable } from "@/lib/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { getActiveTestimonials } from "@/lib/content";
 import Image from "next/image";
 
 export const dynamic = "force-dynamic";
@@ -28,12 +26,7 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default async function TestimonialsPage() {
-  const testimonials = await withRetry((db) =>
-    db.query.testimonials.findMany({
-      where: eq(testimonialsTable.isActive, true),
-      orderBy: [asc(testimonialsTable.sortOrder)],
-    })
-  );
+  const testimonials = await getActiveTestimonials();
 
   return (
     <div>

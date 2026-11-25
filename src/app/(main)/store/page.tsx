@@ -1,6 +1,4 @@
-import { withRetry } from "@/lib/db";
-import { products } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { getActiveProducts } from "@/lib/content";
 import Link from "next/link";
 import { ShoppingCart, PackagePlus, ArrowRight } from "lucide-react";
 import { stripHtml } from "@/lib/sanitize";
@@ -14,12 +12,7 @@ export const metadata = {
 
 export default async function StorePage() {
   // Fetch active products with retry for Neon cold starts
-  const availableProducts = await withRetry((db) =>
-    db.query.products.findMany({
-      where: eq(products.isActive, true),
-      orderBy: [desc(products.createdAt)],
-    })
-  );
+  const availableProducts = await getActiveProducts();
 
   return (
     <article className="xl:pr-[60px]">

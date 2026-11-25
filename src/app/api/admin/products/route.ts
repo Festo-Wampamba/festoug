@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { productSchema } from "@/lib/validations";
+import { revalidateContent } from "@/lib/content";
 
 // CREATE a new product
 export async function POST(req: Request) {
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
       isActive: data.isActive ?? true,
     })
     .returning();
+  revalidateContent("products");
 
   return NextResponse.json(newProduct, { status: 201 });
 }

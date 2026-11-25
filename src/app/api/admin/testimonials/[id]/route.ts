@@ -4,6 +4,7 @@ import { testimonials } from "@/lib/db/schema";
 import { testimonialSchema } from "@/lib/validations";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function PATCH(
   req: NextRequest,
@@ -29,6 +30,7 @@ export async function PATCH(
     .set(result.data)
     .where(eq(testimonials.id, id))
     .returning();
+  revalidateContent("testimonials");
 
   if (!updated) {
     return NextResponse.json({ error: "Testimonial not found" }, { status: 404 });
@@ -48,5 +50,6 @@ export async function DELETE(
 
   const { id } = await params;
   await db.delete(testimonials).where(eq(testimonials.id, id));
+  revalidateContent("testimonials");
   return NextResponse.json({ success: true });
 }

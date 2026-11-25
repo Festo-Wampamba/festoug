@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { blogPostSchema } from "@/lib/validations";
+import { revalidateContent } from "@/lib/content";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -50,6 +51,7 @@ export async function POST(req: Request) {
       publishedAt: data.isPublished ? new Date() : null,
     })
     .returning();
+  revalidateContent("blog");
 
   return NextResponse.json(newPost, { status: 201 });
 }

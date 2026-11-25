@@ -5,17 +5,15 @@ import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
 import { ClientLogos } from "@/components/marketing/client-logos";
 import { EngineeringIllustration } from "@/components/marketing/engineering-illustration";
 import Link from "next/link";
-import { withRetry } from "@/lib/db";
-import { services, testimonials as testimonialsTable, projects as projectsTable } from "@/lib/db/schema";
-import { eq, asc, desc } from "drizzle-orm";
+import { getActiveServices, getActiveTestimonials, getFeaturedProjects } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
   const [servicesData, testimonials, selectedProjects] = await Promise.all([
-    withRetry(db => db.query.services.findMany({ where: eq(services.isActive, true), orderBy: [asc(services.sortOrder)] })),
-    withRetry(db => db.query.testimonials.findMany({ where: eq(testimonialsTable.isActive, true), orderBy: [asc(testimonialsTable.sortOrder)] })),
-    withRetry(db => db.select().from(projectsTable).where(eq(projectsTable.isActive, true)).orderBy(desc(projectsTable.isFeatured), asc(projectsTable.sortOrder)).limit(4)),
+    getActiveServices(),
+    getActiveTestimonials(),
+    getFeaturedProjects(4),
   ]);
   const projects = selectedProjects.map(p => ({ id: p.id, title: p.title, slug: p.slug, category: p.category, image: p.image || "images/project-1.jpg", liveUrl: p.liveUrl }));
 

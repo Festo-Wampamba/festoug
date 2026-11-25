@@ -4,6 +4,7 @@ import { projects } from "@/lib/db/schema";
 import { projectSchema } from "@/lib/validations";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function PATCH(
   req: NextRequest,
@@ -29,6 +30,7 @@ export async function PATCH(
     .set({ ...result.data, updatedAt: new Date() })
     .where(eq(projects.id, id))
     .returning();
+  revalidateContent("projects");
 
   if (!updated) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -48,5 +50,6 @@ export async function DELETE(
 
   const { id } = await params;
   await db.delete(projects).where(eq(projects.id, id));
+  revalidateContent("projects");
   return NextResponse.json({ success: true });
 }

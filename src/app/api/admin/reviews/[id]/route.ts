@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { reviews } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function PATCH(
   req: NextRequest,
@@ -25,6 +26,7 @@ export async function PATCH(
     .set({ status, updatedAt: new Date() })
     .where(eq(reviews.id, id))
     .returning();
+  revalidateContent("reviews");
 
   if (!updated) {
     return NextResponse.json({ error: "Review not found" }, { status: 404 });
@@ -44,5 +46,6 @@ export async function DELETE(
 
   const { id } = await params;
   await db.delete(reviews).where(eq(reviews.id, id));
+  revalidateContent("reviews");
   return NextResponse.json({ success: true });
 }

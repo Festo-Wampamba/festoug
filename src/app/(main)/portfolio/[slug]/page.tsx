@@ -1,6 +1,4 @@
-import { withRetry } from "@/lib/db";
-import { projects } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { getProjectBySlug } from "@/lib/content";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,9 +13,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = await withRetry((db) =>
-    db.query.projects.findFirst({ where: eq(projects.slug, slug) })
-  );
+  const project = await getProjectBySlug(slug);
   if (!project || !project.isActive) return { title: "Project Not Found" };
   return {
     title: `${project.title} | Work`,
@@ -32,9 +28,7 @@ export default async function ProjectDetailPage({
 }) {
   const { slug } = await params;
 
-  const project = await withRetry((db) =>
-    db.query.projects.findFirst({ where: eq(projects.slug, slug) })
-  );
+  const project = await getProjectBySlug(slug);
 
   if (!project || !project.isActive) notFound();
 
