@@ -50,7 +50,7 @@ export default async function SubscriptionPage() {
       year: "numeric", month: "long", day: "numeric",
     });
     return (
-      <div className="animate-in fade-in duration-500">
+      <div>
         <h3 className="text-2xl font-semibold text-white-2 mb-6">Subscription</h3>
         <div className="bg-eerie-black-1 border border-green-500/30 rounded-2xl p-8">
           <div className="flex items-start gap-4 mb-6">
@@ -85,7 +85,7 @@ export default async function SubscriptionPage() {
       month: "long", day: "numeric", year: "numeric",
     });
     return (
-      <div className="animate-in fade-in duration-500">
+      <div>
         <h3 className="text-2xl font-semibold text-white-2 mb-6">Subscription</h3>
         <div className="bg-eerie-black-1 border border-jet rounded-2xl p-8">
           <div className="flex items-start gap-4 mb-6">
@@ -123,7 +123,7 @@ export default async function SubscriptionPage() {
 
   // State 1 — No trial
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       <h3 className="text-2xl font-semibold text-white-2 mb-6">Subscription</h3>
       <div className="bg-eerie-black-1 border border-jet rounded-2xl p-10 text-center">
         <AlertCircle className="w-10 h-10 text-light-gray-70 mx-auto mb-4" />

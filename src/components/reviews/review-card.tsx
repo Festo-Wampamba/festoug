@@ -72,7 +72,7 @@ export function ReviewCard({
             </span>
           </div>
 
-          <h4 className="text-white-2 font-semibold text-sm mb-1">{title}</h4>
+          <h3 className="text-white-2 font-semibold text-sm mb-1">{title}</h3>
           <p className="text-light-gray text-sm leading-relaxed">{body}</p>
 
           <div className="mt-4 flex items-center gap-3">

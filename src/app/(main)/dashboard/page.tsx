@@ -31,7 +31,7 @@ export default async function DashboardOverview() {
   const activeLicensesCount = userLicenses.filter(l => l.isActive).length;
 
   return (
-    <div className="space-y-8 animate-in fade-in zoom-in-95 duration-500">
+    <div className="space-y-8">
       {/* Account Status Warning */}
       {session.user.accountStatus === "SUSPENDED" && (
         <div className="flex items-start gap-3 p-4 bg-orange-400/10 border border-orange-400/20 rounded-2xl">

@@ -20,8 +20,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <span aria-hidden className="hidden sm:inline">·</span>
             <span>Kampala, Uganda</span>
           </p>
-          <nav aria-label="Footer navigation" className="flex shrink-0 items-center justify-center gap-6">
-            <a href="https://github.com/Festo-Wampamba" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-sm transition-colors hover:text-primary">GitHub</a>
+          <nav aria-label="Footer navigation" className="flex shrink-0 items-center justify-center flex-wrap gap-x-5 gap-y-1">
+            <a href="https://github.com/Festo-Wampamba" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm transition-colors hover:text-primary">GitHub</a>
+            <a href="https://www.youtube.com/channel/UCSiPOa3Vowwi42t1BysexmQ" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm transition-colors hover:text-primary">YouTube</a>
+            <Link href="/blog" className="inline-flex min-h-11 items-center rounded-sm transition-colors hover:text-primary">Blog</Link>
+            <Link href="/store" className="inline-flex min-h-11 items-center rounded-sm transition-colors hover:text-primary">Store</Link>
             <Link href="/contact" className="inline-flex min-h-11 items-center rounded-sm transition-colors hover:text-primary">Get in touch</Link>
           </nav>
         </footer>

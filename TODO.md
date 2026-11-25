@@ -1,5 +1,7 @@
 # Project TODO Tracker
 
+> UI and design work is tracked in [docs/ui-overhaul/TRACKER.md](docs/ui-overhaul/TRACKER.md), including the per-session log.
+
 ## Phase 2: Database & Auth (Completed ✅)
 - [x] Configure PostgreSQL and Drizzle ORM
 - [x] Create comprehensive Database Schema

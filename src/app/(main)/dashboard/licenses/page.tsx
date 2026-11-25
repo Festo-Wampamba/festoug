@@ -19,7 +19,7 @@ export default async function LicensesPage() {
   );
 
   return (
-    <div className="animate-in fade-in zoom-in-95 duration-500">
+    <div>
       <h3 className="text-2xl font-semibold text-white-2 mb-6">License Keys</h3>
 
       {userLicenses.length === 0 ? (

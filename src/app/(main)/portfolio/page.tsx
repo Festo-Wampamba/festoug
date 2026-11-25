@@ -8,7 +8,7 @@ import { getGitHubRepos } from "@/lib/github";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Portfolio",
+  title: "Work",
   description: "Explore projects built by Festo Wampamba — web apps, data solutions, and more.",
 };
 
@@ -34,22 +34,24 @@ export default async function PortfolioPage() {
   }));
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       <header className="mb-4 relative pb-[15px]">
-        <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
-          Portfolio
-        </h2>
+        <h1 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
+          Work
+        </h1>
         <div className="absolute bottom-0 left-0 w-10 h-1 bg-gold rounded-full" />
       </header>
+      <p className="mb-6 max-w-[60ch] text-muted-foreground">Websites, applications and systems I have designed and built, for clients and for my own products.</p>
 
+      <h2 className="sr-only">Projects</h2>
       <PortfolioGrid projects={projects} />
 
       {repos.length > 0 && (
         <section className="mt-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-white-2 text-2xl font-semibold capitalize">
+            <h2 className="text-white-2 text-2xl font-semibold capitalize">
               Open Source on GitHub
-            </h3>
+            </h2>
             <a
               href="https://github.com/Festo-Wampamba"
               target="_blank"

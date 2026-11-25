@@ -53,9 +53,9 @@ export function ServiceCard({ title, icon, description, index = 0 }: ServiceCard
         )}
       </div>
 
-      <h4 className="min-w-0 text-base font-semibold leading-snug text-card-foreground font-head">
+      <h3 className="min-w-0 text-base font-semibold leading-snug text-card-foreground font-head">
         {title}
-      </h4>
+      </h3>
 
       <p className="col-span-2 border-t border-border pt-3 text-base font-normal leading-relaxed text-muted-foreground">
         {description}

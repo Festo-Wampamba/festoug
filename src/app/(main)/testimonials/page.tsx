@@ -36,11 +36,11 @@ export default async function TestimonialsPage() {
   );
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       <header className="mb-8 relative pb-[15px]">
-        <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
+        <h1 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
           Testimonials
-        </h2>
+        </h1>
         <div className="absolute bottom-0 left-0 w-10 h-1 bg-gold rounded-full" />
       </header>
 
@@ -52,7 +52,7 @@ export default async function TestimonialsPage() {
         {testimonials.map((t) => (
           <div
             key={t.id}
-            className="relative bg-eerie-black-1 border border-jet rounded-2xl p-6 pt-10 shadow-1 animate-in fade-in zoom-in-95 duration-500"
+            className="relative bg-eerie-black-1 border border-jet rounded-2xl p-6 pt-10 shadow-1"
           >
             {/* Avatar */}
             <figure className="absolute top-0 left-6 -translate-y-1/2 rounded-2xl overflow-hidden shadow-lg border-2 border-jet">
@@ -68,9 +68,9 @@ export default async function TestimonialsPage() {
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="text-white-2 text-base font-semibold capitalize">
+                <h2 className="text-white-2 text-base font-semibold capitalize">
                   {t.name}
-                </h3>
+                </h2>
                 {t.role && (
                   <p className="text-light-gray text-xs">{t.role}</p>
                 )}

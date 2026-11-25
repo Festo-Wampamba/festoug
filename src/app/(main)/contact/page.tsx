@@ -30,10 +30,10 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       <header className="mb-8 max-w-2xl">
         <div className="relative pb-[15px]">
-          <h2 className="text-foreground text-[32px] font-semibold tracking-tight">Contact</h2>
+          <h1 className="text-foreground text-[32px] font-semibold tracking-tight">Contact</h1>
           <div className="absolute bottom-0 left-0 h-1 w-10 rounded-full bg-gold" />
         </div>
         <p className="mt-4 text-muted-foreground">
@@ -43,7 +43,7 @@ export default function ContactPage() {
 
       {/* 1 — The task: write and send */}
       <section aria-labelledby="contact-form-heading" className="max-w-3xl">
-        <h3 id="contact-form-heading" className="sr-only">Send a message</h3>
+        <h2 id="contact-form-heading" className="sr-only">Send a message</h2>
 
         <form onSubmit={handleSubmit} className="grid gap-5">
           <fieldset className="grid gap-5 md:grid-cols-2">

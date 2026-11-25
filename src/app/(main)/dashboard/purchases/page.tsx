@@ -28,7 +28,7 @@ export default async function PurchasesPage() {
   const reviewedProductIds = new Set(userReviews.map((r) => r.productId));
 
   return (
-    <div className="animate-in fade-in zoom-in-95 duration-500">
+    <div>
       <h3 className="text-2xl font-semibold text-white-2 mb-6">Order History & Downloads</h3>
 
       {userOrders.length === 0 ? (

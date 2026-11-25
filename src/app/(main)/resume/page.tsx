@@ -10,11 +10,11 @@ export const metadata = {
 
 export default function ResumePage() {
   return (
-    <div className="animate-in fade-in duration-500">
+    <div>
       <header className="mb-8 relative pb-[15px]">
-        <h2 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
+        <h1 className="text-white-2 text-[32px] font-semibold capitalize tracking-tight">
           Resume
-        </h2>
+        </h1>
         <div className="absolute bottom-0 left-0 w-10 h-1 bg-gold rounded-full" />
       </header>
 
@@ -25,7 +25,7 @@ export default function ResumePage() {
             <AnimatedBookIcon className="w-[18px] h-[18px]" />
           </div>
           <div>
-            <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Education</h3>
+            <h2 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Education</h2>
             <div className="mt-1.5 h-1 w-10 rounded-full bg-primary" />
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function ResumePage() {
             <AnimatedBriefcaseIcon className="w-[18px] h-[18px]" />
           </div>
           <div>
-            <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Work History</h3>
+            <h2 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">Work History</h2>
             <div className="mt-1.5 h-1 w-10 rounded-full bg-primary" />
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function ResumePage() {
       {/* Skills */}
       <div className="mb-4">
         <div className="mb-6">
-          <h3 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">My Skills</h3>
+          <h2 className="text-white-2 text-xl font-bold uppercase tracking-wide font-head leading-none">My Skills</h2>
           <div className="mt-1.5 h-1 w-10 rounded-full bg-primary" />
         </div>
         <SkillTags
