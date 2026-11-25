@@ -4,6 +4,7 @@ import { eq, and, ne } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { blogPostSchema } from "@/lib/validations";
+import { revalidateContent } from "@/lib/content";
 
 // UPDATE a blog post
 export async function PATCH(
@@ -56,6 +57,7 @@ export async function PATCH(
     })
     .where(eq(blogPosts.id, id))
     .returning();
+  revalidateContent("blog");
 
   return NextResponse.json(updated);
 }
@@ -72,5 +74,6 @@ export async function DELETE(
 
   const { id } = await params;
   await db.delete(blogPosts).where(eq(blogPosts.id, id));
+  revalidateContent("blog");
   return NextResponse.json({ success: true });
 }

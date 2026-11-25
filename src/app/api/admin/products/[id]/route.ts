@@ -4,6 +4,7 @@ import { eq, and, ne } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { productSchema } from "@/lib/validations";
+import { revalidateContent } from "@/lib/content";
 
 // UPDATE a product
 export async function PATCH(
@@ -57,6 +58,7 @@ export async function PATCH(
     })
     .where(eq(products.id, id))
     .returning();
+  revalidateContent("products");
 
   return NextResponse.json(updated);
 }
@@ -84,5 +86,6 @@ export async function DELETE(
   }
 
   await db.delete(products).where(eq(products.id, id));
+  revalidateContent("products");
   return NextResponse.json({ success: true });
 }

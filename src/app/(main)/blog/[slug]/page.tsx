@@ -1,6 +1,4 @@
-import { withRetry } from "@/lib/db";
-import { blogPosts } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { getPostBySlug } from "@/lib/content";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,9 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await withRetry((db) => db.query.blogPosts.findFirst({
-    where: eq(blogPosts.slug, slug),
-  }));
+  const post = await getPostBySlug(slug);
 
   if (!post || !post.isPublished) return { title: "Post Not Found" };
 
@@ -28,9 +24,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   // Avoid relational `with` query — Neon HTTP driver can fail on it.
   // Fetch post and author as two separate simple queries instead.
-  const post = await withRetry((db) =>
-    db.query.blogPosts.findFirst({ where: eq(blogPosts.slug, slug) })
-  );
+  const post = await getPostBySlug(slug);
 
   if (!post || !post.isPublished) notFound();
 

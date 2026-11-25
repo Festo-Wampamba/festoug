@@ -1,7 +1,8 @@
 import { withRetry } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { products, reviews, orders, reviewHelpfulVotes } from "@/lib/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { reviews, orders, reviewHelpfulVotes } from "@/lib/db/schema";
+import { and, eq } from "drizzle-orm";
+import { getApprovedReviews, getProductBySlug } from "@/lib/content";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, LayoutTemplate, ShieldCheck, Star, Zap } from "lucide-react";
 import Link from "next/link";
@@ -14,9 +15,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const p = await withRetry((db) => db.query.products.findFirst({
-    where: eq(products.slug, slug)
-  }));
+  const p = await getProductBySlug(slug);
   if (!p || !p.isActive) return { title: "Product Not Found" };
   return {
     title: `${p.name} | FestoUG Store`,
@@ -27,9 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const product = await withRetry((db) => db.query.products.findFirst({
-    where: eq(products.slug, slug),
-  }));
+  const product = await getProductBySlug(slug);
 
   if (!product || !product.isActive) {
     notFound();
@@ -37,18 +34,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   const session = await auth();
 
-  const productReviews = await withRetry((db) =>
-    db.query.reviews.findMany({
-      where: and(
-        eq(reviews.productId, product.id),
-        eq(reviews.status, "APPROVED")
-      ),
-      with: {
-        user: { columns: { id: true, name: true, image: true } },
-      },
-      orderBy: [desc(reviews.createdAt)],
-    })
-  );
+  const productReviews = await getApprovedReviews(product.id);
 
   // Check if current user can review (has completed order, hasn't reviewed yet)
   let canReview = false;

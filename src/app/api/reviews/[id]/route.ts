@@ -4,6 +4,7 @@ import { reviews } from "@/lib/db/schema";
 import { reviewUpdateSchema } from "@/lib/validations";
 import { eq, and } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function PATCH(
   req: NextRequest,
@@ -43,6 +44,7 @@ export async function PATCH(
     .set({ rating, title, body: reviewBody, status, updatedAt: new Date() })
     .where(and(eq(reviews.id, id), eq(reviews.userId, session.user.id)))
     .returning();
+  revalidateContent("reviews");
 
   return NextResponse.json(updated);
 }
@@ -69,6 +71,7 @@ export async function DELETE(
   await db
     .delete(reviews)
     .where(and(eq(reviews.id, id), eq(reviews.userId, session.user.id)));
+  revalidateContent("reviews");
 
   return NextResponse.json({ success: true });
 }

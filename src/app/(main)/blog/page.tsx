@@ -1,7 +1,5 @@
 import { BlogCard } from "@/components/blog/blog-card";
-import { withRetry } from "@/lib/db";
-import { blogPosts } from "@/lib/db/schema";
-import { desc, eq, count } from "drizzle-orm";
+import { getPublishedPostCount, getPublishedPosts } from "@/lib/content";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -18,23 +16,14 @@ export default async function BlogPage(props: { searchParams?: Promise<{ page?: 
   const postsPerPage = 6;
 
   // Total count of published posts
-  const [{ value: totalPosts }] = await withRetry((db) =>
-    db.select({ value: count() }).from(blogPosts).where(eq(blogPosts.isPublished, true))
-  );
+  const totalPosts = await getPublishedPostCount();
 
   const totalPages = Math.ceil(totalPosts / postsPerPage) || 1;
   const page = Math.max(1, Math.min(currentPage, totalPages));
   const offset = (page - 1) * postsPerPage;
 
   // Fetch actual posts
-  const posts = await withRetry((db) =>
-    db.query.blogPosts.findMany({
-      where: eq(blogPosts.isPublished, true),
-      orderBy: [desc(blogPosts.publishedAt), desc(blogPosts.createdAt)],
-      limit: postsPerPage,
-      offset,
-    })
-  );
+  const posts = await getPublishedPosts(postsPerPage, offset);
 
   return (
     <div>

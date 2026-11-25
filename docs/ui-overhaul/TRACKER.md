@@ -47,10 +47,17 @@ blog and a SaaS (accounts, dashboard, licenses, maintenance trials). Decision:
 
 ## Phase 2: speed
 
-- [ ] Move content pages (portfolio, resume, blog, services, testimonials) off
-      `force-dynamic` to cached rendering with `revalidate` (36 route files are
-      force-dynamic today; most only need it for auth/store/dashboard)
-- [ ] Check that admin edits still appear (revalidate on save)
+- [x] Content pages read through cached, tagged queries (`src/lib/content.ts`,
+      `unstable_cache`, 1h safety refresh). Production test: first load
+      200–980ms, repeat loads 7–20ms. Pages keep `force-dynamic` so the build
+      never needs a database (CI builds with a placeholder URL); the cache
+      serves the data instead. Services has no data and is now fully static.
+- [x] Every admin and review write clears its tag (`revalidateContent`, 20
+      write sites across 13 routes) with `expire: 0`, so edits show on the
+      next load. Placement checked in the diff; not yet exercised with a real
+      admin login
+- [ ] Later, optional: true static pages served from the CDN. Needs a
+      Postgres service in CI so the build can prerender
 
 ## Phase 3: proof of work (needs content from Festo)
 
@@ -119,4 +126,14 @@ Trade-off decisions (Festo): More dropdown in the header, "Work" as the name,
 YouTube in the footer, H1 first on product pages. All verified at 375 / 1024
 / 1440: header stays on one line, dropdown keyboard-closes, no console errors
 on a fresh load. Sign in stays icon-only.
+
+### 2026-11-25 · `perf/cache-content-pages` · phase 2
+Added `src/lib/content.ts`: tagged, cached reads for home, work, blog, store,
+product and testimonials, with Date fields restored after the cache's JSON
+round trip. 13 write routes clear the matching tag. Services is static.
+Verified: production build passes with an unreachable database (CI parity);
+production server against the real DB shows cold 200–980ms vs warm 7–20ms;
+9 tagged cache entries written; all 9 content pages render with no errors.
+Not verified: an admin save clearing the cache live (needs an admin login).
+Next: phase 3 content (case studies, screenshots, blog clean-up) and phase 4.
 Next: phase 2 (caching) and the case-study content for phase 3.

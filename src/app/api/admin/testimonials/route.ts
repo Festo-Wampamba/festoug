@@ -4,6 +4,7 @@ import { testimonials } from "@/lib/db/schema";
 import { testimonialSchema } from "@/lib/validations";
 import { asc } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function GET() {
   const session = await auth();
@@ -34,5 +35,6 @@ export async function POST(req: NextRequest) {
   }
 
   const [testimonial] = await db.insert(testimonials).values(result.data).returning();
+  revalidateContent("testimonials");
   return NextResponse.json(testimonial, { status: 201 });
 }

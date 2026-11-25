@@ -4,6 +4,7 @@ import { reviews, orders } from "@/lib/db/schema";
 import { reviewSchema } from "@/lib/validations";
 import { eq, and } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateContent } from "@/lib/content";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
       status,
     })
     .returning();
+  revalidateContent("reviews");
 
   return NextResponse.json(review, { status: 201 });
 }
